@@ -53,7 +53,7 @@ if not st.session_state["autenticado"]:
 else:
     # --- CONTENIDO DE TU PLATAFORMA (FASE COMERCIAL) ---
     st.title("🧠 Synapsis: Tutor de Élite")
-    st.success(class_name="¡Conexión Blindada y Segura!")
+    st.success("¡Conexión Blindada y Segura!")
     
     st.sidebar.title("📚 Módulos de Biología")
     modulo = st.sidebar.radio("Selecciona tu unidad:", ["Fase 1: Introducción Teórica", "Fase 2: Rigor Técnico", "Fase 3: Evaluación Virtual"])
