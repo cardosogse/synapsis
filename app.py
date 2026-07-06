@@ -4,24 +4,18 @@ import time
 # 1. CONFIGURACIÓN DEL CHASIS DE NAVEGACIÓN NATIVA
 st.set_page_config(page_title="ChonpsLab", page_icon="⚛️", layout="centered")
 
-# --- INYECCIÓN DE ESTILOS CSS AVANZADOS (CIELO NOCTURNO REALISTA) ---
+# --- INYECCIÓN DE ESTILOS CSS AVANZADOS (UNIVERSO Y ESTRELLAS) ---
 st.markdown("""
 <style>
-    /* Efecto Cielo Nocturno Realista usando miles de estrellas aleatorias por sombras moleculares */
+    /* Efecto Universo: Fondo negro absoluto con patrón de estrellas sutiles */
     .stApp {
-        background-color: #00020a !important; /* Negro con un sutil tinte azul profundo del espacio */
+        background-color: #000000 !important;
         background-image: 
-            radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.9), transparent),
-            radial-gradient(1px 1px at 40px 70px, rgba(255, 255, 255, 0.8), transparent),
-            radial-gradient(1.5px 1.5px at 50px 160px, rgba(255, 255, 255, 0.95), transparent),
-            radial-gradient(1px 1px at 80px 120px, rgba(255, 255, 255, 0.5), transparent),
-            radial-gradient(2px 2px at 150px 30px, rgba(255, 255, 255, 0.9), transparent),
-            radial-gradient(1px 1px at 250px 50px, rgba(0, 229, 255, 0.4), transparent), /* Destello azul cian lejano */
-            radial-gradient(1px 1px at 300px 90px, rgba(255, 255, 255, 0.7), transparent),
-            radial-gradient(1.5px 1.5px at 20px 220px, rgba(255, 255, 255, 0.85), transparent),
-            radial-gradient(1px 1px at 100px 240px, rgba(255, 255, 255, 0.6), transparent),
-            radial-gradient(2px 2px at 200px 180px, rgba(255, 255, 255, 0.9), transparent);
-        background-size: 300px 300px; /* Repetición armónica para simular constelaciones infinitas */
+            radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+            radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+        background-size: 550px 550px, 350px 350px, 250px 250px;
+        background-position: 0 0, 40px 60px, 130px 270px;
     }
 
     /* Tipografías de la Portada Premium */
@@ -33,13 +27,13 @@ st.markdown("""
         font-family: 'Segoe UI', -apple-system, sans-serif;
         margin-bottom: 0px;
         letter-spacing: 1px;
-        text-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
     }
     .main-title-suffix {
         color: #00e5ff; 
         font-weight: 300;
         font-size: 2.8rem;
-        text-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+        text-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
     }
     .sub-title {
         text-align: center; 
@@ -51,15 +45,15 @@ st.markdown("""
         letter-spacing: 0.5px;
     }
     
-    /* Panel Cósmico Translúcido (Efecto cristal flotando en el firmamento) */
+    /* Panel Cósmico Translúcido (Flotando en el espacio) */
     .bio-panel {
-        background-color: rgba(5, 10, 25, 0.65);
-        border: 1px solid rgba(0, 229, 255, 0.2);
+        background-color: rgba(10, 15, 30, 0.7);
+        border: 1px solid rgba(0, 229, 255, 0.25);
         border-left: 5px solid #00e5ff;
         padding: 24px;
         border-radius: 12px;
-        backdrop-filter: blur(8px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(6px);
+        box-shadow: 0 4px 25px rgba(0, 229, 255, 0.1);
         margin-bottom: 30px;
         text-align: center;
     }
@@ -70,10 +64,9 @@ st.markdown("""
         display: block;
         margin-bottom: 8px;
         letter-spacing: 0.3px;
-        text-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
     }
     .panel-text {
-        color: #e0e0e0;
+        color: #eceff1;
         font-size: 0.95rem;
         margin: 0;
         line-height: 1.5;
@@ -192,7 +185,7 @@ if not st.session_state["autenticado"]:
     st.write("---")
     
     st.markdown("<h3 style='font-weight: 600; margin-top: 10px; color: #ffffff;'>Sincronización del Entorno Analítico</h3>", unsafe_allow_html=True)
-    st.write("Introduce tu clave de acceso de 30 días para validar el estado de matrícula y encender los simuladores.")
+    st.write("Introduce tu clave de acceso de 30 días para validar el estado de matrícula y encender los reactores.")
     
     codigo_input = st.text_input("Licencia de Acceso Digital (Token Único):", type="password", placeholder="Introduce tu código aquí...")
     
