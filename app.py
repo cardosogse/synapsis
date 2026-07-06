@@ -2,8 +2,8 @@ import streamlit as st
 import time
 import sqlite3
 import hashlib
+import uuid
 from datetime import datetime, timedelta
-from streamlit.web.server.websocket_headers import _get_websocket_headers
 
 # ========================================================
 # 1. MOTOR DE BASE DE DATOS Y SEGURIDAD ANTIPIRATERÍA
@@ -35,18 +35,24 @@ def init_db():
 
 def get_device_fingerprint():
     """
-    Genera un hash único basado en las cabeceras del navegador y la IP.
-    Aproximación estricta para bloquear dispositivos múltiples en entornos web.
+    Genera un hash único basado en las cabeceras del cliente.
+    Arquitectura robusta para Streamlit Cloud sin dependencias privadas.
     """
-    try:
-        headers = _get_websocket_headers()
+    # 1. Intentar usar la API oficial moderna de Streamlit (v1.37+)
+    if hasattr(st, "context") and hasattr(st.context, "headers"):
+        headers = st.context.headers
         user_agent = headers.get("User-Agent", "Unknown-Agent")
         accept_lang = headers.get("Accept-Language", "Unknown-Lang")
-        # En producción real, se combinaría con st.context.headers y la IP remota.
+        
         raw_fingerprint = f"{user_agent}-{accept_lang}"
         return hashlib.sha256(raw_fingerprint.encode()).hexdigest()
-    except:
-        return "fallback-device-id-001"
+    
+    # 2. Mecanismo de contingencia (Fallback) si la API falla
+    if "session_device_id" not in st.session_state:
+        fallback_id = str(uuid.uuid4())
+        st.session_state["session_device_id"] = hashlib.sha256(fallback_id.encode()).hexdigest()
+        
+    return st.session_state["session_device_id"]
 
 def validate_token(token_input):
     """Lógica estricta de validación y bloqueo."""
@@ -65,7 +71,12 @@ def validate_token(token_input):
         conn.close()
         return False, "Esta licencia ha sido revocada por violaciones de seguridad."
         
-    expiration_date = datetime.strptime(expiration_str.split('.')[0], '%Y-%m-%d %H:%M:%S')
+    # Manejar formatos de fecha con o sin microsegundos
+    try:
+        expiration_date = datetime.strptime(expiration_str.split('.')[0], '%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        expiration_date = datetime.strptime(expiration_str, '%Y-%m-%d %H:%M:%S.%f')
+        
     if datetime.now() > expiration_date:
         conn.close()
         return False, "Tu suscripción de 30 días ha caducado. Adquiere una nueva licencia."
@@ -91,7 +102,7 @@ def validate_token(token_input):
 # ========================================================
 # 2. CONFIGURACIÓN DEL CHASIS Y ESTÉTICA CÓSMICA
 # ========================================================
-st.set_page_config(page_title="ChonpsLab | EdTech", page_icon="⚛️", layout="wide")
+st.set_page_config(page_title="ChonpsLab | Entorno Metabólico", page_icon="⚛️", layout="wide")
 
 st.markdown("""
 <style>
@@ -222,6 +233,8 @@ else:
                 if st.session_state.nivel_desbloqueado < 2:
                     st.session_state.nivel_desbloqueado = 2
                     st.success("Módulo 2 Desbloqueado. Ve a la siguiente pestaña.")
+                    time.sleep(0.5)
+                    st.rerun()
 
     # --- MÓDULO 2: LABORATORIO PRÁCTICO ---
     with tabs[1]:
@@ -269,4 +282,5 @@ else:
                 else:
                     st.session_state.vidas -= 1
                     st.error("❌ Respuesta incorrecta. Impacto crítico en el sistema. Has perdido 1 Vida.")
+                    time.sleep(1)
                     st.rerun()
