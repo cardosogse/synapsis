@@ -1,190 +1,193 @@
 import streamlit as st
 import time
 
-# 1. CONFIGURACIÓN DEL CHASIS SAAS
-st.set_page_config(page_title="Synapsis PRO - Seguridad Élite", page_icon="⚛️", layout="centered")
+# 1. CONFIGURACIÓN DEL CHASIS DE NAVEGACIÓN
+st.set_page_config(page_title="SynapsisLab", page_icon="🧠", layout="centered")
+
+# --- ESTILOS CSS NATIVOS PARA ERGONOMÍA VISUAL PREMIUM ---
+st.markdown("""
+<style>
+    /* Estilos globales de tipografía y fondos */
+    .main-title {
+        text-align: center; 
+        color: #0288d1; 
+        font-size: 3.8rem; 
+        font-weight: 800; 
+        letter-spacing: 3px;
+        margin-bottom: 0px;
+    }
+    .sub-title {
+        text-align: center; 
+        font-style: italic; 
+        color: #666; 
+        font-size: 1.1rem; 
+        font-weight: 400;
+        margin-top: 0px;
+        margin-bottom: 5px;
+    }
+    .question-hook {
+        text-align: center; 
+        color: #0288d1; 
+        font-size: 1.2rem; 
+        font-weight: 600; 
+        margin-top: 0px;
+        margin-bottom: 25px;
+    }
+    /* Contenedores de la interfaz del Laboratorio */
+    .console-header {
+        background-color: #f8f9fa;
+        border-left: 5px solid #0288d1;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+    .spectrometer-card-success {
+        background-color: #e8f5e9;
+        border: 1px solid #c8e6c9;
+        border-left: 6px solid #4caf50;
+        padding: 20px;
+        border-radius: 6px;
+        margin-top: 15px;
+    }
+    .spectrometer-card-error {
+        background-color: #ffebee;
+        border: 1px solid #ffcdd2;
+        border-left: 6px solid #f44336;
+        padding: 20px;
+        border-radius: 6px;
+        margin-top: 15px;
+    }
+    .spectrometer-title {
+        color: #333;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+    /* Monitor de la barra lateral */
+    .sidebar-monitor {
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+        padding: 12px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+</style>
+""", unsafe_style=True)
 
 # --- BITÁCORA GLOBAL COMPARTIDA (EL MURO DE ACERO ANTIPIRATERÍA) ---
 @st.cache_resource
 def obtener_base_datos_global():
-    return {}  # Formato: {"codigo_licencia": "session_id_del_ultimo_dispositivo"}
+    return {}  # Estructura: {"codigo_licencia": "session_id_del_ultimo_dispositivo"}
 
 base_datos_global = obtener_base_datos_global()
 
-# Licencias autorizadas para el Tronco Común Universitario
+# Licencias autorizadas para el Tronco Común de Ciencias de la Salud
 CODIGOS_VIGENTES = ["SYNAPSIS-PRO", "VET-BIOQUIMICA-2026", "MED-ELITE-30DAYS"]
 
-# Generar identificador único de dispositivo/pestaña basado en tiempo de alta precisión
 if "mi_session_id" not in st.session_state:
     st.session_state["mi_session_id"] = str(time.time_ns())
 
-# Estados de control de acceso locales
+# Estados locales de control de sesión
 if "autenticado" not in st.session_state:
     st.session_state["autenticado"] = False
 if "codigo_ingresado" not in st.session_state:
     st.session_state["codigo_ingresado"] = ""
 
-# --- VARIABLES DE ESTADO DE LA SIMULACIÓN ---
+# --- VARIABLES DE ESTADO LOCAL DEL LABORATORIO ---
 if "vidas" not in st.session_state:
     st.session_state["vidas"] = 3
 if "puntos" not in st.session_state:
     st.session_state["puntos"] = 0
-if "caso_actual" not in st.session_state:
-    st.session_state["caso_actual"] = 1
-if "resultado_evaluacion" not in st.session_state:
-    st.session_state["resultado_evaluacion"] = None
+if "bloque_actual" not in st.session_state:
+    st.session_state["bloque_actual"] = 0  # 0 = Fundamentos, 1 = Agua y pH
+if "simulacion_ejecutada" not in st.session_state:
+    st.session_state["simulacion_ejecutada"] = False
+if "resultado_texto" not in st.session_state:
+    st.session_state["resultado_texto"] = ""
+if "estado_sistema" not in st.session_state:
+    st.session_state["estado_sistema"] = "En Espera"
 
-# --- FUNCIÓN COLECTORA DE PATRULLAJE AUTOMÁTICO (EL RADAR INVISIBLE) ---
-def verificar_bloqueo_pirateria():
-    """Verifica instantáneamente si este dispositivo ha perdido el derecho de sesión."""
-    if st.session_state["autenticado"]:
-        codigo = st.session_state["codigo_ingresado"]
-        id_actual_en_servidor = base_datos_global.get(codigo)
-        
-        # Si otro ID reclamó el trono en el servidor, este dispositivo se bloquea de inmediato
-        if id_actual_en_servidor != st.session_state["mi_session_id"]:
-            st.session_state["autenticado"] = False
-            st.session_state["codigo_ingresado"] = ""
-            st.error("🚨 SUSPENSIÓN POR PIRATERÍA: Se detectó doble inicio de sesión simultáneo. Tu acceso en este dispositivo ha sido revocado automáticamente.")
-            st.info("💡 Cada suscripción mensual es individual. Para usar Synapsis en múltiples pantallas, adquiere una licencia adicional.")
-            st.stop()
-
-# --- FRAGMENTO DE REFRESCO EN SEGUNDO PLANO (AUTOMATIZACIÓN TOTAL) ---
+# --- RADAR PASIVO DE PIRATERÍA (Background Polling cada 5 segundos) ---
 @st.fragment(run_every=5)
 def radar_seguridad_pasivo():
-    """Ejecuta un escaneo silencioso en el servidor cada 5 segundos sin molestar al alumno."""
     if st.session_state["autenticado"]:
         codigo = st.session_state["codigo_ingresado"]
         if base_datos_global.get(codigo) != st.session_state["mi_session_id"]:
-            st.rerun() # Fuerza el refresco de la app completa para detonar la expulsión
+            st.rerun()
 
-# --- INTERFAZ DE ACCESO (EL MURO) ---
+def verificar_bloqueo_pirateria():
+    if st.session_state["autenticado"]:
+        codigo = st.session_state["codigo_ingresado"]
+        if base_datos_global.get(codigo) != st.session_state["mi_session_id"]:
+            st.session_state["autenticado"] = False
+            st.session_state["codigo_ingresado"] = ""
+            st.error("🚨 SUSPENSIÓN POR PIRATERÍA: Se detectó un doble inicio de sesión simultáneo. Tu acceso en este dispositivo ha sido revocado automáticamente.")
+            st.stop()
+
+# ========================================================
+# --- FACHADA DE ACCESO PÚBLICA (DISEÑO GEOMÉTRICO LIMPIO) ---
+# ========================================================
 if not st.session_state["autenticado"]:
-    st.title("🔐 Synapsis PRO")
-    st.subheader("Acceso a la Plataforma de Especialización Biomédica")
-    st.write("Introduce tu código de suscripción de 30 días para sincronizarte con el entorno de Tronco Común.")
+    st.markdown("<h1 class='main-title'>SYNAPSIS</h1>", unsafe_style=True)
+    st.markdown("<p class='sub-title'>Aprende rápido. Rompe las barreras biológicas.</p>", unsafe_style=True)
+    st.markdown("<p class='question-hook'>¿Listo para aprender rápido con tu laboratorio digital?</p>", unsafe_style=True)
     
-    codigo_input = st.text_input("Código de Licencia Válido:", type="password", placeholder="SYNAPSIS-PRO")
+    st.write("---")
     
-    if st.button("Validar e Ingresar"):
+    # Contenedor estético para el Arte Digital de Redes Neuronales
+    st.markdown("""
+    <div style='background-color: #f1f8e9; border: 1px dashed #8bc34a; padding: 20px; text-align: center; border-radius: 4px; color: #33691e; font-size: 0.95rem; font-weight: 500;'>
+        [Módulo de Interconexión Sináptica: Animación de Redes Neuronales Nativas en Desarrollo]
+    </div>
+    """, unsafe_style=True)
+    
+    st.markdown("""
+    <br>
+    <h3 style='color: #333; font-weight: 600;'>Sincronización del Entorno Analítico</h3>
+    Introduzca su clave de acceso individual de 30 días para validar el estado de matrícula y activar los reactores digitales de tronco común.
+    """, unsafe_style=True)
+    
+    codigo_input = st.text_input("Licencia de Acceso Digital (Token Único):", type="password", placeholder="Introduzca el código de suscripción...")
+    
+    if st.button("Activar Reactores Moleculares", use_container_width=True):
         codigo_limpio = codigo_input.strip().upper()
         if codigo_limpio in CODIGOS_VIGENTES:
-            # Sobreescribir el servidor con NUESTRO ID único de pestaña (Expulsa al anterior)
             base_datos_global[codigo_limpio] = st.session_state["mi_session_id"]
-            
             st.session_state["autenticado"] = True
             st.session_state["codigo_ingresado"] = codigo_limpio
-            st.success("Licencia verificada con éxito. Sincronizando radar de seguridad...")
+            st.success("Conexión establecida con éxito. Sincronizando interfaz...")
             time.sleep(0.5)
             st.rerun()
         else:
-            st.error("❌ Código inválido o suscripción expirada. Verifica tu pago.")
+            st.error("Código de licencia inválido o expirado. Verifique su suscripción mensual.")
+
+# ========================================================
+# --- CONSOLA PRIVADA DE ESTUDIANTES (SynapsisLab) ---
+# ========================================================
 else:
-    # ACTIVAR EL RADAR PASIVO: Escanea el servidor en background cada 5 segundos
     radar_seguridad_pasivo()
-    
-    # EJECUTAR INTERCEPTOR: Bloquea el renderizado si el radar detecta anomalías
     verificar_bloqueo_pirateria()
 
-    # --- INTERFAZ CORE: BIENVENIDO AL SIMULADOR ---
-    st.title("⚛️ Synapsis: Especialización en Bioquímica")
-    st.caption(f"Consola de Tronco Común | Licencia Protegida: {st.session_state['codigo_ingresado']}")
+    # Encabezado Ergonómico de la Consola
+    st.markdown("""
+    <div class='console-header'>
+        <h2 style='margin:0; color: #01579b; font-weight: 700;'>SynapsisLab: Consola de Simulación</h2>
+        <span style='color: #555; font-size: 0.85rem;'>Entorno Clínico Protegido | Matrícula Activa: {}</span>
+    </div>
+    """.format(st.session_state['codigo_ingresado']), unsafe_style=True)
     
-    # Panel lateral de estatus
+    # Barra lateral — Monitor de Signos Homeostáticos del Alumno
     with st.sidebar:
-        st.header("📋 Panel de Evaluación")
-        st.metric(label="❤️ Vidas Restantes", value=st.session_state.vidas)
-        st.metric(label="🏆 Puntos de Rigor Científico", value=st.session_state.puntos)
+        st.markdown("<h3 style='color: #333; font-weight:600; margin-bottom:15px;'>Monitor de Estado</h3>", unsafe_style=True)
+        
+        st.markdown("<div class='sidebar-monitor'><span style='font-size:0.8rem; color:#666; text-transform:uppercase;'>Estabilidad (Vidas)</span><br><b style='font-size:1.6rem; color:#d32f2f;'>{} / 3</b></div>".format(st.session_state.vidas), unsafe_style=True)
+        st.markdown("<div class='sidebar-monitor'><span style='font-size:0.8rem; color:#666; text-transform:uppercase;'>Rigor (Puntos)</span><br><b style='font-size:1.6rem; color:#1976d2;'>{}</b></div>".format(st.session_state.puntos), unsafe_style=True)
+        
         st.write("---")
-        if st.button("🚪 Cerrar Sesión"):
-            if st.session_state["codigo_ingresado"] in base_datos_global:
-                # Al salir legalmente, liberamos el código en el servidor
-                if base_datos_global[st.session_state["codigo_ingresado"]] == st.session_state["mi_session_id"]:
-                    del base_datos_global[st.session_state["codigo_ingresado"]]
-            st.session_state["autenticado"] = False
-            st.rerun()
-
-    st.header("🔬 Bloque 0: Fundamentos Químicos de la Materia Viva")
-    st.write("Módulo de homologación nacional para ciencias de la salud. El sistema se está patrullando automáticamente.")
-    st.write("---")
-
-    # Sistema de Game Over
-    if st.session_state.vidas <= 0:
-        st.error("💀 **¡Inestabilidad Estructural Total!** Has cometido demasiados errores conceptuales básicos en química. El simulador se ha bloqueado.")
-        if st.button("♻️ Reiniciar Bloque 0"):
-            st.session_state.vidas = 3
-            st.session_state.puntos = 0
-            st.session_state.caso_actual = 1
-            st.session_state.resultado_evaluacion = None
-            st.rerun()
-            
-    # Condición de Victoria
-    elif st.session_state.caso_actual > 2:
-        st.balloons()
-        st.success(f"🏆 **¡Módulo Completado!** Tienes las bases sólidas para avanzar.")
-        if st.button("♻️ Volver a Evaluar"):
-            st.session_state.caso_actual = 1
-            st.session_state.puntos = 0
-            st.session_state.vidas = 3
-            st.session_state.resultado_evaluacion = None
-            st.rerun()
-            
-    else:
-        # --- DESAFÍO 1: LA DEFINICIÓN DE BIOQUÍMICA ---
-        if st.session_state.caso_actual == 1:
-            st.subheader("📋 Desafío 1: El Objeto de Estudio de la Bioquímica")
-            pregunta = st.radio(
-                "¿Cuál es la definición operacional más precisa de la Bioquímica en ciencias de la salud?",
-                [
-                    "Estudia la anatomía celular macroscópica mediante el uso de microscopía óptica.",
-                    "Es la disciplina molecular que estudia los componentes químicos de los seres vivos, sus estructuras, funciones y las reacciones químicas (metabolismo) que sustentan la vida.",
-                    "Analiza las fuerzas mecánicas de los músculos en animales."
-                ],
-                key="fund_caso_1"
-            )
-            
-            if st.button("Confirmar Análisis", key="btn_fund_1"):
-                verificar_bloqueo_pirateria()  # Patrullaje extra antes de procesar puntos
-                if "disciplina molecular" in pregunta:
-                    st.session_state.resultado_evaluacion = ("correcto", "¡Correcto! La bioquímica opera a nivel molecular explicando cómo la materia genera vida.")
-                    st.session_state.puntos += 100
-                else:
-                    st.session_state.resultado_evaluacion = ("incorrecto", "Error de concepto. Eso describe a la histología o a la biomecánica.")
-                    st.session_state.vidas -= 1
-
-        # --- DESAFÍO 2: LA ELECTRONEGATIVIDAD ---
-        elif st.session_state.caso_actual == 2:
-            st.subheader("📋 Desafío 2: Comportamiento Atómico y Electronegatividad")
-            pregunta = st.radio(
-                "¿Qué ocurre cuando el Oxígeno altamente electronegativo se enlaza con el Hidrógeno?",
-                [
-                    "Los electrones se comparten de manera perfectamente simétrica, creando una molécula apolar.",
-                    "Se genera un enlace covalente polar, donde el Oxígeno jala los electrones con más fuerza, acumulando una densidad de carga parcialmente negativa.",
-                    "El Hidrógeno destruye el núcleo del Oxígeno."
-                ],
-                key="fund_caso_2"
-            )
-            
-            if st.button("Confirmar Análisis", key="btn_fund_2"):
-                verificar_bloqueo_pirateria()  # Patrullaje extra antes de procesar puntos
-                if "covalente polar" in pregunta:
-                    st.session_state.resultado_evaluacion = ("correcto", "¡Soberbio! Esa asimetría es el origen de los dipolos moleculares que permiten al agua disolver biomoléculas.")
-                    st.session_state.puntos += 100
-                else:
-                    st.session_state.resultado_evaluacion = ("incorrecto", "Incorrecto. Si fuera simétrica el enlace sería no polar (como C-H).")
-                    st.session_state.vidas -= 1
-
-        # Despliegue de retroalimentación
-        if st.session_state.resultado_evaluacion:
-            tipo, mensaje = st.session_state.resultado_evaluacion
-            if tipo == "correcto":
-                st.success(mensaje)
-                if st.button("Siguiente Desafío ➡️"):
-                    st.session_state.caso_actual += 1
-                    st.session_state.resultado_evaluacion = None
-                    st.rerun()
-            else:
-                st.error(mensaje)
-                if st.button("Analizar Error y Continuar 🔄"):
-                    st.session_state.resultado_evaluacion = None
-                    st.rerun()
+        st.markdown("<h4 style='color: #333; font-weight:600;'>Navegación Curricular</h4>", unsafe_style=True)
+        
+        # Selector de bloques temáticos integrados
+        if st.sidebar.button("Bloque 0: Fundamentos Quím
