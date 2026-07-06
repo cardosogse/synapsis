@@ -87,6 +87,7 @@ base_datos_global = obtener_base_datos_global()
 # Licencias autorizadas para el Tronco Común de Ciencias de la Salud
 CODIGOS_VIGENTES = ["SYNAPSIS-PRO", "VET-BIOQUIMICA-2026", "MED-ELITE-30DAYS"]
 
+# Generar un ID único por pestaña de forma segura
 if "mi_session_id" not in st.session_state:
     st.session_state["mi_session_id"] = str(time.time_ns())
 
@@ -102,7 +103,7 @@ if "vidas" not in st.session_state:
 if "puntos" not in st.session_state:
     st.session_state["puntos"] = 0
 if "bloque_actual" not in st.session_state:
-    st.session_state["bloque_actual"] = 0  # 0 = Fundamentos, 1 = Agua y pH
+    st.session_state["bloque_actual"] = 0  
 if "simulacion_ejecutada" not in st.session_state:
     st.session_state["simulacion_ejecutada"] = False
 if "resultado_texto" not in st.session_state:
@@ -110,22 +111,29 @@ if "resultado_texto" not in st.session_state:
 if "estado_sistema" not in st.session_state:
     st.session_state["estado_sistema"] = "En Espera"
 
-# --- RADAR PASIVO DE PIRATERÍA (Background Polling cada 5 segundos) ---
+# --- RADAR PASIVO DE PIRATERÍA (Background Polling optimizado) ---
 @st.fragment(run_every=5)
 def radar_seguridad_pasivo():
     if st.session_state["autenticado"]:
         codigo = st.session_state["codigo_ingresado"]
-        if base_datos_global.get(codigo) != st.session_state["mi_session_id"]:
+        # Evitar falsos positivos si la base global se limpió en un refresh manual
+        if codigo in base_datos_global and base_datos_global[codigo] != st.session_state["mi_session_id"]:
             st.rerun()
 
 def verificar_bloqueo_pirateria():
     if st.session_state["autenticado"]:
         codigo = st.session_state["codigo_ingresado"]
-        if base_datos_global.get(codigo) != st.session_state["mi_session_id"]:
-            st.session_state["autenticado"] = False
-            st.session_state["codigo_ingresado"] = ""
-            st.error("🚨 SUSPENSIÓN POR PIRATERÍA: Se detectó un doble inicio de sesión simultáneo. Tu acceso en este dispositivo ha sido revocado automáticamente.")
-            st.stop()
+        
+        # Corrección de bucle: Si el código desapareció de la base global por un F5, reestablecer trono
+        if codigo in base_datos_global:
+            if base_datos_global[codigo] != st.session_state["mi_session_id"]:
+                st.session_state["autenticado"] = False
+                st.session_state["codigo_ingresado"] = ""
+                st.error("🚨 SUSPENSIÓN POR PIRATERÍA: Se detectó un doble inicio de sesión simultáneo. Tu acceso en este dispositivo ha sido revocado automáticamente.")
+                st.stop()
+        else:
+            # Reclamar el trono de forma segura si la memoria caché del navegador se refrescó
+            base_datos_global[codigo] = st.session_state["mi_session_id"]
 
 # ========================================================
 # --- FACHADA DE ACCESO PÚBLICA (DISEÑO GEOMÉTRICO LIMPIO) ---
@@ -190,4 +198,104 @@ else:
         st.markdown("<h4 style='color: #333; font-weight:600;'>Navegación Curricular</h4>", unsafe_style=True)
         
         # Selector de bloques temáticos integrados
-        if st.sidebar.button("Bloque 0: Fundamentos Quím
+        if st.sidebar.button("Bloque 0: Fundamentos Químicos", use_container_width=True):
+            st.session_state.bloque_actual = 0
+            st.session_state.simulacion_ejecutada = False
+            st.rerun()
+        if st.sidebar.button("Bloque 1: Agua y Equilibrio del pH", use_container_width=True):
+            st.session_state.bloque_actual = 1
+            st.session_state.simulacion_ejecutada = False
+            st.rerun()
+            
+        st.write("---")
+        if st.button("Desconectar Sesión de Forma Segura", use_container_width=True):
+            if st.session_state["codigo_ingresado"] in base_datos_global:
+                if base_datos_global[st.session_state["codigo_ingresado"]] == st.session_state["mi_session_id"]:
+                    del base_datos_global[st.session_state["codigo_ingresado"]]
+            st.session_state["autenticado"] = False
+            st.rerun()
+
+    # SISTEMA LOGICIAL DE CONTROL DE ESTADO (Game Over)
+    if st.session_state.vidas <= 0:
+        st.markdown("""
+        <div class='spectrometer-card-error'>
+            <div class='spectrometer-title' style='color:#c62828;'>Falla Homeostática Crítica</div>
+            El sistema ha entrado en inestabilidad irreversible debido a decisiones experimentales erróneas. El reactor se ha bloqueado.
+        </div>
+        """, unsafe_style=True)
+        if st.button("Inyectar Nuevos Reactores Extracelulares y Reiniciar", use_container_width=True):
+            st.session_state.vidas = 3
+            st.session_state.puntos = 0
+            st.session_state.simulacion_ejecutada = False
+            st.session_state.estado_sistema = "En Espera"
+            st.rerun()
+            
+    else:
+        # ========================================================
+        # --- DESPLIEGUE CONTINUO: BLOQUE 0 (FUNDAMENTOS) ---
+        # ========================================================
+        if st.session_state.bloque_actual == 0:
+            st.subheader("Ficha de Protocolo 0: Enlaces y Electronegatividad")
+            
+            with st.expander("Ver Sustento Teórico del Enlace Bioquímico", expanded=True):
+                st.markdown("""
+                Los sistemas vivos están estructurados a partir del ensamblaje de bioelementos primarios (**CHON**). 
+                La interacción espacial de estos átomos depende estrictamente de su **Electronegatividad** (la fuerza molecular para atraer electrones).
+                * **Oxígeno (3.44) y Nitrógeno (3.04):** Elementos con alta densidad y ambición electrónica en sistemas biológicos.
+                * **Carbono (2.55) y Hidrógeno (2.20):** Elementos con baja fuerza de atracción.
+                
+                **Consecuencias en la materia viva:**
+                1. **Enlace Covalente Polar:** Ocurre al unir elementos con gran diferencia de electronegatividad (ej. O-H). Los electrones se desplazan asimétricamente, generando un **dipolo eléctrico** (pequeños imanes). Es la base hidrofílica que permite al agua interactuar con solutos.
+                2. **Enlace Covalente No Polar:** Los electrones se comparten simétricamente (ej. C-H) debido a fuerzas similares. El enlace es eléctricamente neutro e hidrofóbico (base estructural de las membranas lipídicas).
+                """)
+
+            st.write("---")
+            st.markdown("<h3 style='color:#333; font-weight:600;'>Reactor de Enlaces Moleculares</h3>", unsafe_style=True)
+            st.write("Configure la combinación atómica elemental del ensayo analítico:")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                atomo_1 = st.selectbox("Elemento Primario del Núcleo:", ["Oxígeno (Fuerza: 3.44)", "Carbono (Fuerza: 2.55)"])
+            with col2:
+                atomo_2 = st.selectbox("Elemento de Interacción Orbital:", ["Hidrógeno (Fuerza: 2.20)", "Oxígeno (Fuerza: 3.44)"])
+                
+            if st.button("Disparar Reacción Térmica", use_container_width=True):
+                st.session_state.simulacion_ejecutada = True
+                verificar_bloqueo_pirateria()
+                
+                es_polar = "Oxígeno" in atomo_1 and "Hidrógeno" in atomo_2
+                es_apolar = "Carbono" in atomo_1 and "Hidrógeno" in atomo_2
+                es_error = "Oxígeno" in atomo_1 and "Oxígeno" in atomo_2
+                
+                if es_polar:
+                    st.session_state.estado_sistema = "Enlace Covalente Polar (Dipolo Eléctrico Activo)"
+                    st.session_state.resultado_texto = "Análisis molecular impecable. La asimetría en la densidad electrónica deforma la nube orbital. El Oxígeno retiene la carga parcial negativa y el Hidrógeno la positiva, estructurando el dipolo que fundamenta los puentes de hidrógeno."
+                    st.session_state.puntos += 100
+                elif es_apolar:
+                    st.session_state.estado_sistema = "Enlace Covalente No Polar (Geometría Simétrica)"
+                    st.session_state.resultado_texto = "Configuración correcta. Las fuerzas del Carbono y el Hidrógeno se equilibran en el centro geométrico del enlace. La ausencia de cargas netas produce un compuesto hidrofóbico, componente clave para la estabilidad de las bicapas lipídicas corporales."
+                    st.session_state.puntos += 100
+                elif es_error:
+                    st.session_state.estado_sistema = "Molécula Gaseosa Homogénea (O2)"
+                    st.session_state.resultado_texto = "Conflicto de variables en fluidos. Ambos átomos poseen idéntica afinidad electrónica, compartiendo el par de electrones de forma perfectamente simétrica. Produce oxígeno molecular (O₂), vital para la fosforilación oxidativa celular, pero incapaz de disolverse o interactuar de forma dipolar con solventes orgánicos. Pérdida de estabilidad estructural."
+                    st.session_state.vidas -= 1
+                st.rerun()
+
+        # ========================================================
+        # --- DESPLIEGUE CONTINUO: BLOQUE 1 (AGUA Y PH) ---
+        # ========================================================
+        elif st.session_state.bloque_actual == 1:
+            st.subheader("Ficha de Protocolo 1: Dinámica del Agua y Equilibrio del pH")
+            
+            with st.expander("Ver Sustento Teórico de la Disociación Iónica", expanded=True):
+                st.markdown("""
+                El agua ($H_2O$) representa el disolvente universal de la homeostasis biológica. Debido a su carácter dipolar (repasado en el Bloque 0), tiene la capacidad de disociarse de forma reversible en **iones hidronio ($H^+$)** y **iones oxhidrilo ($OH^-$)**.
+                
+                $$\gamma: H_2O \rightleftharpoons H^+ + OH^-$$
+                
+                La concentración libre de estos iones de hidrógeno determina el **pH** del medio interno. El rango de estabilidad vital de la sangre se ubica estrictamente entre **7.35 y 7.45**. Desviaciones fuera de estos límites alteran la carga eléctrica de los aminoácidos y desnaturalizan las enzimas del metabolismo. Para evitarlo, el cuerpo utiliza **sistemas amortiguadores o tampón**, siendo el principal el sistema de **Bicarbonato / Ácido Carbónico**.
+                """)
+
+            st.write("---")
+            st.markdown("<h3 style='color:#333; font-weight:600;'>Analizador de Amortiguación Extracelular</h3>", unsafe_style=True)
+            st.write("Inyecte soluciones analíticas en el plasma químico
