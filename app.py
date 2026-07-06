@@ -261,4 +261,132 @@ else:
             for i, col in enumerate([c1, c2, c3]):
                 with col:
                     k1, k2 = keys[i*2], keys[i*2+1]
-                    st.markdown(f"<div style='background:rgba(255,255,255,0.05); padding:10px; border-radius:5px; border-left:3px solid {ELEMENTOS[k1]['color']}; margin-bottom:10px;'><b>{k1}
+                    st.markdown(f"<div style='background:rgba(255,255,255,0.05); padding:10px; border-radius:5px; border-left:3px solid {ELEMENTOS[k1]['color']}; margin-bottom:10px;'><b>{k1}</b><br><small>Fuerza: {ELEMENTOS[k1]['fuerza']}</small></div>", unsafe_allow_html=True)
+                    st.markdown(f"<div style='background:rgba(255,255,255,0.05); padding:10px; border-radius:5px; border-left:3px solid {ELEMENTOS[k2]['color']}; margin-bottom:10px;'><b>{k2}</b><br><small>Fuerza: {ELEMENTOS[k2]['fuerza']}</small></div>", unsafe_allow_html=True)
+
+        # ----------------------------------------------------
+        # MÓDULO 3: REACTOR DE ENLACES (CON MOTOR BIOLÓGICO)
+        # ----------------------------------------------------
+        with tabs[2]:
+            st.markdown("### Espectrometría de Enlaces Covalentes")
+            st.write("Funde dos elementos biológicos. El sistema calculará la polaridad vectorial y determinará en qué macromolécula orgánica encaja esta unión.")
+            
+            c1, c2 = st.columns(2)
+            atom1 = c1.selectbox("Elemento Primario (A):", list(ELEMENTOS.keys()))
+            atom2 = c2.selectbox("Elemento Secundario (B):", list(ELEMENTOS.keys()))
+            
+            if st.button("Activar Reactor Molecular", use_container_width=True):
+                a1, a2 = ELEMENTOS[atom1], ELEMENTOS[atom2]
+                st.components.v1.html(generar_svg_enlace(a1['sym'], a1['fuerza'], a1['color'], a2['sym'], a2['fuerza'], a2['color']), height=140, scrolling=False)
+                
+                diff = abs(a1['fuerza'] - a2['fuerza'])
+                macro_tit, macro_desc = obtener_contexto_biologico(a1['sym'], a2['sym'])
+                
+                if diff == 0:
+                    css_card = "card-success"
+                    tit = f"✅ Enlace No Polar Homonúcleo (Diferencia = 0.0)"
+                elif diff <= 0.4:
+                    css_card = "card-success"
+                    tit = f"✅ Enlace Covalente No Polar (Diferencia = {diff:.2f})"
+                elif diff <= 1.7:
+                    css_card = "card-polar"
+                    tit = f"⚡ Enlace Covalente Polar (Diferencia = {diff:.2f})"
+                else:
+                    css_card = "card-error"
+                    tit = f"⚠️ Inestabilidad Iónica (Diferencia = {diff:.2f})"
+                    st.session_state.vidas -= 1
+                    
+                st.markdown(f"""
+                <div class='{css_card}'>
+                    <h4 style='margin-top:0;'>{tit}</h4>
+                    <p style='margin-bottom:10px;'><strong>🔬 Integración Biológica: {macro_tit}</strong><br>{macro_desc}</p>
+                </div>
+                """, unsafe_allow_html=True)
+
+        # ----------------------------------------------------
+        # MÓDULO 4: GLUCÓMICA Y CARBOHIDRATOS
+        # ----------------------------------------------------
+        with tabs[3]:
+            st.markdown("### Glucómica: Isomerismo y Disacáridos")
+            st.write("El orden de los átomos en el espacio dicta su función. Experimenta con la especificidad enzimática.")
+            
+            with st.expander("🔍 Análisis Estructural: Glucosa vs Galactosa (Epímeros)"):
+                st.markdown("""
+                **¿Qué son los epímeros?**
+                Son isómeros que difieren en la configuración espacial de un único carbono asimétrico.
+                * **D-Glucosa:** En el Carbono 4, el grupo Hidroxilo (-OH) se orienta a la derecha.
+                * **D-Galactosa:** En el Carbono 4, el grupo Hidroxilo (-OH) se orienta a la izquierda.
+                * *Impacto clínico:* Esta diminuta alteración obliga al organismo a utilizar rutas y enzimas completamente distintas para su metabolismo.
+                """)
+            
+            st.markdown("#### Cámara de Síntesis O-Glucosídica")
+            c1, c2 = st.columns(2)
+            azu1 = c1.selectbox("Residuo Monosacárido 1:", ["Alfa-D-Glucosa", "Beta-D-Galactosa"])
+            azu2 = c2.selectbox("Residuo Monosacárido 2:", ["Alfa-D-Glucosa", "Beta-D-Fructosa"])
+            
+            if st.button("Formar Enlace (Liberar $H_2O$)", use_container_width=True):
+                if azu1 == "Alfa-D-Glucosa" and azu2 == "Alfa-D-Glucosa":
+                    st.markdown("<div class='card-success'>🌾 <b>MALTOSA [Enlace Alfa 1→4]:</b> Azúcar de malta, reductor. Producto de la digestión del almidón.</div>", unsafe_allow_html=True)
+                elif azu1 == "Beta-D-Galactosa" and azu2 == "Alfa-D-Glucosa":
+                    st.markdown("<div class='card-success'>🥛 <b>LACTOSA [Enlace Beta 1→4]:</b> Azúcar de leche animal. Requiere enzima Lactasa para escindir el enlace 'Beta'.</div>", unsafe_allow_html=True)
+                elif azu1 == "Alfa-D-Glucosa" and azu2 == "Beta-D-Fructosa":
+                    st.markdown("<div class='card-success'>🎋 <b>SACAROSA [Enlace Alfa 1 ↔ Beta 2]:</b> Azúcar de caña. Dicarbonílico, bloquea los extremos reduciendo su reactividad.</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown("<div class='card-error'>⚠️ <b>Mutación Estructural:</b> Ensamblaje incompatible con el metabolismo estándar de mamíferos.</div>", unsafe_allow_html=True)
+
+        # ----------------------------------------------------
+        # MÓDULO 5: TITULACIÓN Y BUFFERS
+        # ----------------------------------------------------
+        with tabs[4]:
+            st.markdown("### Sistemas de Amortiguación Homeostática")
+            st.write("La vida depende de un pH estable (7.35 - 7.45 en plasma). Simula una infusión agresiva de ácido fuerte.")
+            
+            solucion = st.radio("Escoge el fluido receptor:", ["Agua Destilada Pura (Sin capacidad de tamponamiento)", "Plasma Sanguíneo (Contiene Buffer Bicarbonato / Proteínas)"])
+            
+            if st.button("Infundir 10 mL de HCl (Ácido Clorhídrico)", use_container_width=True):
+                if "Agua" in solucion:
+                    st.progress(0.1) # Representación visual gráfica del pH desplomado
+                    st.markdown("<div class='card-error'><b>🩸 CHOQUE DE ACIDOSIS (pH cae a 2.0):</b> El HCl libera libremente todos sus protones ($H^+$). Al no existir un ácido/base débil que los atrape, la acidez se dispara desnaturalizando la estructura 3D de las proteínas. <b>Pierdes 1 vida.</b></div>", unsafe_allow_html=True)
+                    st.session_state.vidas -= 1
+                else:
+                    st.progress(0.7) # Representación visual del pH estable
+                    st.markdown("<div class='card-success'><b>🛡️ TAMPONAMIENTO ESTABLE (pH se mantiene en ~7.4):</b> Las bases conjugadas del plasma secuestran el exceso de protones del HCl convirtiéndolos en componentes débiles. La concentración celular sobrevive en su <b>Región Amortiguadora</b>.</div>", unsafe_allow_html=True)
+
+        # ----------------------------------------------------
+        # MÓDULO 6: MATRIZ DE EVALUACIÓN CON FEEDBACK
+        # ----------------------------------------------------
+        with tabs[5]:
+            st.markdown("### Validación Científica Rigurosa")
+            st.write("Cierra tu práctica de laboratorio respondiendo el cuestionario. Obtendrás retroalimentación detallada tras enviar.")
+            
+            with st.form("exam_unam_pro"):
+                for i, q in enumerate(PREGUNTAS_UNAM):
+                    st.markdown(f"<span style='color:#00e5ff; font-weight:bold;'>{q['q']}</span>", unsafe_allow_html=True)
+                    st.session_state.quiz_respuestas[i] = st.radio(f"R{i}", q['opciones'], key=f"q_{i}", label_visibility="collapsed")
+                    st.write("")
+                
+                submitted = st.form_submit_button("Someter Bitácora a Evaluación", use_container_width=True)
+                
+            if submitted:
+                st.session_state.quiz_evaluado = True
+                errores = sum([1 for i, q in enumerate(PREGUNTAS_UNAM) if st.session_state.quiz_respuestas[i] != q['a']])
+                
+                if errores == 0:
+                    st.balloons()
+                    st.success("🏆 ¡CALIFICACIÓN PERFECTA! Cero lagunas conceptuales. Has dominado la física cuántica, biomoléculas y homeostasis celular.")
+                else:
+                    st.session_state.vidas -= 1
+                    st.error(f"❌ Detectamos {errores} error(es) en tu análisis. Has perdido 1 vida. Revisa las correcciones detalladas abajo:")
+                
+                st.markdown("#### 📑 Reporte Clínico Detallado")
+                for i, q in enumerate(PREGUNTAS_UNAM):
+                    acierto = st.session_state.quiz_respuestas[i] == q['a']
+                    estado = "✅ CORRECTO" if acierto else "❌ INCORRECTO"
+                    with st.expander(f"Reactivo {i+1} — {estado}", expanded=not acierto):
+                        st.write(f"**Tu respuesta:** {st.session_state.quiz_respuestas[i]}")
+                        if not acierto:
+                            st.write(f"**Respuesta esperada:** {q['a']}")
+                        st.markdown(f"<div style='padding:10px; background:rgba(255,255,255,0.05); border-left:3px solid {'#4caf50' if acierto else '#ffb142'};'>{q['retro']}</div>", unsafe_allow_html=True)
+
+    st.write("---")
+    st.markdown("<p style='text-align:center; color:#90a4ae; font-size:12px;'>ChonpsLab Pro © 2026 | Sistema Paramétrico de Educación Interactiva</p>", unsafe_allow_html=True)
