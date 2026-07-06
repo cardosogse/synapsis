@@ -2,36 +2,58 @@ import streamlit as st
 import time
 
 # 1. CONFIGURACIÓN DEL CHASIS DE NAVEGACIÓN
-st.set_page_config(page_title="SynapsisLab", page_icon="🧠", layout="centered")
+st.set_page_config(page_title="p53Lab", page_icon="🧠", layout="centered")
 
-# --- INYECCIÓN CONTROLADA DE ESTILOS CSS (PARÁMETRO CORREGIDO) ---
+# --- ESTILOS CSS NATIVOS PARA ERGONOMÍA VISUAL PREMIUM ---
 st.markdown("""
 <style>
+    /* Estilos globales de tipografía y fondos de la portada */
     .main-title {
         text-align: center; 
         color: #0288d1; 
-        font-size: 3.8rem; 
-        font-weight: 800; 
-        letter-spacing: 3px;
+        font-size: 3.6rem; 
+        font-weight: 700; 
+        font-family: 'Segoe UI', sans-serif;
         margin-bottom: 0px;
+    }
+    .main-title-sub {
+        font-weight: 300; 
+        color: #455a64; 
+        font-size: 2rem;
     }
     .sub-title {
         text-align: center; 
         font-style: italic; 
-        color: #666; 
-        font-size: 1.1rem; 
-        font-weight: 400;
-        margin-top: 0px;
-        margin-bottom: 5px;
+        color: #546e7a; 
+        font-size: 1.15rem; 
+        margin-top: 5px; 
+        letter-spacing: 0.3px;
     }
-    .question-hook {
-        text-align: center; 
-        color: #0288d1; 
+    .holographic-panel {
+        background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%); 
+        border: 1px solid #90caf9; 
+        border-left: 6px solid #0288d1; 
+        padding: 22px; 
+        border-radius: 8px; 
+        box-shadow: 0 4px 12px rgba(2, 136, 209, 0.05); 
+        margin: 25px 0; 
+        text-align: center;
+    }
+    .panel-hook {
+        color: #01579b; 
+        font-weight: 700; 
         font-size: 1.2rem; 
-        font-weight: 600; 
-        margin-top: 0px;
-        margin-bottom: 25px;
+        display: block; 
+        margin-bottom: 6px; 
+        letter-spacing: 0.2px;
     }
+    .panel-text {
+        color: #455a64; 
+        font-size: 0.9rem; 
+        margin: 0; 
+        line-height: 1.4;
+    }
+    /* Estilos de la Consola Interna del Laboratorio */
     .console-header {
         background-color: #f8f9fa;
         border-left: 5px solid #0288d1;
@@ -104,7 +126,7 @@ if "resultado_texto" not in st.session_state:
 if "estado_sistema" not in st.session_state:
     st.session_state["estado_sistema"] = "En Espera"
 
-# --- RADAR PASIVO DE PIRATERÍA ---
+# --- RADAR PASIVO DE PIRATERÍA (Background Polling) ---
 @st.fragment(run_every=5)
 def radar_seguridad_pasivo():
     if st.session_state["autenticado"]:
@@ -119,31 +141,33 @@ def verificar_bloqueo_pirateria():
             if base_datos_global[codigo] != st.session_state["mi_session_id"]:
                 st.session_state["autenticado"] = False
                 st.session_state["codigo_ingresado"] = ""
-                st.error("🚨 SUSPENSIÓN POR PIRATERÍA: Acceso revocado automáticamente.")
+                st.error("🚨 SUSPENSIÓN POR PIRATERÍA: Acceso revocado automáticamente debido a doble inicio de sesión.")
                 st.stop()
         else:
             base_datos_global[codigo] = st.session_state["mi_session_id"]
 
 # ========================================================
-# --- FACHADA DE ACCESO PÚBLICA ---
+# --- FACHADA DE ACCESO PÚBLICA (PORTADA PREMIUM RESTAURADA) ---
 # ========================================================
 if not st.session_state["autenticado"]:
-    st.markdown("<h1 class='main-title'>SYNAPSIS</h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-title'>p53Lab <span class='main-title-sub'>digital</span></h1>", unsafe_allow_html=True)
     st.markdown("<p class='sub-title'>Aprende rápido. Rompe las barreras biológicas.</p>", unsafe_allow_html=True)
-    st.markdown("<p class='question-hook'>¿Listo para aprender rápido con tu laboratorio digital?</p>", unsafe_allow_html=True)
+    
+    # INTERRUPTOR VISUAL: Panel holográfico exquisito que sustituye al cuadro gris apagado
+    st.markdown("""
+    <div class='holographic-panel'>
+        <span class='panel-hook'>¿Listo para aprender rápido con tu laboratorio digital?</span>
+        <p class='panel-text'>
+            Sincroniza tu entorno de tronco común. Regula las variables moleculares y observa las consecuencias homeostáticas en tiempo real.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
     
     st.write("---")
     
     st.markdown("""
-    <div style='background-color: #f1f8e9; border: 1px dashed #8bc34a; padding: 20px; text-align: center; border-radius: 4px; color: #33691e; font-size: 0.95rem; font-weight: 500;'>
-        [Módulo de Interconexión Sináptica: Animación de Redes Neuronales Nativas en Desarrollo]
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("""
-    <br>
-    <h3 style='color: #333; font-weight: 600;'>Sincronización del Entorno Analítico</h3>
-    Introduzca su clave de acceso individual de 30 días para validar el estado de matrícula y activar los reactores digitales de tronco común.
+    <h3 style='color: #333; font-weight: 600; margin-top: 10px;'>Sincronización del Entorno Analítico</h3>
+    Introduzca su clave de acceso de 30 días para validar sus credenciales y activar los reactores digitales.
     """, unsafe_allow_html=True)
     
     codigo_input = st.text_input("Licencia de Acceso Digital (Token Único):", type="password", placeholder="Introduzca el código de suscripción...")
@@ -161,7 +185,7 @@ if not st.session_state["autenticado"]:
             st.error("Código de licencia inválido o expirado. Verifique su suscripción mensual.")
 
 # ========================================================
-# --- CONSOLA PRIVADA DE ESTUDIANTES (SynapsisLab) ---
+# --- CONSOLA PRIVADA DE ESTUDIANTES (p53Lab) ---
 # ========================================================
 else:
     radar_seguridad_pasivo()
@@ -169,8 +193,8 @@ else:
 
     st.markdown("""
     <div class='console-header'>
-        <h2 style='margin:0; color: #01579b; font-weight: 700;'>SynapsisLab: Consola de Simulación</h2>
-        <span style='color: #555; font-size: 0.85rem;'>Entorno Clínico Protegido</span>
+        <h2 style='margin:0; color: #01579b; font-weight: 700;'>p53Lab: Consola de Simulación Advanced</h2>
+        <span style='color: #555; font-size: 0.85rem;'>Entorno de Ciencias de la Salud Protegido</span>
     </div>
     """, unsafe_allow_html=True)
     
@@ -202,7 +226,7 @@ else:
         st.markdown("""
         <div class='spectrometer-card-error'>
             <div class='spectrometer-title' style='color:#c62828;'>Falla Homeostática Crítica</div>
-            El sistema ha entrado en inestabilidad irreversible. Reactor bloqueado.
+            El sistema ha entrado en inestabilidad irreversible. El reactor p53Lab se ha bloqueado.
         </div>
         """, unsafe_allow_html=True)
         if st.button("Inyectar Nuevos Reactores y Reiniciar", use_container_width=True):
