@@ -12,6 +12,29 @@ def obtener_diagrama_vectorial(tipo_evento):
     diseñadas específicamente para el contraste en modo oscuro.
     """
     diagramas = {
+        "estira_afloja_debil": """
+        <div style='display: flex; justify-content: center; align-items: center; width: 100%; height: 110px;'>
+            <svg viewBox="0 0 240 100" width="100%" height="100%">
+                <circle cx="60" cy="50" r="16" fill="#90a4ae" opacity="0.8"/>
+                <text x="54" y="54" fill="white" font-family="sans-serif" font-size="12">Átomo</text>
+                <circle cx="120" cy="50" r="5" fill="#ffffff"/>
+                <circle cx="120" cy="50" r="8" fill="none" stroke="#00e5ff" stroke-width="1"/>
+                <circle cx="180" cy="50" r="16" fill="#90a4ae" opacity="0.8"/>
+                <ellipse cx="120" cy="50" rx="65" ry="22" fill="none" stroke="#b0bec5" stroke-width="1.2" stroke-dasharray="2 2"/>
+            </svg>
+        </div>
+        """,
+        "estira_afloja_fuerte": """
+        <div style='display: flex; justify-content: center; align-items: center; width: 100%; height: 110px;'>
+            <svg viewBox="0 0 240 100" width="100%" height="100%">
+                <circle cx="60" cy="50" r="24" fill="#ff5252" opacity="0.9"/>
+                <text x="48" y="54" fill="white" font-weight="bold" font-family="sans-serif" font-size="12">Fuerte</text>
+                <circle cx="95" cy="50" r="5" fill="#00e5ff"/>
+                <ellipse cx="105" cy="50" rx="65" ry="28" fill="none" stroke="#ff5252" stroke-width="1.5" stroke-dasharray="4 2"/>
+                <circle cx="180" cy="50" r="12" fill="#00e5ff" opacity="0.5"/>
+            </svg>
+        </div>
+        """,
         "polar": """
         <div style='display: flex; justify-content: center; align-items: center; width: 100%; height: 120px;'>
             <svg viewBox="0 0 240 120" width="100%" height="100%" style="background: transparent;">
@@ -206,7 +229,7 @@ if "vidas" not in st.session_state:
 if "puntos" not in st.session_state:
     st.session_state["puntos"] = 0
 if "bloque_actual" not in st.session_state:
-    st.session_state["bloque_actual"] = 0  
+    st.session_state["bloque_actual"] = 0  # 0: Inducción, 1: Enlaces, 2: pH
 if "simulacion_ejecutada" not in st.session_state:
     st.session_state["simulacion_ejecutada"] = False
 if "resultado_texto" not in st.session_state:
@@ -285,7 +308,7 @@ else:
     </div>
     """, unsafe_allow_html=True)
     
-    # Barra lateral — Monitor de Signos
+    # Barra lateral — Monitor de Signos y Navegación Curricular
     with st.sidebar:
         st.markdown("<h3 style='font-weight:600; margin-bottom:15px;'>Monitor de Estado</h3>", unsafe_allow_html=True)
         st.markdown("<div class='sidebar-monitor'><span style='font-size:0.8rem; color:#90a4ae; text-transform:uppercase;'>Estabilidad (Vidas)</span><br><b style='font-size:1.6rem; color:#f44336;'>{} / 3</b></div>".format(st.session_state.vidas), unsafe_allow_html=True)
@@ -293,12 +316,17 @@ else:
         
         st.write("---")
         st.markdown("<h4 style='font-weight:600;'>Navegación Curricular</h4>", unsafe_allow_html=True)
-        if st.sidebar.button("Bloque 0: Fundamentos Químicos", use_container_width=True):
+        
+        if st.sidebar.button("Bloque 0: Inducción a la Fuerza", use_container_width=True):
             st.session_state.bloque_actual = 0
             st.session_state.simulacion_ejecutada = False
             st.rerun()
-        if st.sidebar.button("Bloque 1: Agua y Equilibrio del pH", use_container_width=True):
+        if st.sidebar.button("Bloque 1: Enlaces Moleculares", use_container_width=True):
             st.session_state.bloque_actual = 1
+            st.session_state.simulacion_ejecutada = False
+            st.rerun()
+        if st.sidebar.button("Bloque 2: Agua y Equilibrio del pH", use_container_width=True):
+            st.session_state.bloque_actual = 2
             st.session_state.simulacion_ejecutada = False
             st.rerun()
             
@@ -325,13 +353,48 @@ else:
             st.session_state.grafico_activo = ""
             st.rerun()
     else:
-        # CONTENIDO BLOQUE 0
+        # ========================================================
+        # --- ACTIVIDAD NUEVA: BLOQUE 0 (INDUCCIÓN / JUNIOR SHIELD) ---
+        # ========================================================
         if st.session_state.bloque_actual == 0:
-            st.subheader("Ficha de Protocolo 0: Enlaces y Electronegatividad")
+            st.subheader("Bloque 0: El Experimento del Estira y Afloja")
+            st.write("¿Qué son esos números en los reactores? Antes de enlazar átomos, calibra su **Fuerza de Atracción (Electronegatividad)** mediante este simulador interactivo de Linus Pauling.")
+            
+            # Slider interactivo de fuerza para entrenar la intuición del alumno
+            fuerza = st.slider("Ajusta el nivel de Electronegatividad (Escala Pauling):", 0.7, 4.0, 2.2, step=0.1)
+            
+            if fuerza >= 3.0:
+                st.info("⚡ **Nivel: Altamente Ambicioso (Ej: Oxígeno: 3.44)**. Este átomo tiene tanta fuerza que secuestra los electrones hacia su propio núcleo, deformando la nube molecular por completo.")
+                svg_induccion = obtener_diagrama_vectorial("estira_afloja_fuerte")
+            else:
+                st.success("🤝 **Nivel: Compartición Justa o Débil (Ej: Carbono: 2.55 / Hidrógeno: 2.20)**. Las fuerzas están equilibradas. Los átomos compartirán los electrones de forma simétrica sin crear polos.")
+                svg_induccion = obtener_diagrama_vectorial("estira_afloja_debil")
+                
+            st.components.v1.html(svg_induccion, height=120, scrolling=False)
+            
+            st.write("---")
+            st.write("**Reto de Entrada al Laboratorio:** Si el Carbono tiene una fuerza de 2.55 y el Hidrógeno de 2.20, ¿cómo será su relación al unirse?")
+            respuesta = st.radio("Selecciona la respuesta correcta para desbloquear el reactor:", ["Uno le roba los electrones al otro (Polar)", "Están en un empate justo compartiendo al centro (No Polar)"])
+            
+            if st.button("Validar Conocimiento de Inducción", use_container_width=True):
+                if "No Polar" in respuesta:
+                    st.balloons()
+                    st.success("¡Excelente! Has destruido la laguna de aprendizaje. Al estar empatados en fuerza, el enlace es perfectamente simétrico (No Polar). ¡Reactor desbloqueado!")
+                    time.sleep(1.0)
+                    st.session_state.bloque_actual = 1
+                    st.rerun()
+                else:
+                    st.error("Respuesta incorrecta. Recuerda el 'Estira y Afloja': si las fuerzas son similares (2.55 y 2.20), ninguno tiene el poder de deformar la nube. Intenta de nuevo.")
+
+        # ========================================================
+        # --- CONTENIDO REESTRUCTURADO: BLOQUE 1 (ENLACES MOLECULARES) ---
+        # ========================================================
+        elif st.session_state.bloque_actual == 1:
+            st.subheader("Bloque 1: Enlaces y Electronegatividad")
             with st.expander("Ver Sustento Teórico del Enlace Bioquímico", expanded=True):
                 st.markdown("""
                 Los sistemas vivos están estructurados a partir del ensamblaje de los bioelementos primarios (**CHONPS**). 
-                La interacción espacial de estos átomos depende estrictamente de su **Electronegatividad**.
+                La interacción espacial de estos átomos depende estrictamente de su **Electronegatividad** (la fuerza que entrenaste en el Bloque 0).
                 """)
 
             st.write("---")
@@ -353,27 +416,29 @@ else:
                 
                 if es_polar:
                     st.session_state.estado_sistema = "Enlace Covalente Polar (Dipolo Eléctrico Activo)"
-                    st.session_state.resultado_texto = "Análisis molecular impecable. La alta electronegatividad del Oxígeno atrae con mayor fuerza los electrones hacia su núcleo. Esto deforma la nube molecular creando un dipolo: una densidad de carga parcial negativa sobre el Oxígeno y cargas parciales positivas sobre los Hidrógenos, fundamentando la hidrofilia celular."
+                    st.session_state.resultado_texto = "Análisis molecular impecable. La alta electronegatividad del Oxígeno (3.44) atrae con mayor fuerza los electrones hacia su núcleo en comparación con el Hidrógeno (2.20). Esto deforma la nube molecular creando un dipolo: una densidad de carga parcial negativa sobre el Oxígeno y cargas parciales positivas sobre los Hidrógenos, fundamentando la hidrofilia celular."
                     st.session_state.grafico_activo = "polar"
                     st.session_state.puntos += 100
                 elif es_apolar:
                     st.session_state.estado_sistema = "Enlace Covalente No Polar (Geometría Simétrica)"
-                    st.session_state.resultado_texto = "Configuración correcta. Las fuerzas de atracción del Carbono y el Hidrógeno son muy similares. Los electrones se comparten equitativamente en el centro geométrico del enlace, resultando en una molécula eléctricamente neutra, hidrofóbica, vital para estructurar el núcleo de las bicapas lipídicas."
+                    st.session_state.resultado_texto = "Configuración correcta. Las fuerzas de atracción del Carbono (2.55) y el Hidrógeno (2.20) son muy similares. Los electrones se comparten equitativamente en el centro geométrico del enlace, resultando en una molécula eléctricamente neutra, hidrofóbica, vital para estructurar el núcleo de las bicapas lipídicas corporales."
                     st.session_state.grafico_activo = "apolar"
                     st.session_state.puntos += 100
                 elif es_error:
                     st.session_state.estado_sistema = "Molécula Gaseosa Homogénea (O2)"
-                    st.session_state.resultado_texto = "Conflicto de variables en fluidos celulares. Ambos átomos de Oxígeno poseen idéntica afinidad electrónica, compartiendo los electrones en un enlace covalente doble perfectamente simétrico. Produce oxígeno molecular (O₂), vital para la respiración mitocondrial, pero incapaz de actuar como disolvente o dipolo orgánico. Pérdida de estabilidad en el reactor fluido."
+                    st.session_state.resultado_texto = "Conflicto de variables en fluidos celulares. Ambos átomos de Oxígeno poseen idéntica afinidad electrónica (3.44), compartiendo los electrones en un enlace covalente doble perfectamente simétrico. Produce oxígeno molecular (O₂), vital para la respiración mitocondrial, pero incapaz de actuar como disolvente o dipolo orgánico. Pérdida de estabilidad en el reactor fluido."
                     st.session_state.grafico_activo = "o2_gas"
                     st.session_state.vidas -= 1
                 st.rerun()
 
-        # CONTENIDO BLOQUE 1
-        elif st.session_state.bloque_actual == 1:
-            st.subheader("Ficha de Protocolo 1: Dinámica del Agua y Equilibrio del pH")
+        # ========================================================
+        # --- CONTENIDO REESTRUCTURADO: BLOQUE 2 (AGUA Y PH) ---
+        # ========================================================
+        elif st.session_state.bloque_actual == 2:
+            st.subheader("Bloque 2: Dinámica del Agua y Equilibrio del pH")
             with st.expander("Ver Sustento Teórico de la Disociación Iónica", expanded=True):
                 st.markdown("""
-                El agua ($H_2O$) representa el disolvente universal de la homeostasis biológica en todo organismo vivo.
+                El agua ($H_2O$) representa el disolvente universal de la homeostasis biológica en todo organismo vivo. Debido a su carácter dipolar, se disocia de forma reversible.
                 """)
 
             st.write("---")
@@ -408,7 +473,7 @@ else:
                 st.rerun()
 
         # ========================================================
-        # --- ESPECTRÓMETRO DIGITAL (MONITOR DE SALIDA CON RENDERS DE ALTA FIDELIDAD) ---
+        # --- ESPECTRÓMETRO DIGITAL (MONITOR DE SALIDA PREMIUM CON RENDER) ---
         # ========================================================
         if st.session_state.simulacion_ejecutada:
             st.write("---")
