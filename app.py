@@ -116,15 +116,12 @@ if "estado_sistema" not in st.session_state:
 def radar_seguridad_pasivo():
     if st.session_state["autenticado"]:
         codigo = st.session_state["codigo_ingresado"]
-        # Evitar falsos positivos si la base global se limpió en un refresh manual
         if codigo in base_datos_global and base_datos_global[codigo] != st.session_state["mi_session_id"]:
             st.rerun()
 
 def verificar_bloqueo_pirateria():
     if st.session_state["autenticado"]:
         codigo = st.session_state["codigo_ingresado"]
-        
-        # Corrección de bucle: Si el código desapareció de la base global por un F5, reestablecer trono
         if codigo in base_datos_global:
             if base_datos_global[codigo] != st.session_state["mi_session_id"]:
                 st.session_state["autenticado"] = False
@@ -132,7 +129,6 @@ def verificar_bloqueo_pirateria():
                 st.error("🚨 SUSPENSIÓN POR PIRATERÍA: Se detectó un doble inicio de sesión simultáneo. Tu acceso en este dispositivo ha sido revocado automáticamente.")
                 st.stop()
         else:
-            # Reclamar el trono de forma segura si la memoria caché del navegador se refrescó
             base_datos_global[codigo] = st.session_state["mi_session_id"]
 
 # ========================================================
@@ -259,7 +255,7 @@ else:
             with col2:
                 atomo_2 = st.selectbox("Elemento de Interacción Orbital:", ["Hidrógeno (Fuerza: 2.20)", "Oxígeno (Fuerza: 3.44)"])
                 
-            if st.button("Disparar Reacción Térmica", use_container_width=True):
+            if st.button("Disparar Reacción Thermal", use_container_width=True):
                 st.session_state.simulacion_ejecutada = True
                 verificar_bloqueo_pirateria()
                 
@@ -298,4 +294,65 @@ else:
 
             st.write("---")
             st.markdown("<h3 style='color:#333; font-weight:600;'>Analizador de Amortiguación Extracelular</h3>", unsafe_style=True)
-            st.write("Inyecte soluciones analíticas en el plasma químico
+            st.write("Inyecte soluciones analíticas en el plasma químico simulado:")
+            
+            solucion_inyectada = st.selectbox(
+                "Seleccione la solución de infusión y el estado del medio interno:",
+                [
+                    "Ácido Clorhídrico (HCl) puro inyectado en Agua Destilada neutra",
+                    "Ácido Clorhídrico (HCl) inyectado en Plasma con Amortiguador Bicarbonato (HCO3-)",
+                    "Hidróxido de Sodio (NaOH) puro inyectado en Plasma sin sistemas amortiguadores"
+                ]
+            )
+            
+            if st.button("Confirmar Infusión Química", use_container_width=True):
+                st.session_state.simulacion_ejecutada = True
+                verificar_bloqueo_pirateria()
+                
+                if "Agua Destilada" in solucion_inyectada:
+                    st.session_state.estado_sistema = "Acidosis Plasmática Crítica (pH = 2.0)"
+                    st.session_state.resultado_texto = "Falla del medio interno. El HCl es un ácido fuerte que se disocia por completo liberando un exceso masivo de protones (H+). Al carecer de un sistema tampón que capture estos iones, el pH colapsa de forma instantánea, provocando la pérdida de la estructura terciaria de las proteínas funcionales."
+                    st.session_state.vidas -= 1
+                elif "Amortiguador Bicarbonato" in solucion_inyectada:
+                    st.session_state.estado_sistema = "Homeostasis Sanguínea Estable (pH = 7.4)"
+                    st.session_state.resultado_texto = "Compensación química exitosa. Siguiendo el principio de Le Chatelier, las moléculas de Bicarbonato capturan el exceso de protones del ácido fuerte, convirtiéndolos en Ácido Carbónico débil. Este se disocia rápidamente en agua y CO₂, permitiendo la eliminación del exceso de acidez por vía respiratoria."
+                    st.session_state.puntos += 150
+                elif "Hidróxido de Sodio" in solucion_inyectada:
+                    st.session_state.estado_sistema = "Alcalosis Metabólica Severa (pH = 11.0)"
+                    st.session_state.resultado_texto = "Desequilibrio catiónico. El NaOH libera grupos oxhidrilo (OH-) que secuestran los protones libres del sistema. Sin amortiguadores que cedan H+ para compensar la pérdida, el pH se dispara críticamente hacia la alcalinidad, rompiendo los puentes de hidrógeno intra-moleculares."
+                    st.session_state.vidas -= 1
+                st.rerun()
+
+        # ========================================================
+        # --- ESPECTRÓMETRO DIGITAL (MONITOR DE SALIDA UNIFICADO) ---
+        # ========================================================
+        if st.session_state.simulacion_ejecutada:
+            st.write("---")
+            
+            es_error_sistema = "Molécula Gaseosa" in st.session_state.estado_sistema or "Crítica" in st.session_state.estado_sistema or "Severa" in st.session_state.estado_sistema
+            
+            if es_error_sistema:
+                st.markdown(f"""
+                <div class='spectrometer-card-error'>
+                    <div class='spectrometer-title' style='color:#c62828;'>Lectura del Espectrómetro: Anomalía en el Medio</div>
+                    <strong style='font-size:1.1rem; color:#b71c1c;'>Estatus: {st.session_state.estado_sistema}</strong><br><br>
+                    {st.session_state.resultado_texto}
+                </div>
+                """, unsafe_style=True)
+            else:
+                st.markdown(f"""
+                <div class='spectrometer-card-success'>
+                    <div class='spectrometer-title' style='color:#2e7d32;'>Lectura del Espectrómetro: Estabilidad Óptima</div>
+                    <strong style='font-size:1.1rem; color:#1b5e20;'>Estatus: {st.session_state.estado_sistema}</strong><br><br>
+                    {st.session_state.resultado_texto}
+                </div>
+                """, unsafe_style=True)
+                
+            st.write("")
+            if st.button("Limpiar Cámara de Inyección del Reactor", use_container_width=True):
+                st.session_state.simulacion_ejecutada = False
+                st.rerun()
+
+    st.write("---")
+    if st.button("Sincronizar Canales de Red Electroquímica"):
+        st.rerun()
