@@ -4,18 +4,94 @@ import time
 # 1. CONFIGURACIÓN DEL CHASIS DE NAVEGACIÓN NATIVA
 st.set_page_config(page_title="ChonpsLab", page_icon="⚛️", layout="centered")
 
-# --- INYECCIÓN DE ESTILOS CSS AVANZADOS (UNIVERSO Y ESTRELLAS) ---
+# --- OPTIMIZADOR 1: MOTOR DE DIAGRAMAS VECTORIALES NATIVOS (SVG BAJO EN RAM) ---
+@st.cache_data
+def obtener_diagrama_vectorial(tipo_evento):
+    """
+    Base de datos gráfica congelada en caché. Renderiza vectores puros (SVG) 
+    con nitidez absoluta en modo oscuro, pesando menos de 3KB por gráfico.
+    """
+    diagramas = {
+        "polar": """
+        <div style='display: flex; justify-content: center; margin: 15px 0;'>
+            <svg viewBox="0 0 240 120" width="85%" style="background: rgba(0,0,0,0.2); border-radius: 8px;">
+                <circle cx="70" cy="60" r="28" fill="#ff5252" opacity="0.85"/>
+                <text x="63" y="66" fill="white" font-weight="bold" font-family="sans-serif" font-size="16">O</text>
+                <text x="35" y="35" fill="#ff5252" font-weight="bold" font-family="sans-serif" font-size="14">δ⁻</text>
+                
+                <circle cx="170" cy="60" r="14" fill="#00e5ff" opacity="0.85"/>
+                <text x="164" y="65" fill="black" font-weight="bold" font-family="sans-serif" font-size="12">H</text>
+                <text x="175" y="35" fill="#00e5ff" font-weight="bold" font-family="sans-serif" font-size="14">δ⁺</text>
+                
+                <ellipse cx="105" cy="60" rx="60" ry="38" fill="none" stroke="#00e5ff" stroke-width="1.5" stroke-dasharray="4 3"/>
+                <circle cx="115" cy="60" r="4" fill="#00e5ff"/>
+                <circle cx="125" cy="60" r="4" fill="#00e5ff"/>
+            </svg>
+        </div>
+        """,
+        "apolar": """
+        <div style='display: flex; justify-content: center; margin: 15px 0;'>
+            <svg viewBox="0 0 240 120" width="85%" style="background: rgba(0,0,0,0.2); border-radius: 8px;">
+                <circle cx="70" cy="60" r="24" fill="#ffb142" opacity="0.85"/>
+                <text x="63" y="66" fill="black" font-weight="bold" font-family="sans-serif" font-size="15">C</text>
+                
+                <circle cx="170" cy="60" r="14" fill="#00e5ff" opacity="0.85"/>
+                <text x="164" y="65" fill="black" font-weight="bold" font-family="sans-serif" font-size="12">H</text>
+                
+                <ellipse cx="120" cy="60" rx="68" ry="32" fill="none" stroke="#b0bec5" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <circle cx="115" cy="60" r="4" fill="#ffffff"/>
+                <circle cx="125" cy="60" r="4" fill="#ffffff"/>
+            </svg>
+        </div>
+        """,
+        "o2_gas": """
+        <div style='display: flex; justify-content: center; margin: 15px 0;'>
+            <svg viewBox="0 0 240 120" width="85%" style="background: rgba(0,0,0,0.2); border-radius: 8px;">
+                <circle cx="75" cy="60" r="24" fill="#ff5252" opacity="0.7"/>
+                <text x="69" y="65" fill="white" font-weight="bold" font-family="sans-serif" font-size="14">O</text>
+                
+                <circle cx="165" cy="60" r="24" fill="#ff5252" opacity="0.7"/>
+                <text x="159" y="65" fill="white" font-weight="bold" font-family="sans-serif" font-size="14">O</text>
+                
+                <line x1="105" y1="55" x2="135" y2="55" stroke="#ffffff" stroke-width="2"/>
+                <line x1="105" y1="65" x2="135" y2="65" stroke="#ffffff" stroke-width="2"/>
+            </svg>
+        </div>
+        """,
+        "disociacion_agua": """
+        <div style='display: flex; justify-content: center; margin: 15px 0;'>
+            <svg viewBox="0 0 260 120" width="85%" style="background: rgba(0,0,0,0.2); border-radius: 8px;">
+                <g transform="translate(10, 0)">
+                    <circle cx="40" cy="60" r="18" fill="#ff5252"/>
+                    <text x="35" y="64" fill="white" font-family="sans-serif" font-size="11">H₂O</text>
+                    
+                    <text x="80" y="55" fill="#b0bec5" font-size="18">⇌</text>
+                    
+                    <circle cx="130" cy="60" r="12" fill="#00e5ff"/>
+                    <text x="125" y="64" fill="black" font-weight="bold" font-family="sans-serif" font-size="11">H⁺</text>
+                    
+                    <text x="155" y="65" fill="#ffffff" font-size="16">+</text>
+                    
+                    <circle cx="200" cy="60" r="16" fill="#ff5252"/>
+                    <text x="190" y="64" fill="white" font-family="sans-serif" font-size="11">OH⁻</text>
+                </g>
+            </svg>
+        </div>
+        """
+    }
+    return diagramas.get(tipo_evento, "")
+
+# --- INYECCIÓN DE ESTILOS CSS AVANZADOS (FONDO NEGRO ABSOLUTO Y PORTADA CÓSMICA) ---
 st.markdown("""
 <style>
-    /* Efecto Universo: Fondo negro absoluto con patrón de estrellas sutiles */
+    /* El chasis de fondo negro puro integrado al modo oscuro de Streamlit */
     .stApp {
         background-color: #000000 !important;
         background-image: 
-            radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
-            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
-            radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
-        background-size: 550px 550px, 350px 350px, 250px 250px;
-        background-position: 0 0, 40px 60px, 130px 270px;
+            radial-gradient(white, rgba(255,255,255,.2) 1px, transparent 20px),
+            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
+        background-size: 350px 350px, 200px 200px;
+        background-position: 0 0, 40px 60px;
     }
 
     /* Tipografías de la Portada Premium */
@@ -27,33 +103,30 @@ st.markdown("""
         font-family: 'Segoe UI', -apple-system, sans-serif;
         margin-bottom: 0px;
         letter-spacing: 1px;
-        text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
     }
     .main-title-suffix {
         color: #00e5ff; 
         font-weight: 300;
         font-size: 2.8rem;
-        text-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
     }
     .sub-title {
         text-align: center; 
         font-style: italic; 
-        color: #b0bec5; 
+        color: #90a4ae; 
         font-size: 1.1rem; 
         margin-top: 5px; 
         margin-bottom: 25px;
         letter-spacing: 0.5px;
     }
     
-    /* Panel Cósmico Translúcido (Flotando en el espacio) */
+    /* Panel Cósmico Translúcido (Flota sobre el universo negro) */
     .bio-panel {
-        background-color: rgba(10, 15, 30, 0.7);
-        border: 1px solid rgba(0, 229, 255, 0.25);
+        background-color: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(0, 229, 255, 0.2);
         border-left: 5px solid #00e5ff;
         padding: 24px;
-        border-radius: 12px;
-        backdrop-filter: blur(6px);
-        box-shadow: 0 4px 25px rgba(0, 229, 255, 0.1);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 229, 255, 0.05);
         margin-bottom: 30px;
         text-align: center;
     }
@@ -66,7 +139,7 @@ st.markdown("""
         letter-spacing: 0.3px;
     }
     .panel-text {
-        color: #eceff1;
+        color: #cfd8dc;
         font-size: 0.95rem;
         margin: 0;
         line-height: 1.5;
@@ -144,6 +217,8 @@ if "resultado_texto" not in st.session_state:
     st.session_state["resultado_texto"] = ""
 if "estado_sistema" not in st.session_state:
     st.session_state["estado_sistema"] = "En Espera"
+if "grafico_activo" not in st.session_state:
+    st.session_state["grafico_activo"] = ""
 
 # --- RADAR PASIVO DE PIRATERÍA ---
 @st.fragment(run_every=5)
@@ -172,7 +247,6 @@ if not st.session_state["autenticado"]:
     st.markdown("<h1 class='main-title'>Chonps<span class='main-title-suffix'>Lab</span></h1>", unsafe_allow_html=True)
     st.markdown("<p class='sub-title'>Aprende rápido. Rompe las barreras biológicas.</p>", unsafe_allow_html=True)
     
-    # PANEL VISUAL SOFISTICADO: Integrado al fondo cósmico con bordes neón azul translúcido
     st.markdown("""
     <div class='bio-panel'>
         <span class='panel-hook'>¿Listo para aprender rápido con tu laboratorio digital?</span>
@@ -185,7 +259,7 @@ if not st.session_state["autenticado"]:
     st.write("---")
     
     st.markdown("<h3 style='font-weight: 600; margin-top: 10px; color: #ffffff;'>Sincronización del Entorno Analítico</h3>", unsafe_allow_html=True)
-    st.write("Introduce tu clave de acceso de 30 días para validar el estado de matrícula y encender los reactores.")
+    st.write("Introduce tu clave de acceso de 30 días para validar el estado de matrícula y encender los simuladores.")
     
     codigo_input = st.text_input("Licencia de Acceso Digital (Token Único):", type="password", placeholder="Introduce tu código aquí...")
     
@@ -252,6 +326,7 @@ else:
             st.session_state.puntos = 0
             st.session_state.simulacion_ejecutada = False
             st.session_state.estado_sistema = "En Espera"
+            st.session_state.grafico_activo = ""
             st.rerun()
     else:
         # CONTENIDO BLOQUE 0
@@ -282,15 +357,18 @@ else:
                 
                 if es_polar:
                     st.session_state.estado_sistema = "Enlace Covalente Polar (Dipolo Eléctrico Activo)"
-                    st.session_state.resultado_texto = "Análisis molecular impecable. El Oxígeno retiene la carga parcial negativa y el Hidrógeno la positiva."
+                    st.session_state.resultado_texto = "Análisis molecular impecable. La alta electronegatividad del Oxígeno atrae con mayor fuerza los electrones hacia su núcleo. Esto deforma la nube molecular creando un dipolo: una densidad de carga parcial negativa sobre el Oxígeno y cargas parciales positivas sobre los Hidrógenos, fundamentando la hidrofilia celular."
+                    st.session_state.grafico_activo = "polar"
                     st.session_state.puntos += 100
                 elif es_apolar:
                     st.session_state.estado_sistema = "Enlace Covalente No Polar (Geometría Simétrica)"
-                    st.session_state.resultado_texto = "Configuración correcta. Las fuerzas del Carbono y el Hidrógeno se equilibran de forma justa."
+                    st.session_state.resultado_texto = "Configuración correcta. Las fuerzas de atracción del Carbono y el Hidrógeno son muy similares. Los electrones se comparten equitativamente en el centro geométrico del enlace, resultando en una molécula eléctricamente neutra, hidrofóbica, vital para estructurar el núcleo de las bicapas lipídicas."
+                    st.session_state.grafico_activo = "apolar"
                     st.session_state.puntos += 100
                 elif es_error:
                     st.session_state.estado_sistema = "Molécula Gaseosa Homogénea (O2)"
-                    st.session_state.resultado_texto = "Conflicto de variables en fluidos. Produce oxígeno molecular (O₂), incapaz de interactuar como dipolo."
+                    st.session_state.resultado_texto = "Conflicto de variables en fluidos celulares. Ambos átomos de Oxígeno poseen idéntica afinidad electrónica, compartiendo los electrones en un enlace covalente doble perfectamente simétrico. Produce oxígeno molecular (O₂), vital para la respiración mitocondrial, pero incapaz de actuar como disolvente o dipolo orgánico. Pérdida de estabilidad en el reactor fluido."
+                    st.session_state.grafico_activo = "o2_gas"
                     st.session_state.vidas -= 1
                 st.rerun()
 
@@ -317,22 +395,25 @@ else:
             if st.button("Confirmar Infusión Química", use_container_width=True):
                 st.session_state.simulacion_ejecutada = True
                 verificar_bloqueo_pirateria()
+                st.session_state.grafico_activo = "disociacion_agua"
                 
                 if "Agua Destilada" in solucion_inyectada:
                     st.session_state.estado_sistema = "Acidosis Plasmática Crítica (pH = 2.0)"
-                    st.session_state.resultado_texto = "Falla del medio interno. El HCl se disocia por completo liberando un exceso masivo de protones (H+)."
+                    st.session_state.resultado_texto = "Falla del medio interno. El HCl es un ácido fuerte que se disocia al 100% liberando un exceso masivo de protones libres (H+). Al carecer de un sistema tampón que capture estas cargas, el pH colapsa de inmediato, desnaturalizando proteínas y rompiendo la homeostasis del sistema."
                     st.session_state.vidas -= 1
                 elif "Amortiguador Bicarbonato" in solucion_inyectada:
                     st.session_state.estado_sistema = "Homeostasis Sanguínea Estable (pH = 7.4)"
-                    st.session_state.resultado_texto = "Compensación química exitosa. El Bicarbonato captura los protones libres del medio."
+                    st.session_state.resultado_texto = "Compensación química exitosa. Siguiendo la ley de acción de masas, las moléculas de Bicarbonato capturan el exceso de protones (H+), convirtiéndolos en Ácido Carbónico débil, amortiguando de forma impecable el impacto sobre el medio interno."
                     st.session_state.puntos += 150
                 elif "Hidróxido de Sodio" in solucion_inyectada:
                     st.session_state.estado_sistema = "Alcalosis Metabólica Severa (pH = 11.0)"
-                    st.session_state.resultado_texto = "Desequilibrio catiónico. El NaOH libera grupos oxhidrilo (OH-) que secuestran los protones libres."
+                    st.session_state.resultado_texto = "Desequilibrio catiónico crítico. El NaOH se disocia por completo liberando grupos oxhidrilo (OH-) que secuestran los protones libres del medio. Sin un amortiguador que ceda H+ para restaurar el equilibrio iónico, el pH se dispara peligrosamente hacia la alcalinidad."
                     st.session_state.vidas -= 1
                 st.rerun()
 
-        # ESPECTRÓMETRO DIGITAL (MONITOR DE SALIDA)
+        # ========================================================
+        # --- ESPECTRÓMETRO DIGITAL (MONITOR DE SALIDA CON DIAGRAMAS) ---
+        # ========================================================
         if st.session_state.simulacion_ejecutada:
             st.write("---")
             es_error_sistema = "Molécula Gaseosa" in st.session_state.estado_sistema or "Crítica" in st.session_state.estado_sistema or "Severa" in st.session_state.estado_sistema
@@ -353,10 +434,17 @@ else:
                     {st.session_state.resultado_texto}
                 </div>
                 """, unsafe_allow_html=True)
+            
+            # --- DESPLIEGUE DEL DIAGRAMA COMPILADO EN CACHÉ (JUNIOR MODE ACTIVE) ---
+            if st.session_state.grafico_activo:
+                st.write("")
+                codigo_svg = obtener_diagrama_vectorial(st.session_state.grafico_activo)
+                st.markdown(codigo_svg, unsafe_allow_html=True)
                 
             st.write("")
             if st.button("Limpiar Cámara de Inyección", use_container_width=True):
                 st.session_state.simulacion_ejecutada = False
+                st.session_state.grafico_activo = ""
                 st.rerun()
 
     st.write("---")
