@@ -6,12 +6,11 @@ from datetime import timedelta
 # ========================================================
 # 1. CONFIGURACIÓN DEL CHASIS Y ESTÉTICA CÓSMICA
 # ========================================================
-st.set_page_config(page_title="ChonpsLab Pro", page_icon="⚛️", layout="wide")
+st.set_page_config(page_title="ChonpsLab Pro | Synapsis", page_icon="⚛️", layout="wide")
 
 def inyectar_css():
     st.markdown("""
     <style>
-        /* Chasis Cósmico de Alto Rendimiento */
         .stApp {
             background-color: #000000 !important;
             background-image: 
@@ -28,8 +27,6 @@ def inyectar_css():
         .card-error { background-color: rgba(244, 67, 54, 0.1); border-left: 5px solid #f44336; padding: 15px; border-radius: 5px; margin-top: 10px; }
         .card-hint { background-color: rgba(255, 177, 66, 0.1); border-left: 5px solid #ffb142; padding: 15px; border-radius: 5px; margin-top: 10px; color: #ffda79;}
         .monitor-box { background-color: rgba(255,255,255,0.05); padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px;}
-        
-        /* Pestañas Fluídas */
         .stTabs [data-baseweb="tab-list"] { gap: 8px; background-color: transparent; }
         .stTabs [data-baseweb="tab"] { background-color: rgba(255,255,255,0.05); border-radius: 4px 4px 0 0; padding: 10px 20px; color: #90a4ae; font-weight: bold;}
         .stTabs [aria-selected="true"] { background-color: rgba(0, 229, 255, 0.15) !important; color: #00e5ff !important; border-bottom: 2px solid #00e5ff !important; }
@@ -39,37 +36,68 @@ def inyectar_css():
 # ========================================================
 # 2. CAPA DE SERVICIOS: BASE DE DATOS Y AUTENTICACIÓN
 # ========================================================
+DB_NAME = 'synapsis_auth.db'
+
 def inicializar_db():
-    """Crea la base de datos local SQLite para gestionar suscripciones."""
-    conn = sqlite3.connect('synapsis_auth.db')
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS tokens_acceso
                  (token TEXT PRIMARY KEY, fecha_expiracion DATE, en_uso BOOLEAN, identificador_usuario TEXT)''')
     
-    # Generar un token maestro de prueba válido por 30 días si no existe
+    # Token maestro garantizado
     token_prueba = "SYNAPSIS-PRO-2026"
     fecha_futura = datetime.date.today() + timedelta(days=30)
     c.execute("INSERT OR IGNORE INTO tokens_acceso (token, fecha_expiracion, en_uso, identificador_usuario) VALUES (?, ?, ?, ?)", 
               (token_prueba, fecha_futura, False, "Admin"))
-    
     conn.commit()
     conn.close()
 
-def validar_token(token_ingresado):
-    """Valida criptográficamente el token y su vigencia temporal."""
-    conn = sqlite3.connect('synapsis_auth.db')
+def validar_y_bloquear_token(token_ingresado):
+    conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("SELECT fecha_expiracion, en_uso FROM tokens_acceso WHERE token = ?", (token_ingresado,))
     resultado = c.fetchone()
-    conn.close()
     
     if resultado:
         fecha_exp = datetime.datetime.strptime(resultado[0], "%Y-%m-%d").date()
-        if datetime.date.today() <= fecha_exp:
-            return True, f"Token válido. Expira el: {fecha_exp}"
-        else:
+        en_uso = resultado[1]
+        
+        if datetime.date.today() > fecha_exp:
+            conn.close()
             return False, "El token ha expirado. Renueva tu suscripción."
+            
+        if en_uso:
+            conn.close()
+            return False, "Acceso denegado: Este token ya está activo en otro dispositivo. Cierra la sesión previa."
+        
+        # Bloquear token para uso exclusivo
+        c.execute("UPDATE tokens_acceso SET en_uso = 1 WHERE token = ?", (token_ingresado,))
+        conn.commit()
+        conn.close()
+        return True, "Acceso concedido. Conexión segura establecida."
+    
+    conn.close()
     return False, "Token inexistente o inválido."
+
+def liberar_token(token):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("UPDATE tokens_acceso SET en_uso = 0 WHERE token = ?", (token,))
+    conn.commit()
+    conn.close()
+
+def registrar_nuevo_usuario(token, dias_duracion, identificador="Nuevo Estudiante"):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    exp = datetime.date.today() + timedelta(days=dias_duracion)
+    try:
+        c.execute("INSERT INTO tokens_acceso VALUES (?, ?, ?, ?)", (token.upper(), exp, False, identificador))
+        conn.commit()
+        mensaje = f"Token {token} registrado con éxito hasta {exp}"
+    except sqlite3.IntegrityError:
+        mensaje = f"Error: El token {token} ya existe en la base de datos."
+    conn.close()
+    return mensaje
 
 # ========================================================
 # 3. CAPA DE DATOS Y LÓGICA CIENTÍFICA
@@ -149,8 +177,8 @@ def generar_svg_enlace(sym1, f1, c1, sym2, f2, c2):
 # ========================================================
 def inicializar_estado():
     if "auth" not in st.session_state: st.session_state["auth"] = False
+    if "token_actual" not in st.session_state: st.session_state["token_actual"] = ""
     if "vidas" not in st.session_state: st.session_state["vidas"] = 3
-    if "puntos" not in st.session_state: st.session_state["puntos"] = 0
     if "errores_quiz" not in st.session_state: st.session_state["errores_quiz"] = 0
     if "advertencia_ph" not in st.session_state: st.session_state["advertencia_ph"] = False
 
@@ -162,43 +190,82 @@ def main():
     inicializar_db()
     inicializar_estado()
 
-    # PORTADA DE AUTENTICACIÓN
+    # ----------------------------------------------------
+    # RUTA A: USUARIO NO AUTENTICADO (PORTADA Y ADMIN)
+    # ----------------------------------------------------
     if not st.session_state["auth"]:
         st.markdown("<h1 class='main-title'>Chonps<span class='main-title-suffix'>Lab</span> Pro</h1>", unsafe_allow_html=True)
-        st.markdown("<p class='sub-title'>Plataforma de Simulación Bioquímica y Veterinaria</p>", unsafe_allow_html=True)
+        st.markdown("<p class='sub-title'>Plataforma de Simulación Bioquímica - Nodo Synapsis</p>", unsafe_allow_html=True)
         st.markdown("""
         <div class='bio-panel'>
             <span style='color:#00e5ff; font-weight:700; font-size:1.25rem;'>Acceso Restringido</span>
-            <p style='color:#cfd8dc; margin-top:10px;'>Ingresa tu token de suscripción activo para desplegar el entorno de simulación molecular.</p>
+            <p style='color:#cfd8dc; margin-top:10px;'>Ingresa tu token de suscripción activo para desplegar el entorno de simulación.</p>
         </div>
         """, unsafe_allow_html=True)
         
         pwd = st.text_input("Token de Licencia:", type="password")
         if st.button("Autenticar Terminal", use_container_width=True):
-            es_valido, mensaje = validar_token(pwd.strip().upper())
+            token_limpio = pwd.strip().upper()
+            es_valido, mensaje = validar_y_bloquear_token(token_limpio)
             if es_valido:
                 st.session_state["auth"] = True
+                st.session_state["token_actual"] = token_limpio
                 st.success(mensaje)
                 st.rerun()
             else:
-                st.error(f"Acceso denegado: {mensaje}")
+                st.error(f"Error: {mensaje}")
         
-        with st.expander("Panel de Administración (Solo Pruebas)"):
-            st.info("Token activo de prueba generado por el sistema: **SYNAPSIS-PRO-2026**")
+        # Panel de Administración Oculto (Generación de Tokens)
+        with st.expander("⚙️ Panel de Administración (Generador de Tokens)"):
+            st.markdown("Crea nuevas suscripciones o desbloquea tokens atascados (Ej. si se cerró el navegador sin salir).")
+            c_admin1, c_admin2 = st.columns(2)
+            
+            with c_admin1:
+                nuevo_token = st.text_input("Nuevo Token (Ej: ALUMNO-101):").strip().upper()
+                dias = st.number_input("Días de vigencia:", min_value=1, value=30)
+                if st.button("Crear Suscripción", type="primary"):
+                    if nuevo_token:
+                        res = registrar_nuevo_usuario(nuevo_token, dias)
+                        st.info(res)
+                    else:
+                        st.warning("Escribe un token válido.")
+                        
+            with c_admin2:
+                token_bloqueado = st.text_input("Forzar desbloqueo de Token:").strip().upper()
+                if st.button("Liberar Token", type="secondary"):
+                    if token_bloqueado:
+                        liberar_token(token_bloqueado)
+                        st.success(f"Token {token_bloqueado} liberado forzosamente.")
+                    else:
+                        st.warning("Escribe el token a liberar.")
 
-    # CONSOLA DE LABORATORIO
+    # ----------------------------------------------------
+    # RUTA B: USUARIO AUTENTICADO (CONSOLA)
+    # ----------------------------------------------------
     else:
+        # Barra lateral para el cierre de sesión seguro
+        with st.sidebar:
+            st.markdown(f"**Usuario en línea:** `{st.session_state['token_actual']}`")
+            if st.button("🚪 Cerrar Sesión Segura", use_container_width=True):
+                liberar_token(st.session_state["token_actual"])
+                st.session_state["auth"] = False
+                st.session_state["token_actual"] = ""
+                st.rerun()
+            st.markdown("---")
+            st.caption("Recuerda cerrar sesión para liberar tu token en otros dispositivos.")
+
         c1, c2 = st.columns([3, 1])
         with c1:
             st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Consola de Operaciones</h2>", unsafe_allow_html=True)
         with c2:
-            st.markdown(f"<div class='monitor-box'><span style='color:#90a4ae; font-size:12px;'>ESTABILIDAD CELULAR (VIDAS)</span><br><b style='font-size:20px; color:#f44336;'>{st.session_state.vidas} / 3 💔</b></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='monitor-box'><span style='color:#90a4ae; font-size:12px;'>ESTABILIDAD CELULAR</span><br><b style='font-size:20px; color:#f44336;'>{st.session_state.vidas} / 3 💔</b></div>", unsafe_allow_html=True)
 
         if st.session_state.vidas <= 0:
-            st.error("🚨 COLAPSO METABÓLICO: Lisis celular detectada por errores acumulados.")
-            if st.button("Reiniciar Simulador (Consumir nuevo ciclo)"):
+            st.error("🚨 COLAPSO METABÓLICO: Lisis celular detectada por acumulación de fallos.")
+            if st.button("Reiniciar Simulador (Iniciar nuevo ciclo)"):
                 st.session_state.vidas = 3
                 st.session_state.advertencia_ph = False
+                st.session_state.errores_quiz = 0
                 st.rerun()
             return
 
@@ -220,10 +287,14 @@ def main():
             )
             if "Dalton" in modelo:
                 st.info("⚛️ **John Dalton (1810):** El átomo como una esfera sólida indivisible. El reordenamiento de los átomos equivale a una reacción química.")
+            elif "Thomson" in modelo:
+                st.info("⚛️ **J.J. Thomson (1897):** Modelo del 'Pudin de pasas'. Electrones incrustados en una esfera positiva.")
+            elif "Rutherford" in modelo:
+                st.info("⚛️ **Ernest Rutherford (1911):** Átomos mayormente huecos, con un núcleo denso y electrones orbitando.")
+            elif "Bohr" in modelo:
+                st.info("⚛️ **Niels Bohr (1913):** Niveles cuantizados de energía en órbitas circulares definidas.")
             elif "Schrödinger" in modelo:
                 st.info("⚛️ **Erwin Schrödinger (1926):** Modelo Cuántico. Nubes de probabilidad máxima descritas por números cuánticos (n, l, m).")
-            else:
-                st.info(f"⚛️ Mostrando datos históricos para el modelo de {modelo}...")
 
         # MÓDULO 2
         with tabs[1]:
@@ -232,9 +303,9 @@ def main():
             st.components.v1.html(generar_svg_tira_afloja(fuerza), height=120, scrolling=False)
             
             if fuerza >= 3.0:
-                st.markdown("<div class='card-error'><b>🔥 Átomo Altamente Electronegativo:</b> Secuestra la densidad electrónica.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='card-error'><b>🔥 Átomo Altamente Electronegativo (Ej: Oxígeno, Nitrógeno):</b> Secuestra la densidad electrónica, deformando la nube.</div>", unsafe_allow_html=True)
             else:
-                st.markdown("<div class='card-success'><b>🤝 Átomo Equilibrado:</b> Comparte electrones de forma estable.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='card-success'><b>🤝 Átomo Equilibrado (Ej: Carbono, Hidrógeno):</b> Fuerza moderada. Comparte los electrones de forma justa y simétrica.</div>", unsafe_allow_html=True)
 
         # MÓDULO 3
         with tabs[2]:
@@ -249,67 +320,74 @@ def main():
                 diff = abs(a1['fuerza'] - a2['fuerza'])
                 
                 if diff == 0:
-                    st.markdown(f"<div class='card-success'>✅ Enlace Covalente No Polar Puro.</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-success'>✅ <b>Enlace Covalente No Polar Puro (Diferencia = 0.0):</b> Simetría orbital perfecta. Comparten electrones exactamente al centro.</div>", unsafe_allow_html=True)
+                elif diff <= 0.4:
+                    st.markdown(f"<div class='card-success'>✅ <b>Enlace Covalente No Polar (Diferencia = {diff:.2f}):</b> Reparto altamente equitativo (Ej. colas hidrofóbicas).</div>", unsafe_allow_html=True)
                 elif diff <= 1.7:
-                    st.markdown(f"<div class='card-success' style='border-left-color:#ffb142;'>⚡ Enlace Covalente Polar ($\delta^-$ generado).</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-success' style='border-left-color:#ffb142;'>⚡ <b>Enlace Covalente Polar (Diferencia = {diff:.2f}):</b> Formación de dipolos activos. El átomo fuerte genera una carga parcial negativa ($\delta^-$).</div>", unsafe_allow_html=True)
                 else:
-                    st.markdown(f"<div class='card-error'>⚠️ Inestabilidad Molecular Crítica.</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-error'>⚠️ <b>Tensión Iónica / Inestabilidad (Diferencia = {diff:.2f}):</b> Transferencia abrupta de densidad electrónica. Genera estrés molecular alto.</div>", unsafe_allow_html=True)
 
         # MÓDULO 4
         with tabs[3]:
-            st.markdown("### Código de Azúcares y Enlaces O-Glucosídicos")
+            st.markdown("### El Código de los Azúcares: Enlaces O-Glucosídicos")
             c1, c2 = st.columns(2)
             azu1 = c1.selectbox("Monosacárido 1:", ["Alfa-D-Glucosa", "Beta-D-Galactosa"])
             azu2 = c2.selectbox("Monosacárido 2:", ["Alfa-D-Glucosa", "Beta-D-Fructosa (Cetosa)"])
             
-            if st.button("Polimerizar Enlace", use_container_width=True):
+            if st.button("Polimerizar Enlace Glucosídico", use_container_width=True):
                 if azu1 == "Alfa-D-Glucosa" and azu2 == "Alfa-D-Glucosa":
-                    st.markdown("<div class='card-success'>🌾 <b>MALTOSA SINTETIZADA:</b> Enlace Alfa(1→4).</div>", unsafe_allow_html=True)
+                    st.markdown("<div class='card-success'>🌾 <b>MALTOSA SINTETIZADA:</b> Enlace Alfa(1→4). Producto directo de la degradación del almidón. Contiene poder reductor.</div>", unsafe_allow_html=True)
                 elif azu1 == "Beta-D-Galactosa" and azu2 == "Alfa-D-Glucosa":
-                    st.markdown("<div class='card-success'>🥛 <b>LACTOSA SINTETIZADA:</b> Enlace Beta(1→4).</div>", unsafe_allow_html=True)
+                    st.markdown("<div class='card-success'>🥛 <b>LACTOSA SINTETIZADA:</b> Enlace Beta(1→4). Requiere la enzima Lactasa para romper la estructura espacial 'Beta'.</div>", unsafe_allow_html=True)
+                elif azu1 == "Alfa-D-Glucosa" and azu2 == "Beta-D-Fructosa (Cetosa)":
+                    st.markdown("<div class='card-success'>🎋 <b>SACAROSA SINTETIZADA:</b> Enlace Alfa(1) ↔ Beta(2). No es un azúcar reductor porque compromete ambos carbonos anoméricos.</div>", unsafe_allow_html=True)
                 else:
-                    st.markdown("<div class='card-error'>⚠️ Ensamblaje metabólico no prioritario.</div>", unsafe_allow_html=True)
+                    st.markdown("<div class='card-error'>⚠️ <b>Ensamblaje Irregular:</b> Esta combinación no es una ruta metabólica de alta prioridad fisiológica.</div>", unsafe_allow_html=True)
 
-        # MÓDULO 5 (CON ANDAMIAJE SOCRÁTICO)
+        # MÓDULO 5
         with tabs[4]:
             st.markdown("### Control Homeostático: Curvas de Titulación")
-            solucion = st.radio("Medio Recipiente", ["Plasma con Buffer Bicarbonato", "Agua Destilada Pura"])
+            solucion = st.radio("Cámara de Perfusión: Selecciona el medio", ["Medio A: Plasma con Buffer Bicarbonato", "Medio B: Agua Destilada Pura (Cero Solutos)"])
             
-            if st.button("Inyectar Ácido Clorhídrico (HCl)"):
+            if st.button("Inyectar 10 mL de Ácido Clorhídrico (HCl)", use_container_width=True):
                 if "Agua" in solucion:
                     if not st.session_state.advertencia_ph:
                         st.markdown("<div class='card-hint'>💡 <b>SISTEMA DE ASISTENCIA:</b> El agua destilada carece de bases conjugadas. Si inyectas un ácido fuerte aquí, no habrá moléculas que atrapen los protones. ¿Seguro que deseas proceder? Vuelve a presionar el botón si confirmas la acción.</div>", unsafe_allow_html=True)
                         st.session_state.advertencia_ph = True
                     else:
-                        st.markdown("<div class='card-error'>🩸 <b>CHOQUE DE ACIDOSIS:</b> pH colapsa. Desnaturalización proteica masiva. <b>-1 Vida</b>.</div>", unsafe_allow_html=True)
+                        st.markdown("<div class='card-error'>🩸 <b>CHOQUE DE ACIDOSIS:</b> Al no haber sistema amortiguador, el pH colapsa de 7.0 a 2.0 instantáneamente. Desnaturalización proteica masiva. <b>Pierdes 1 vida.</b></div>", unsafe_allow_html=True)
                         st.session_state.vidas -= 1
                         st.session_state.advertencia_ph = False
                 else:
-                    st.markdown("<div class='card-success'>🛡️ <b>TAMPONAMIENTO EXITOSO:</b> El buffer absorbió los protones manteniendo la homeostasis.</div>", unsafe_allow_html=True)
+                    st.markdown("<div class='card-success'>🛡️ <b>TAMPONAMIENTO EXITOSO:</b> Las bases conjugadas atrapan el exceso de protones del HCl. El pH se mantiene en la Región Amortiguadora.</div>", unsafe_allow_html=True)
                     st.session_state.advertencia_ph = False
 
-        # MÓDULO 6 (EVALUACIÓN CON PISTAS)
+        # MÓDULO 6
         with tabs[5]:
-            st.markdown("### Matriz de Evaluación Bioquímica")
-            Q1 = st.radio("1. ¿Por qué la naturaleza prefiere la D-Glucosa?", ["A) Desvía luz derecha.", "B) Modelo 'llave-cerradura' enzimático.", "C) Carece de enlaces."], index=None)
-            Q2 = st.radio("2. Glucosa y Galactosa difieren en el C4. Son:", ["A) Isótopos", "B) Epímeros", "C) Enantiómeros"], index=None)
+            st.markdown("### Desafío Final: Matriz de Ciencias Bioquímicas")
+            Q1 = st.radio("1. Las enzimas son proteínas altamente específicas. ¿Por qué la naturaleza optó por la D-Glucosa sobre la L-Glucosa?", ["A) Porque la L-Glucosa desvía la luz a la derecha.", "B) Porque la configuración D encaja como 'llave y cerradura' en los sitios activos de nuestras enzimas.", "C) Porque las formas L no tienen enlaces O-Glucosídicos."], index=None)
+            Q2 = st.radio("2. La Galactosa y la Glucosa tienen la misma fórmula, pero difieren en el carbono 4. Por lo tanto, son:", ["A) Isótopos Atómicos", "B) Epímeros (Isómeros estructurales de 1 solo carbono)", "C) Enantiómeros Espejo"], index=None)
             
-            if st.button("Procesar Bitácora", use_container_width=True):
+            if st.button("Evaluar Bitácora de Laboratorio", use_container_width=True):
                 errores = 0
                 if Q1 and "B)" not in Q1: errores += 1
                 if Q2 and "B)" not in Q2: errores += 1
                 
-                if errores == 0 and Q1 and Q2:
+                # Validar que respondió ambas
+                if not Q1 or not Q2:
+                    st.warning("Debes responder todas las preguntas para evaluar la bitácora.")
+                elif errores == 0:
                     st.balloons()
-                    st.success("🏆 ¡RÉCORD PERFECTO! Metabolismo estable.")
+                    st.success("🏆 **¡RÉCORD PERFECTO!** Has dominado los modelos atómicos, el pH, los carbohidratos y el ecosistema CHONPS con rigor analítico.")
                 else:
                     st.session_state.errores_quiz += 1
                     if st.session_state.errores_quiz == 1:
-                        st.markdown(f"<div class='card-hint'>💡 <b>Pista Pedagógica:</b> Tuviste {errores} errores. Recuerda que la especificidad enzimática es espacial (tridimensional) y un epímero es un isómero que varía en un solo carbono. Inténtalo de nuevo sin perder vidas.</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div class='card-hint'>💡 <b>Pista de Andamiaje Cognitivo:</b> Detectamos {errores} error(es). Recuerda que la especificidad enzimática es puramente espacial (encaje tridimensional) y que un isómero que varía en un solo carbono asimétrico se denomina 'epímero'. Revisa tus respuestas e inténtalo de nuevo sin penalización.</div>", unsafe_allow_html=True)
                     else:
                         st.session_state.vidas -= 1
-                        st.error(f"❌ Fallo de asimilación. Has perdido 1 Vida.")
-                        st.session_state.errores_quiz = 0 # Resetear tras penalización
+                        st.error(f"❌ **Fallo Crítico de Asimilación.** Has acumulado demasiados errores y el sistema ha restado 1 Vida.")
+                        st.session_state.errores_quiz = 0 # Reset para la próxima vez
 
 if __name__ == "__main__":
     main()
