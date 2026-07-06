@@ -4,10 +4,21 @@ import time
 # 1. CONFIGURACIÓN DEL CHASIS DE NAVEGACIÓN NATIVA
 st.set_page_config(page_title="ChonpsLab", page_icon="⚛️", layout="centered")
 
-# --- INYECCIÓN DE ESTILOS CSS AVANZADOS (MODO OSCURO INTEGRADO) ---
+# --- INYECCIÓN DE ESTILOS CSS AVANZADOS (UNIVERSO Y ESTRELLAS) ---
 st.markdown("""
 <style>
-    /* Estilos globales de la Portada Premium */
+    /* Efecto Universo: Fondo negro absoluto con patrón de estrellas sutiles */
+    .stApp {
+        background-color: #000000 !important;
+        background-image: 
+            radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+            radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
+        background-size: 550px 550px, 350px 350px, 250px 250px;
+        background-position: 0 0, 40px 60px, 130px 270px;
+    }
+
+    /* Tipografías de la Portada Premium */
     .main-title {
         text-align: center; 
         color: #ffffff; 
@@ -16,29 +27,33 @@ st.markdown("""
         font-family: 'Segoe UI', -apple-system, sans-serif;
         margin-bottom: 0px;
         letter-spacing: 1px;
+        text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
     }
     .main-title-suffix {
         color: #00e5ff; 
         font-weight: 300;
         font-size: 2.8rem;
+        text-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
     }
     .sub-title {
         text-align: center; 
         font-style: italic; 
-        color: #90a4ae; 
+        color: #b0bec5; 
         font-size: 1.1rem; 
         margin-top: 5px; 
         margin-bottom: 25px;
         letter-spacing: 0.5px;
     }
-    /* Panel de Marketing Translúcido (Adiós al cuadro blanco espantoso) */
+    
+    /* Panel Cósmico Translúcido (Flotando en el espacio) */
     .bio-panel {
-        background-color: rgba(30, 41, 59, 0.5);
-        border: 1px solid rgba(0, 229, 255, 0.2);
+        background-color: rgba(10, 15, 30, 0.7);
+        border: 1px solid rgba(0, 229, 255, 0.25);
         border-left: 5px solid #00e5ff;
         padding: 24px;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0, 229, 255, 0.05);
+        border-radius: 12px;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 4px 25px rgba(0, 229, 255, 0.1);
         margin-bottom: 30px;
         text-align: center;
     }
@@ -51,12 +66,13 @@ st.markdown("""
         letter-spacing: 0.3px;
     }
     .panel-text {
-        color: #cfd8dc;
+        color: #eceff1;
         font-size: 0.95rem;
         margin: 0;
         line-height: 1.5;
     }
-    /* Estilos del Entorno Privado del Laboratorio */
+    
+    /* Estilos de la Consola Interna del Laboratorio */
     .console-header {
         background-color: rgba(30, 41, 59, 0.4);
         border-left: 5px solid #0288d1;
@@ -150,13 +166,13 @@ def verificar_bloqueo_pirateria():
             base_datos_global[codigo] = st.session_state["mi_session_id"]
 
 # ========================================================
-# --- FACHADA DE ACCESO PÚBLICA (MATRIZ BIOENERGÉTICA) ---
+# --- FACHADA DE ACCESO PÚBLICA (UNIVERSO CHONPSLAB) ---
 # ========================================================
 if not st.session_state["autenticado"]:
-    st.markdown("<h1 class='main-title'>chonps<span class='main-title-suffix'>lab</span></h1>", unsafe_allow_html=True)
+    st.markdown("<h1 class='main-title'>Chonps<span class='main-title-suffix'>Lab</span></h1>", unsafe_allow_html=True)
     st.markdown("<p class='sub-title'>Aprende rápido. Rompe las barreras biológicas.</p>", unsafe_allow_html=True)
     
-    # PANEL VISUAL SOFISTICADO: Integrado al fondo con bordes neón azul translúcido
+    # PANEL VISUAL SOFISTICADO: Integrado al fondo cósmico con bordes neón azul translúcido
     st.markdown("""
     <div class='bio-panel'>
         <span class='panel-hook'>¿Listo para aprender rápido con tu laboratorio digital?</span>
@@ -168,8 +184,8 @@ if not st.session_state["autenticado"]:
     
     st.write("---")
     
-    st.markdown("<h3 style='font-weight: 600; margin-top: 10px;'>Sincronización del Entorno Analítico</h3>", unsafe_allow_html=True)
-    st.write("Introduce tu clave de acceso de 30 días para validar el estado de matrícula y encender los simuladores.")
+    st.markdown("<h3 style='font-weight: 600; margin-top: 10px; color: #ffffff;'>Sincronización del Entorno Analítico</h3>", unsafe_allow_html=True)
+    st.write("Introduce tu clave de acceso de 30 días para validar el estado de matrícula y encender los reactores.")
     
     codigo_input = st.text_input("Licencia de Acceso Digital (Token Único):", type="password", placeholder="Introduce tu código aquí...")
     
