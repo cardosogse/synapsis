@@ -4,18 +4,17 @@ import time
 # 1. CONFIGURACIÓN DEL CHASIS DE NAVEGACIÓN NATIVA
 st.set_page_config(page_title="ChonpsLab", page_icon="⚛️", layout="centered")
 
-# --- INYECCIÓN DE ESTILOS CSS AVANZADOS (UNIVERSO Y ESTRELLAS) ---
+# --- INYECCIÓN DE ESTILOS CSS AVANZADOS (FONDO NEGRO ABSOLUTO RESTAURADO) ---
 st.markdown("""
 <style>
-    /* Efecto Universo: Fondo negro absoluto con patrón de estrellas sutiles */
+    /* El chasis de fondo negro puro que te gustó, integrado al modo oscuro */
     .stApp {
         background-color: #000000 !important;
         background-image: 
-            radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
-            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
-            radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px);
-        background-size: 550px 550px, 350px 350px, 250px 250px;
-        background-position: 0 0, 40px 60px, 130px 270px;
+            radial-gradient(white, rgba(255,255,255,.2) 1px, transparent 20px),
+            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
+        background-size: 350px 350px, 200px 200px;
+        background-position: 0 0, 40px 60px;
     }
 
     /* Tipografías de la Portada Premium */
@@ -27,33 +26,30 @@ st.markdown("""
         font-family: 'Segoe UI', -apple-system, sans-serif;
         margin-bottom: 0px;
         letter-spacing: 1px;
-        text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
     }
     .main-title-suffix {
         color: #00e5ff; 
         font-weight: 300;
         font-size: 2.8rem;
-        text-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
     }
     .sub-title {
         text-align: center; 
         font-style: italic; 
-        color: #b0bec5; 
+        color: #90a4ae; 
         font-size: 1.1rem; 
         margin-top: 5px; 
         margin-bottom: 25px;
         letter-spacing: 0.5px;
     }
     
-    /* Panel Cósmico Translúcido (Flotando en el espacio) */
+    /* Panel Cósmico Translúcido */
     .bio-panel {
-        background-color: rgba(10, 15, 30, 0.7);
-        border: 1px solid rgba(0, 229, 255, 0.25);
+        background-color: rgba(30, 41, 59, 0.5);
+        border: 1px solid rgba(0, 229, 255, 0.2);
         border-left: 5px solid #00e5ff;
         padding: 24px;
-        border-radius: 12px;
-        backdrop-filter: blur(6px);
-        box-shadow: 0 4px 25px rgba(0, 229, 255, 0.1);
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 229, 255, 0.05);
         margin-bottom: 30px;
         text-align: center;
     }
@@ -66,7 +62,7 @@ st.markdown("""
         letter-spacing: 0.3px;
     }
     .panel-text {
-        color: #eceff1;
+        color: #cfd8dc;
         font-size: 0.95rem;
         margin: 0;
         line-height: 1.5;
@@ -185,7 +181,7 @@ if not st.session_state["autenticado"]:
     st.write("---")
     
     st.markdown("<h3 style='font-weight: 600; margin-top: 10px; color: #ffffff;'>Sincronización del Entorno Analítico</h3>", unsafe_allow_html=True)
-    st.write("Introduce tu clave de acceso de 30 días para validar el estado de matrícula y encender los reactores.")
+    st.write("Introduce tu clave de acceso de 30 días para validar el estado de matrícula y encender los simuladores.")
     
     codigo_input = st.text_input("Licencia de Acceso Digital (Token Único):", type="password", placeholder="Introduce tu código aquí...")
     
