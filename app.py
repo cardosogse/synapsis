@@ -6,48 +6,48 @@ st.set_page_config(page_title="ChonpsLab Pro", page_icon="⚛️", layout="cente
 
 # --- BANCO DE DATOS MAESTRO (PROPIEDADES BIOLÓGICAS DE CHONPS) ---
 ELEMENTOS = {
-    "Oxígeno (O)": {"fuerza": 3.44, "color": "#ff5252", "desc": "Altamente ambicioso. Induce polaridad e hidrofilia celular."},
-    "Nitrógeno (N)": {"fuerza": 3.04, "color": "#33d9b2", "desc": "Clave en aminoácidos y bases nitrogenadas. Genera dipolos fuertes."},
-    "Azufre (S)": {"fuerza": 2.58, "color": "#ffda79", "desc": "Estabilizador proteico mediante puentes disulfuro moleculares."},
-    "Carbono (C)": {"fuerza": 2.55, "color": "#ffb142", "desc": "El esqueleto de la materia viva. Enlaces estables y versátiles."},
-    "Hidrógeno (H)": {"fuerza": 2.20, "color": "#00e5ff", "desc": "Donador universal de protones y estabilizador de puentes hídricos."},
-    "Fósforo (P)": {"fuerza": 2.19, "color": "#ff7ff5", "desc": "Esencial para los enlaces de alta energía (ATP) y ácidos nucleicos."}
+    "Oxígeno (O)": {"fuerza": 3.44, "color": "#ff5252", "desc": "Altamente ambicioso. Induce polaridad, dipolos y puentes de hidrógeno. Esencial en Carbohidratos, Proteínas y Ácidos Nucleicos."},
+    "Nitrógeno (N)": {"fuerza": 3.04, "color": "#33d9b2", "desc": "Estructurador de aminoácidos y bases nitrogenadas. Define la identidad de Proteínas y Ácidos Nucleicos."},
+    "Azufre (S)": {"fuerza": 2.58, "color": "#ffda79", "desc": "Elemento de soporte y rigidez tridimensional. Exclusivo de Proteínas (Puentes disulfuro)."},
+    "Carbono (C)": {"fuerza": 2.55, "color": "#ffb142", "desc": "El esqueleto covalente universal. Presente en el 100% de Carbohidratos, Lípidos, Proteínas y Ácidos Nucleicos."},
+    "Hidrógeno (H)": {"fuerza": 2.20, "color": "#00e5ff", "desc": "Saturador de cadenas hidrofóbicas en Lípidos y estabilizador conformacional de hélices orgánicas."},
+    "Fósforo (P)": {"fuerza": 2.19, "color": "#ff7ff5", "desc": "Almacenador de alta energía (ATP) y esqueleto estructural de los Ácidos Nucleicos (ADN/ARN)."}
 }
 
 PREGUNTAS_DESAFIO = [
     {
         "id": 1,
-        "pregunta": "1. Al unir Nitrógeno (3.04) con Carbono (2.55) para formar el enlace peptídico de una proteína, ¿qué sucede con los electrones?",
-        "opciones": ["Se comparten de forma idéntica y simétrica (Apolar)", "Se desplazan con mayor densidad hacia el Nitrógeno debido a su mayor fuerza (Polar)"],
-        "correcta": "Se desplazan con mayor densidad hacia el Nitrógeno debido a su mayor fuerza (Polar)"
+        "pregunta": "1. [JERARQUÍA: LÍPIDOS] Las cadenas de los ácidos grasos están formadas casi exclusivamente por Carbono (2.55) e Hidrógeno (2.20). Al experimentar en el reactor, vemos que su diferencia es menor a 0.4. ¿Cuál es la propiedad resultante en los lípidos celulares?",
+        "opciones": ["Son altamente polares e hidrofílicos, disolviéndose en el plasma.", "Son apolares e hidrofóbicos, ideales para formar membranas celulares aislantes."],
+        "correcta": "Son apolares e hidrofóbicos, ideales para formar membranas celulares aislantes."
     },
     {
         "id": 2,
-        "pregunta": "2. En los puentes disulfuro que de manera natural estabilizan la estructura de la insulina, se enlazan dos átomos de Azufre (2.58 - 2.58 = 0). ¿Qué tipo de enlace resulta?",
-        "opciones": ["Enlace Covalente No Polar (Simétrico)", "Enlace Covalente Polar (Asimétrico)"],
-        "correcta": "Enlace Covalente No Polar (Simétrico)"
+        "pregunta": "2. [JERARQUÍA: PROTEÍNAS] El enlace peptídico une covalentemente un Carbono (2.55) con un Nitrógeno (3.04). Al analizar el Espectrómetro, ¿cómo se distribuye la densidad electrónica en este pilar proteico?",
+        "opciones": ["Se genera un dipolo local (Polar) debido a que el Nitrógeno atrae con mayor fuerza los electrones.", "Se comparte de forma 100% idéntica (Apolar) porque las fuerzas se cancelan en el espacio."],
+        "correcta": "Se genera un dipolo local (Polar) debido a que el Nitrógeno atrae con mayor fuerza los electrones."
     },
     {
         "id": 3,
-        "pregunta": "3. Los enlaces de alta energía del ATP involucran uniones Fósforo-Oxígeno. Con una diferencia de fuerza de 1.25 ($3.44 - 2.19$), este enlace es:",
-        "opciones": ["Fuertemente Polar, acumulando tensiones de carga", "Totalmente Apolar, liberando calor espontáneo"],
-        "correcta": "Fuertemente Polar, acumulando tensiones de carga"
+        "pregunta": "3. [JERARQUÍA: ÁCIDOS NUCLEICOS] La columna vertebral del ADN requiere enlaces de alta energía Fósforo-Oxígeno. Con una diferencia de fuerza crítica de 1.25 ($3.44 - 2.19$), estos enlaces se caracterizan por:",
+        "opciones": ["Ser fuertemente polares, acumulando tensiones de carga ideales para la transferencia de energía.", "Ser enlaces apolares e inertes, lo que impide la duplicación del material genético."],
+        "correcta": "Ser fuertemente polares, acumulando tensiones de carga ideales para la transferencia de energía."
     },
     {
         "id": 4,
-        "pregunta": "4. ¿Cuál de los 6 bioelementos del ecosistema CHONPS tiene la mayor capacidad para romper la neutralidad de una molécula orgánica e inducir hidrofilia?",
-        "opciones": ["El Carbono (C)", "El Oxígeno (O)"],
-        "correcta": "El Oxígeno (O)"
+        "pregunta": "4. [JERARQUÍA: CARBOHIDRATOS] Los azúcares como la glucosa poseen múltiples grupos oxhidrilo (-OH) donde el Oxígeno (3.44) se une al Hidrógeno (2.20). ¿Por qué la glucosa es el combustible rápido del plasma sanguíneo?",
+        "opciones": ["Porque el enlace O-H es altamente polar, permitiendo que el agua del plasma la disuelva de inmediato.", "Porque la geometría simétrica del O-H repele el agua, obligando a la glucosa a precipitar."],
+        "correcta": "Porque el enlace O-H es altamente polar, permitiendo que el agua del plasma la disuelva de inmediato."
     },
     {
         "id": 5,
-        "pregunta": "5. Si un par de átomos tiene una diferencia de electronegatividad menor a 0.4 en la escala de Pauling, ¿cuál es la consecuencia biofísica en la macromolécula?",
-        "opciones": ["Se vuelve hidrofóbica e insoluble en agua (Apolar)", "Se disocia inmediatamente liberando protones de pH"],
-        "correcta": "Se vuelve hidrofóbica e insoluble en agua (Apolar)"
+        "pregunta": "5. [JERARQUÍA: PROTEÍNAS AVANZADAS] Para estabilizar la insulina, se requiere unir dos átomos del mismo elemento: Azufre (2.58) con Azufre (2.58). ¿Qué estatus arrojará el reactor para este puente disulfuro?",
+        "opciones": ["Enlace Covalente Homogéneo No Polar (Diferencia = 0.0), mecánicamente rígido y simétrico.", "Enlace Iónico Crítico con colapso de dipolos estables."],
+        "correcta": "Enlace Covalente Homogéneo No Polar (Diferencia = 0.0), mecánicamente rígido y simétrico."
     }
 ]
 
-# --- MOTOR DE GRÁFICOS VECTORIALES DINÁMICOS (OPTIMIZADO EN RAM) ---
+# --- MOTOR DE GRÁFICOS VECTORIALES DINÁMICOS ---
 def generar_svg_enlace(nombre1, fuerza1, color1, nombre2, fuerza2, color2):
     diff = abs(fuerza1 - fuerza2)
     sym = "O" if "Oxígeno" in nombre1 else ("N" if "Nitrógeno" in nombre1 else ("S" if "Azufre" in nombre1 else ("C" if "Carbono" in nombre1 else ("P" if "Fósforo" in nombre1 else "H"))))
@@ -74,10 +74,8 @@ def generar_svg_enlace(nombre1, fuerza1, color1, nombre2, fuerza2, color2):
         <svg viewBox="0 0 240 120" width="100%" height="100%" style="background: transparent;">
             <circle cx="70" cy="60" r="22" fill="{color1}" opacity="0.85"/>
             <text x="64" y="65" fill="black" font-weight="bold" font-family="sans-serif" font-size="14">{sym}</text>
-            
             <circle cx="170" cy="60" r="18" fill="{color2}" opacity="0.85"/>
             <text x="164" y="64" fill="black" font-weight="bold" font-family="sans-serif" font-size="12">{sym2}</text>
-            
             <ellipse cx="{ellipse_x}" cy="60" rx="{ellipse_w}" ry="32" fill="none" stroke="{stroke_color}" stroke-width="1.5" stroke-dasharray="{stroke_dash}"/>
             <circle cx="{cx_e1}" cy="60" r="4" fill="#ffffff"/>
             <circle cx="{cx_e2}" cy="60" r="4" fill="#ffffff"/>
@@ -112,10 +110,9 @@ def generar_svg_induccion(fuerza_fase0):
         </div>
         """
 
-# --- INYECCIÓN DE ESTILOS CSS RECONSTRUIDOS (EL REGRESO DEL UNIVERSO OSCURO) ---
+# --- INYECCIÓN DE ESTILOS CSS (EL UNIVERSO CÓSMICO PREMIUM) ---
 st.markdown("""
 <style>
-    /* Chasis de fondo negro absoluto con mapa de estrellas */
     .stApp {
         background-color: #000000 !important;
         background-image: 
@@ -124,102 +121,17 @@ st.markdown("""
         background-size: 350px 350px, 200px 200px;
         background-position: 0 0, 40px 60px;
     }
-
-    .main-title {
-        text-align: center; 
-        color: #ffffff; 
-        font-size: 3.4rem; 
-        font-weight: 800; 
-        font-family: 'Segoe UI', -apple-system, sans-serif;
-        margin-bottom: 0px;
-        letter-spacing: 1px;
-    }
-    .main-title-suffix {
-        color: #00e5ff; 
-        font-weight: 300;
-        font-size: 2.8rem;
-    }
-    .sub-title {
-        text-align: center; 
-        font-style: italic; 
-        color: #90a4ae; 
-        font-size: 1.1rem; 
-        margin-top: 5px; 
-        margin-bottom: 25px;
-        letter-spacing: 0.5px;
-    }
-    
-    /* Panel translúcido con borde neón hitech */
-    .bio-panel {
-        background-color: rgba(30, 41, 59, 0.5);
-        border: 1px solid rgba(0, 229, 255, 0.2);
-        border-left: 5px solid #00e5ff;
-        padding: 24px;
-        border-radius: 8px;
-        box-shadow: 0 4px 20px rgba(0, 229, 255, 0.05);
-        margin-bottom: 30px;
-    }
-    .panel-hook {
-        color: #00e5ff;
-        font-weight: 700;
-        font-size: 1.25rem;
-        display: block;
-        margin-bottom: 8px;
-        letter-spacing: 0.3px;
-    }
-    .panel-text {
-        color: #cfd8dc;
-        font-size: 0.95rem;
-        margin: 0;
-        line-height: 1.5;
-    }
-    
-    /* Encabezado del Laboratorio */
-    .console-header {
-        background-color: rgba(30, 41, 59, 0.4);
-        border-left: 5px solid #0288d1;
-        padding: 15px;
-        border-radius: 4px;
-        margin-bottom: 20px;
-    }
-    
-    /* Espectrómetro: Éxito (Verde translúcido hitech) */
-    .spectrometer-card-success {
-        background-color: rgba(76, 175, 80, 0.08);
-        border: 1px solid rgba(76, 175, 80, 0.25);
-        border-left: 6px solid #4caf50;
-        padding: 20px;
-        border-radius: 6px;
-        margin-top: 15px;
-    }
-    /* Espectrómetro: Error (Rojo translúcido de alarma) */
-    .spectrometer-card-error {
-        background-color: rgba(244, 67, 54, 0.08);
-        border: 1px solid rgba(244, 67, 54, 0.25);
-        border-left: 6px solid #f44336;
-        padding: 20px;
-        border-radius: 6px;
-        margin-top: 15px;
-    }
-    
-    .spectrometer-title {
-        color: #b0bec5;
-        font-size: 0.85rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 700;
-        margin-bottom: 8px;
-    }
-    
-    /* Monitores de la barra de navegación lateral */
-    .sidebar-monitor {
-        background-color: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 12px;
-        border-radius: 4px;
-        margin-bottom: 10px;
-        text-align: center;
-    }
+    .main-title { text-align: center; color: #ffffff; font-size: 3.4rem; font-weight: 800; font-family: 'Segoe UI', sans-serif; margin-bottom: 0px; }
+    .main-title-suffix { color: #00e5ff; font-weight: 300; }
+    .sub-title { text-align: center; font-style: italic; color: #90a4ae; font-size: 1.1rem; margin-top: 5px; margin-bottom: 25px; }
+    .bio-panel { background-color: rgba(30, 41, 59, 0.5); border: 1px solid rgba(0, 229, 255, 0.2); border-left: 5px solid #00e5ff; padding: 24px; border-radius: 8px; margin-bottom: 30px; }
+    .panel-hook { color: #00e5ff; font-weight: 700; font-size: 1.25rem; display: block; margin-bottom: 8px; }
+    .panel-text { color: #cfd8dc; font-size: 0.95rem; margin: 0; line-height: 1.5; }
+    .console-header { background-color: rgba(30, 41, 59, 0.4); border-left: 5px solid #0288d1; padding: 15px; border-radius: 4px; margin-bottom: 20px; }
+    .spectrometer-card-success { background-color: rgba(76, 175, 80, 0.08); border: 1px solid rgba(76, 175, 80, 0.25); border-left: 6px solid #4caf50; padding: 20px; border-radius: 6px; margin-top: 15px; }
+    .spectrometer-card-error { background-color: rgba(244, 67, 54, 0.08); border: 1px solid rgba(244, 67, 54, 0.25); border-left: 6px solid #f44336; padding: 20px; border-radius: 6px; margin-top: 15px; }
+    .spectrometer-title { color: #b0bec5; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px; }
+    .sidebar-monitor { background-color: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); padding: 12px; border-radius: 4px; margin-bottom: 10px; text-align: center; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -228,7 +140,7 @@ CODIGOS_VIGENTES = ["SYNAPSIS-PRO", "VET-BIOQUIMICA-2026", "MED-ELITE-30DAYS"]
 if "autenticado" not in st.session_state: st.session_state["autenticado"] = False
 if "vidas" not in st.session_state: st.session_state["vidas"] = 3
 if "puntos" not in st.session_state: st.session_state["puntos"] = 0
-if "bloque_actual" not in st.session_state: st.session_state["bloque_actual"] = 0  # 0:Inducción, 1:Simulador CHONPS, 2:Desafío de las 5 Preguntas
+if "bloque_actual" not in st.session_state: st.session_state["bloque_actual"] = 0 
 if "sim_ejecutada" not in st.session_state: st.session_state["sim_ejecutada"] = False
 if "sim_html" not in st.session_state: st.session_state["sim_html"] = ""
 if "sim_status" not in st.session_state: st.session_state["sim_status"] = ""
@@ -244,9 +156,9 @@ if not st.session_state["autenticado"]:
     
     st.markdown("""
     <div class='bio-panel'>
-        <span class='panel-hook'>Ecosistema de Bioelementos Expandido (CHONPS)</span>
+        <span class='panel-hook'>El Alfabeto de la Vida: Ecosistema CHONPS</span>
         <p class='panel-text'>
-            Bienvenido al entorno analítico optimizado. Esta suite integra la totalidad de las macromoléculas biológicas esenciales, permitiendo modelar desde enlaces de agua hasta puentes disulfuro y esqueletos de nucleótidos ADN/ARN.
+            Carbono (C), Hidrógeno (H), Oxígeno (O), Nitrógeno (N), Fósforo (P) y Azufre (S). Estos seis elementos construyen el 99% de la materia viva en el planeta. Sincroniza tu entorno analítico para regular sus fuerzas de enlace y comprender cómo estructuran la jerarquía molecular.
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -271,7 +183,6 @@ else:
     </div>
     """, unsafe_allow_html=True)
     
-    # Barra Lateral Rediseñada con Estilo Oscuro
     with st.sidebar:
         st.markdown("<h3 style='font-weight:600; margin-bottom:15px;'>Monitor de Progreso</h3>", unsafe_allow_html=True)
         st.markdown(f"<div class='sidebar-monitor'><span style='color:#90a4ae; font-size:0.8rem; text-transform:uppercase;'>Estabilidad de Vidas</span><br><b style='font-size:1.5rem; color:#f44336;'>{st.session_state.vidas} / 3</b></div>", unsafe_allow_html=True)
@@ -311,24 +222,28 @@ else:
             st.rerun()
     else:
         # --------------------------------------------------------
-        # --- FASE 0: CALENTAMIENTO E INTUICIÓN ---
+        # --- FASE 0: CALENTAMIENTO E INTUICIÓN DE CHONPS ---
         # --------------------------------------------------------
         if st.session_state.bloque_actual == 0:
-            st.subheader("Fase 0: Inducción Electronegativa")
-            st.write("Mueve el control deslizante para comprender de forma física cómo la fuerza atómica (Electronegatividad) jala y deforma las nubes de electrones.")
+            st.subheader("Fase 0: Inducción a los 6 Elementos Vitales")
+            st.write("Mueve el control deslizante para comprender de forma física la **Electronegatividad (Fuerza de atracción)** en la escala de Pauling.")
             
-            fuerza_fase0 = st.slider("Ajustar Fuerza (Escala Pauling):", 0.7, 4.0, 2.2, step=0.1)
+            fuerza_fase0 = st.slider("Ajustar Fuerza de Atracción Electrónica:", 0.7, 4.0, 2.2, step=0.1)
             if fuerza_fase0 >= 3.0:
-                st.info("⚡ **Átomo Ambicioso (Ej: Oxígeno o Nitrógeno).** Deforma la geometría molecular y atrae las cargas hacia sí.")
+                st.info("⚡ **Átomo de Alta Fuerza (Ej: Oxígeno: 3.44 o Nitrógeno: 3.04).** Rompe la simetría molecular, induce polaridad y es el imán que permite la hidrofilia celular.")
             else:
-                st.success("🤝 **Átomo Equilibrado (Ej: Carbono o Hidrógeno).** Distribuye y comparte los electrones con justicia orbital.")
+                st.success("🤝 **Átomo de Fuerza Balanceada/Baja (Ej: Carbono: 2.55, Azufre: 2.58, Hidrógeno: 2.20, Fósforo: 2.19).** Comparte electrones equitativamente.")
             
-            # Renderizado del SVG de inducción adaptado al fondo
             st.components.v1.html(generar_svg_induccion(fuerza_fase0), height=110, scrolling=False)
             
             st.write("---")
-            st.write("**Reto de Nivelación:** Si el Carbono (2.55) y el Azufre (2.58) se unen, sus fuerzas están prácticamente empatadas. ¿Cómo se comportará su enlace?")
-            resp_f0 = st.radio("Elige tu hipótesis:", ["Será un enlace simétrico y No Polar", "Será un enlace asimétrico altamente Polar"])
+            st.markdown("### El Mapa de Identidad de los Ladrillos de la Vida")
+            for el, info in ELEMENTOS.items():
+                st.markdown(f"**<span style='color:{info['color']};'>{el}</span> (Fuerza: {info['fuerza']}):** {info['desc']}", unsafe_allow_html=True)
+            
+            st.write("---")
+            st.write("**Reto de Nivelación:** Si unes Carbono (2.55) e Hidrógeno (2.20) para formar el esqueleto de un Lípido, sus fuerzas están muy balanceadas. ¿Cómo será la nube electrónica?")
+            resp_f0 = st.radio("Elige tu hipótesis académica:", ["Será simétrica y No Polar, repeliendo el agua", "Será asimétrica y Polar, disolviéndose al instante"])
             
             if st.button("Validar Entrada al Laboratorio", use_container_width=True):
                 if "No Polar" in resp_f0:
@@ -337,7 +252,7 @@ else:
                     st.session_state.bloque_actual = 1
                     st.rerun()
                 else:
-                    st.error("Error analítico. Fuerzas similares equivalen a un reparto justo (No Polar). Revisa el concepto del estira y afloja.")
+                    st.error("Error de inducción. Fuerzas similares equivalen a un reparto justo (No Polar). Revisa el mapa de calor.")
 
         # --------------------------------------------------------
         # --- FASE 1: SIMULADOR MACRO CHONPS AVANZADO ---
@@ -362,22 +277,22 @@ else:
                 
                 if diff == 0:
                     st.session_state.sim_status = "Enlace Covalente Homogéneo No Polar (Simetría Total)"
-                    st.session_state.sim_output = f"Unión molecular estable entre elementos idénticos. La diferencia de fuerza es 0.0. Los electrones rotan exactamente en medio de ambos núcleos. Estructura uniones homonucleares como el enlace Azufre-Azufre de los puentes disulfuro proteicos."
+                    st.session_state.sim_output = f"Unión molecular estable entre elementos idénticos. La diferencia de fuerza es 0.0. Los electrones rotan exactamente en medio de ambos núcleos. Estructura uniones homonocleares como el enlace Azufre-Azufre de los puentes disulfuro proteicos esenciales."
                     st.session_state.sim_error = False
                     st.session_state.puntos += 100
                 elif diff <= 0.4:
                     st.session_state.sim_status = "Enlace Covalente No Polar (Hidrofóbico)"
-                    st.session_state.sim_output = f"Estabilidad electroquímica óptima. La diferencia de fuerza es de {diff:.2f} (menor a 0.4). Los átomos comparten electrones equitativamente. Configuración clave para formar estructuras insolubles en agua, como las cadenas de ácidos grasos."
+                    st.session_state.sim_output = f"Estabilidad electroquímica óptima. La diferencia de fuerza es de {diff:.2f} (menor a 0.4). Los átomos comparten electrones equitativamente. Configuración clave para formar estructuras insolubles en agua, como las cadenas de ácidos grasos en Lípidos."
                     st.session_state.sim_error = False
                     st.session_state.puntos += 100
                 elif diff < 1.7:
                     st.session_state.sim_status = "Enlace Covalente Polar (Dipolo Activo - Hidrófilo)"
-                    st.session_state.sim_output = f"Asimetría orbital detectada. La diferencia de fuerza es de {diff:.2f}. El elemento con mayor electronegatividad jala el par electrónico hacia su zona, induciendo una carga parcial negativa y dejando una carga parcial positiva en el opuesto. Esto genera la solubilidad y los puentes de hidrógeno."
+                    st.session_state.sim_output = f"Asimetría orbital detectada. La diferencia de fuerza es de {diff:.2f}. El elemento con mayor electronegatividad jala el par electrónico hacia su zona, induciendo una carga parcial negativa y dejando una carga parcial positiva en el opuesto. Esto genera la solubilidad en Carbohidratos y puentes hídricos."
                     st.session_state.sim_error = False
                     st.session_state.puntos += 120
                 else:
                     st.session_state.sim_status = "Tensión Iónica / Ruptura de Estabilidad"
-                    st.session_state.sim_output = f"Diferencia de atracción crítica ({diff:.2f}). Genera un estrés de dipolos extremos, común en grupos fosfato altamente inestables y reactivos (esencia de la transferencia energética en el ATP)."
+                    st.session_state.sim_output = f"Diferencia de atracción crítica ({diff:.2f}). Genera un estrés de dipolos extremos, común en grupos fosfato altamente inestables y reactivos, pilar de los enlaces fosfodiéster en Ácidos Nucleicos y transferencia energética en el ATP."
                     st.session_state.sim_error = True
                     st.session_state.vidas -= 1
                 st.rerun()
@@ -385,7 +300,7 @@ else:
             if st.session_state.sim_ejecutada:
                 st.write("---")
                 card_class = "spectrometer-card-error" if st.session_state.sim_error else "spectrometer-card-success"
-                title_color = "#ff5252" if st.session_state.sim_error else "69f0ae"
+                title_color = "#ff5252" if st.session_state.sim_error else "#69f0ae"
                 
                 st.markdown(f"""
                 <div class='{card_class}'>
@@ -401,11 +316,11 @@ else:
                     st.rerun()
 
         # --------------------------------------------------------
-        # --- FASE 2: EXAMEN DE DESAFÍO DE 5 PREGUNTAS ---
+        # --- FASE 2: EXAMEN DE DESAFÍO BASADO EN JERARQUÍAS ---
         # --------------------------------------------------------
         elif st.session_state.bloque_actual == 2:
-            st.subheader("Fase 2: Desafío de Validación Científica")
-            st.write("Responde correctamente a este cuestionario de alta exigencia académica basado en las lecturas del simulador. ¡Equivocarse cuesta una vida!")
+            st.subheader("Fase 2: Desafío de Validación de Macromoléculas")
+            st.write("Responde correctamente a este cuestionario de alta exigencia académica basado en la jerarquía bioquímica celular. ¡Equivocarse cuesta una vida!")
             
             with st.form("banco_preguntas_chonps"):
                 respuestas_usuario = {}
@@ -424,10 +339,10 @@ else:
                     
                     if errores == 0:
                         st.balloons()
-                        st.success("🏆 ¡EXAMEN PERFECTO! Has dominado el ecosistema CHONPS con rigor de experto. Tus conocimientos están blindados.")
+                        st.success("🏆 ¡EXAMEN PERFECTO! Has dominado el ecosistema CHONPS y la jerarquía de las macromoléculas con rigor de experto. El software está validado.")
                         st.session_state.puntos += 500
                     else:
                         st.session_state.vidas -= 1
-                        st.error(f"❌ Examen reprobado con {errores} error(es) analítico(s). Has perdido 1 Vida debido a inestabilidad conceptual. ¡Estudia las lecturas de los enlaces!")
+                        st.error(f"❌ Examen reprobado con {errores} error(es) analítico(s). Has perdido 1 Vida debido a inestabilidad conceptual. Estudia las interacciones atómicas.")
                         time.sleep(1.5)
                         st.rerun()
