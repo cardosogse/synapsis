@@ -75,7 +75,7 @@ st.markdown("""
         text-align: center;
     }
 </style>
-""", unsafe_style=True)
+""", unsafe_allow_html=True)
 
 # --- BITÁCORA GLOBAL COMPARTIDA (EL MURO DE ACERO ANTIPIRATERÍA) ---
 @st.cache_resource
@@ -135,7 +135,7 @@ def verificar_bloqueo_pirateria():
 # --- FACHADA DE ACCESO PÚBLICA (DISEÑO GEOMÉTRICO LIMPIO) ---
 # ========================================================
 if not st.session_state["autenticado"]:
-    st.markdown("<h1 class='main-title'>SYNAPSIS</h1>", unsafe_style=True)
+    st.markdown("<h1 class='main-title'>SYNAPSIS</h1>", unsafe_allow_html=True)
     st.markdown("<p class='sub-title'>Aprende rápido. Rompe las barreras biológicas.</p>", unsafe_style=True)
     st.markdown("<p class='question-hook'>¿Listo para aprender rápido con tu laboratorio digital?</p>", unsafe_style=True)
     
@@ -146,13 +146,13 @@ if not st.session_state["autenticado"]:
     <div style='background-color: #f1f8e9; border: 1px dashed #8bc34a; padding: 20px; text-align: center; border-radius: 4px; color: #33691e; font-size: 0.95rem; font-weight: 500;'>
         [Módulo de Interconexión Sináptica: Animación de Redes Neuronales Nativas en Desarrollo]
     </div>
-    """, unsafe_style=True)
+    """, unsafe_allow_html=True)
     
     st.markdown("""
     <br>
     <h3 style='color: #333; font-weight: 600;'>Sincronización del Entorno Analítico</h3>
     Introduzca su clave de acceso individual de 30 días para validar el estado de matrícula y activar los reactores digitales de tronco común.
-    """, unsafe_style=True)
+    """, unsafe_allow_html=True)
     
     codigo_input = st.text_input("Licencia de Acceso Digital (Token Único):", type="password", placeholder="Introduzca el código de suscripción...")
     
@@ -181,17 +181,17 @@ else:
         <h2 style='margin:0; color: #01579b; font-weight: 700;'>SynapsisLab: Consola de Simulación</h2>
         <span style='color: #555; font-size: 0.85rem;'>Entorno Clínico Protegido | Matrícula Activa: {}</span>
     </div>
-    """.format(st.session_state['codigo_ingresado']), unsafe_style=True)
+    """.format(st.session_state['codigo_ingresado']), unsafe_allow_html=True)
     
     # Barra lateral — Monitor de Signos Homeostáticos del Alumno
     with st.sidebar:
-        st.markdown("<h3 style='color: #333; font-weight:600; margin-bottom:15px;'>Monitor de Estado</h3>", unsafe_style=True)
+        st.markdown("<h3 style='color: #333; font-weight:600; margin-bottom:15px;'>Monitor de Estado</h3>", unsafe_allow_html=True)
         
-        st.markdown("<div class='sidebar-monitor'><span style='font-size:0.8rem; color:#666; text-transform:uppercase;'>Estabilidad (Vidas)</span><br><b style='font-size:1.6rem; color:#d32f2f;'>{} / 3</b></div>".format(st.session_state.vidas), unsafe_style=True)
-        st.markdown("<div class='sidebar-monitor'><span style='font-size:0.8rem; color:#666; text-transform:uppercase;'>Rigor (Puntos)</span><br><b style='font-size:1.6rem; color:#1976d2;'>{}</b></div>".format(st.session_state.puntos), unsafe_style=True)
+        st.markdown("<div class='sidebar-monitor'><span style='font-size:0.8rem; color:#666; text-transform:uppercase;'>Estabilidad (Vidas)</span><br><b style='font-size:1.6rem; color:#d32f2f;'>{} / 3</b></div>".format(st.session_state.vidas), unsafe_allow_html=True)
+        st.markdown("<div class='sidebar-monitor'><span style='font-size:0.8rem; color:#666; text-transform:uppercase;'>Rigor (Puntos)</span><br><b style='font-size:1.6rem; color:#1976d2;'>{}</b></div>".format(st.session_state.puntos), unsafe_allow_html=True)
         
         st.write("---")
-        st.markdown("<h4 style='color: #333; font-weight:600;'>Navegación Curricular</h4>", unsafe_style=True)
+        st.markdown("<h4 style='color: #333; font-weight:600;'>Navegación Curricular</h4>", unsafe_allow_html=True)
         
         # Selector de bloques temáticos integrados
         if st.sidebar.button("Bloque 0: Fundamentos Químicos", use_container_width=True):
@@ -218,7 +218,7 @@ else:
             <div class='spectrometer-title' style='color:#c62828;'>Falla Homeostática Crítica</div>
             El sistema ha entrado en inestabilidad irreversible debido a decisiones experimentales erróneas. El reactor se ha bloqueado.
         </div>
-        """, unsafe_style=True)
+        """, unsafe_allow_html=True)
         if st.button("Inyectar Nuevos Reactores Extracelulares y Reiniciar", use_container_width=True):
             st.session_state.vidas = 3
             st.session_state.puntos = 0
@@ -246,7 +246,7 @@ else:
                 """)
 
             st.write("---")
-            st.markdown("<h3 style='color:#333; font-weight:600;'>Reactor de Enlaces Moleculares</h3>", unsafe_style=True)
+            st.markdown("<h3 style='color:#333; font-weight:600;'>Reactor de Enlaces Moleculares</h3>", unsafe_allow_html=True)
             st.write("Configure la combinación atómica elemental del ensayo analítico:")
             
             col1, col2 = st.columns(2)
@@ -255,7 +255,7 @@ else:
             with col2:
                 atomo_2 = st.selectbox("Elemento de Interacción Orbital:", ["Hidrógeno (Fuerza: 2.20)", "Oxígeno (Fuerza: 3.44)"])
                 
-            if st.button("Disparar Reacción Thermal", use_container_width=True):
+            if st.button("Disparar Reacción Térmica", use_container_width=True):
                 st.session_state.simulacion_ejecutada = True
                 verificar_bloqueo_pirateria()
                 
@@ -269,7 +269,7 @@ else:
                     st.session_state.puntos += 100
                 elif es_apolar:
                     st.session_state.estado_sistema = "Enlace Covalente No Polar (Geometría Simétrica)"
-                    st.session_state.resultado_texto = "Configuración correcta. Las fuerzas del Carbono y el Hidrógeno se equilibran en el centro geométrico del enlace. La ausencia de cargas netas produce un compuesto hidrofóbico, componente clave para la estabilidad de las bicapas lipídicas corporales."
+                    st.session_state.resultado_texto = "Configuración correcta. Las fuerzas del Carbono y el Hidrógeno se equilibran en el centro geométrico del enlace. La AWSencia de cargas netas produce un compuesto hidrofóbico, componente clave para la estabilidad de las bicapas lipídicas corporales."
                     st.session_state.puntos += 100
                 elif es_error:
                     st.session_state.estado_sistema = "Molécula Gaseosa Homogénea (O2)"
@@ -293,7 +293,7 @@ else:
                 """)
 
             st.write("---")
-            st.markdown("<h3 style='color:#333; font-weight:600;'>Analizador de Amortiguación Extracelular</h3>", unsafe_style=True)
+            st.markdown("<h3 style='color:#333; font-weight:600;'>Analizador de Amortiguación Extracelular</h3>", unsafe_allow_html=True)
             st.write("Inyecte soluciones analíticas en el plasma químico simulado:")
             
             solucion_inyectada = st.selectbox(
@@ -338,7 +338,7 @@ else:
                     <strong style='font-size:1.1rem; color:#b71c1c;'>Estatus: {st.session_state.estado_sistema}</strong><br><br>
                     {st.session_state.resultado_texto}
                 </div>
-                """, unsafe_style=True)
+                """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
                 <div class='spectrometer-card-success'>
@@ -346,7 +346,7 @@ else:
                     <strong style='font-size:1.1rem; color:#1b5e20;'>Estatus: {st.session_state.estado_sistema}</strong><br><br>
                     {st.session_state.resultado_texto}
                 </div>
-                """, unsafe_style=True)
+                """, unsafe_allow_html=True)
                 
             st.write("")
             if st.button("Limpiar Cámara de Inyección del Reactor", use_container_width=True):
