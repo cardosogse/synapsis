@@ -2,38 +2,56 @@ import streamlit as st
 import time
 
 # ========================================================
-# 1. CONFIGURACIÓN DEL CHASIS Y ESTÉTICA CÓSMICA
+# 1. CONFIGURACIÓN DEL CHASIS Y ESTÉTICA CÓSMICA PREMIUM
 # ========================================================
-st.set_page_config(page_title="ChonpsLab", page_icon="⚛️", layout="wide")
+st.set_page_config(page_title="ChonpsLab Pro", page_icon="⚛️", layout="wide")
 
 st.markdown("""
 <style>
-    /* Chasis Cósmico de Alto Rendimiento (Negro Puro) */
+    /* Universo Oscuro Absoluto */
     .stApp {
-        background-color: #000000 !important;
+        background-color: #0b0f19 !important;
         background-image: 
-            radial-gradient(white, rgba(255,255,255,.2) 1px, transparent 20px),
-            radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px);
+            radial-gradient(rgba(255,255,255,0.15) 1px, transparent 20px),
+            radial-gradient(rgba(255,255,255,0.1) 1px, transparent 30px);
         background-size: 350px 350px, 200px 200px;
         background-position: 0 0, 40px 60px;
+        font-family: 'Segoe UI', -apple-system, sans-serif;
     }
-    .main-title { text-align: center; color: #ffffff; font-size: 3.8rem; font-weight: 800; margin-bottom: 0px; letter-spacing: 2px;}
-    .main-title-suffix { color: #00e5ff; font-weight: 300; }
-    .sub-title { text-align: center; font-style: italic; color: #90a4ae; font-size: 1.2rem; margin-top: 5px; margin-bottom: 30px; }
-    .bio-panel { background-color: rgba(30, 41, 59, 0.6); border-left: 5px solid #00e5ff; padding: 20px; border-radius: 8px; margin-bottom: 20px; backdrop-filter: blur(5px);}
-    .card-success { background-color: rgba(76, 175, 80, 0.1); border-left: 5px solid #4caf50; padding: 15px; border-radius: 5px; margin-top: 10px; }
-    .card-error { background-color: rgba(244, 67, 54, 0.1); border-left: 5px solid #f44336; padding: 15px; border-radius: 5px; margin-top: 10px; }
-    .monitor-box { background-color: rgba(255,255,255,0.05); padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px;}
     
-    /* Personalización de los Tabs para que parezcan una consola de control */
-    .stTabs [data-baseweb="tab-list"] { gap: 8px; background-color: transparent; }
-    .stTabs [data-baseweb="tab"] { background-color: rgba(255,255,255,0.05); border-radius: 4px 4px 0 0; padding: 10px 20px; color: #90a4ae; font-weight: bold;}
-    .stTabs [aria-selected="true"] { background-color: rgba(0, 229, 255, 0.15) !important; color: #00e5ff !important; border-bottom: 2px solid #00e5ff !important; }
+    /* Tipografía y Títulos */
+    .main-title { text-align: center; color: #ffffff; font-size: 4rem; font-weight: 900; margin-bottom: 0px; letter-spacing: 2px;}
+    .main-title-suffix { color: #00e5ff; font-weight: 300; }
+    .sub-title { text-align: center; font-style: italic; color: #90a4ae; font-size: 1.1rem; margin-top: 0px; margin-bottom: 30px; letter-spacing: 1px;}
+    
+    /* Paneles Glassmorphism (Translúcidos) */
+    .bio-panel { 
+        background: rgba(30, 41, 59, 0.65); 
+        border-left: 5px solid #00e5ff; 
+        border-radius: 8px; 
+        padding: 25px; 
+        margin-bottom: 25px; 
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+    }
+    
+    /* Tarjetas de Diagnóstico del Espectrómetro */
+    .card-success { background: linear-gradient(90deg, rgba(76,175,80,0.15) 0%, rgba(0,0,0,0) 100%); border-left: 5px solid #4caf50; padding: 20px; border-radius: 6px; margin-top: 15px; border-bottom: 1px solid rgba(76,175,80,0.2);}
+    .card-polar { background: linear-gradient(90deg, rgba(255,177,66,0.15) 0%, rgba(0,0,0,0) 100%); border-left: 5px solid #ffb142; padding: 20px; border-radius: 6px; margin-top: 15px; border-bottom: 1px solid rgba(255,177,66,0.2);}
+    .card-error { background: linear-gradient(90deg, rgba(244,67,54,0.15) 0%, rgba(0,0,0,0) 100%); border-left: 5px solid #f44336; padding: 20px; border-radius: 6px; margin-top: 15px; border-bottom: 1px solid rgba(244,67,54,0.2);}
+    
+    /* Monitores Laterales */
+    .monitor-box { background-color: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5);}
+    
+    /* Navegación Hitech (Tabs) */
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; background-color: transparent; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;}
+    .stTabs [data-baseweb="tab"] { background-color: rgba(30, 41, 59, 0.4); border-radius: 6px 6px 0 0; padding: 12px 24px; color: #90a4ae; font-weight: 600; font-size: 0.95rem; border: 1px solid transparent; border-bottom: none;}
+    .stTabs [aria-selected="true"] { background-color: rgba(0, 229, 255, 0.1) !important; color: #00e5ff !important; border: 1px solid rgba(0, 229, 255, 0.3) !important; border-bottom: none !important; box-shadow: 0 -4px 15px rgba(0,229,255,0.05);}
 </style>
 """, unsafe_allow_html=True)
 
 # ========================================================
-# 2. BASE DE DATOS MAESTRA CHONPS
+# 2. BASE DE DATOS Y MOTOR DE CONTEXTO BIOLÓGICO (RESTAURADO)
 # ========================================================
 ELEMENTOS = {
     "Carbono (C)": {"fuerza": 2.55, "color": "#ffb142", "sym": "C"},
@@ -44,8 +62,31 @@ ELEMENTOS = {
     "Azufre (S)": {"fuerza": 2.58, "color": "#ffda79", "sym": "S"}
 }
 
+def obtener_contexto_biologico(sym1, sym2):
+    """Mapeo avanzado celular basado en las combinaciones atómicas"""
+    combo = "".join(sorted([sym1, sym2]))
+    mapeo = {
+        "CC": ("Carbohidratos y Lípidos", "Esqueleto hidrocarbonado basal. Covalente puro 100% apolar."),
+        "CH": ("Lípidos celulares (Cadenas Hidrofóbicas)", "Forman las colas de ácidos grasos repelentes al agua."),
+        "CO": ("Carbohidratos (Aldosas/Cetonas)", "Grupo carbonilo altamente reactivo, define familias de azúcares."),
+        "CN": ("Proteínas (Enlace Peptídico)", "Unión rígida tipo amida estructural entre aminoácidos."),
+        "HO": ("Agua (Puentes de Hidrógeno)", "Solvente universal dipolar celular."),
+        "HN": ("ADN y Aminoácidos", "Grupos amino polares en bases nitrogenadas."),
+        "OP": ("Ácidos Nucleicos y ATP", "Enlaces fosfodiéster de altísima energía celular."),
+        "SS": ("Proteínas (Puente Disulfuro)", "Estabiliza la estructura 3D de proteínas complejas como la Insulina.")
+    }
+    return mapeo.get(combo, ("Ecosistema CHONPS", "Interacción atómica en el entorno metabólico intracelular."))
+
+PREGUNTAS_UNAM = [
+    {"q": "Si el pH de una solución cambia de 6 a 5, ¿qué magnitud de cambio de concentración de protones representa?", "opciones": ["Aumenta 1 vez", "Aumenta 10 veces", "Disminuye a la mitad"], "a": "Aumenta 10 veces", "retro": "La escala de pH es logarítmica base 10. Un descenso de 1 unidad significa un incremento exponencial de 10x en la acidez ($H^+$)."},
+    {"q": "¿Qué grupo funcional define la unión estructural fundamental entre dos aminoácidos (Enlace Peptídico)?", "opciones": ["Grupo Éster", "Grupo Amida", "Grupo Éter"], "a": "Grupo Amida", "retro": "El enlace peptídico une un grupo carboxilo y un grupo amino, formando una Amida y liberando una molécula de agua en el proceso de traducción."},
+    {"q": "En el isomerismo de carbohidratos, ¿por qué la naturaleza optó por las formas 'D' (D-Glucosa) sobre las 'L'?", "opciones": ["Porque las formas L son tóxicas", "Por la alta especificidad de las enzimas celulares que solo reconocen formas D", "Porque desvían la luz a la izquierda"], "a": "Por la alta especificidad de las enzimas celulares que solo reconocen formas D", "retro": "Las enzimas funcionan bajo el modelo 'llave-cerradura'; la arquitectura tridimensional de sus sitios activos solo encaja perfectamente con las D-aldosas."},
+    {"q": "¿Cómo se clasifica el enlace de la Sacarosa (Glucosa + Fructosa) que le impide tener poder reductor?", "opciones": ["O-Glucosídico Dicarbonílico (Alfa 1 - Beta 2)", "N-Glucosídico", "Puente Disulfuro"], "a": "O-Glucosídico Dicarbonílico (Alfa 1 - Beta 2)", "retro": "Al comprometer ambos carbonos anoméricos en el enlace, la molécula se 'cierra' y no le quedan grupos hidroxilo libres para reducir otras moléculas en el plasma."},
+    {"q": "Un Buffer o Amortiguador fisiológico celular está compuesto químicamente por:", "opciones": ["Un ácido fuerte y una base fuerte", "Un ácido débil y su base conjugada", "Agua destilada y sales"], "a": "Un ácido débil y su base conjugada", "retro": "El ácido débil (ej. Ácido Acético) y su base conjugada (Acetato) absorben impactos homeostáticos donando o capturando protones libres del medio."}
+]
+
 # ========================================================
-# 3. MOTOR VECTORIAL SVG (LIBRE DE BUGS Y OPTIMIZADO)
+# 3. MOTOR VECTORIAL SVG (PRECISIÓN ABSOLUTA)
 # ========================================================
 @st.cache_data
 def generar_svg_tira_afloja(fuerza):
@@ -53,11 +94,11 @@ def generar_svg_tira_afloja(fuerza):
         return """
         <div style='display:flex; justify-content:center; align-items:center; width:100%; height:110px;'>
             <svg viewBox="0 0 240 100" width="100%" height="100%">
-                <circle cx="60" cy="50" r="24" fill="#ff5252" opacity="0.9"/>
-                <text x="48" y="54" fill="white" font-weight="bold" font-family="sans-serif" font-size="12">Fuerte</text>
+                <circle cx="60" cy="50" r="26" fill="#ff5252" opacity="0.9" filter="drop-shadow(0px 0px 5px rgba(255,82,82,0.5))"/>
+                <text x="44" y="54" fill="white" font-weight="bold" font-family="sans-serif" font-size="12">FUERTE</text>
                 <circle cx="95" cy="50" r="5" fill="#00e5ff"/>
-                <ellipse cx="105" cy="50" rx="65" ry="28" fill="none" stroke="#ff5252" stroke-width="1.5" stroke-dasharray="4 2"/>
-                <circle cx="180" cy="50" r="12" fill="#00e5ff" opacity="0.5"/>
+                <ellipse cx="105" cy="50" rx="65" ry="28" fill="none" stroke="#ff5252" stroke-width="2" stroke-dasharray="5 3"/>
+                <circle cx="180" cy="50" r="14" fill="#00e5ff" opacity="0.4"/>
             </svg>
         </div>
         """
@@ -65,12 +106,13 @@ def generar_svg_tira_afloja(fuerza):
         return """
         <div style='display:flex; justify-content:center; align-items:center; width:100%; height:110px;'>
             <svg viewBox="0 0 240 100" width="100%" height="100%">
-                <circle cx="60" cy="50" r="16" fill="#90a4ae" opacity="0.8"/>
-                <text x="54" y="54" fill="white" font-family="sans-serif" font-size="12">Átomo</text>
+                <circle cx="60" cy="50" r="18" fill="#90a4ae" opacity="0.8"/>
+                <text x="44" y="54" fill="white" font-weight="bold" font-family="sans-serif" font-size="11">ÁTOMO A</text>
                 <circle cx="120" cy="50" r="5" fill="#ffffff"/>
-                <circle cx="120" cy="50" r="8" fill="none" stroke="#00e5ff" stroke-width="1"/>
-                <circle cx="180" cy="50" r="16" fill="#90a4ae" opacity="0.8"/>
-                <ellipse cx="120" cy="50" rx="65" ry="22" fill="none" stroke="#b0bec5" stroke-width="1.2" stroke-dasharray="2 2"/>
+                <circle cx="120" cy="50" r="8" fill="none" stroke="#00e5ff" stroke-width="1.5"/>
+                <circle cx="180" cy="50" r="18" fill="#90a4ae" opacity="0.8"/>
+                <text x="164" y="54" fill="white" font-weight="bold" font-family="sans-serif" font-size="11">ÁTOMO B</text>
+                <ellipse cx="120" cy="50" rx="65" ry="24" fill="none" stroke="#b0bec5" stroke-width="1.5" stroke-dasharray="3 3"/>
             </svg>
         </div>
         """
@@ -78,31 +120,33 @@ def generar_svg_tira_afloja(fuerza):
 @st.cache_data
 def generar_svg_enlace(sym1, f1, c1, sym2, f2, c2):
     diff = abs(f1 - f2)
-    # BUG DE DESEMPAQUETADO SOLUCIONADO (Paréntesis en tuplas)
+    # Extracción explícita para evitar errores de tupla en Python
     if diff == 0:
         cx_e1, cx_e2 = 113, 127
         ellipse_x, ellipse_w = 120, 65
         stroke_color = "#ffffff"
         stroke_dash = "2 2"
     elif diff > 0.4:
-        cx_e1, cx_e2 = (85, 95) if f1 > f2 else (145, 155)
-        ellipse_x, ellipse_w = (100, 70) if f1 > f2 else (140, 70)
-        stroke_color = c1 if f1 > f2 else c2
+        # Lógica ternaria segura
+        if f1 > f2:
+            cx_e1, cx_e2, ellipse_x, ellipse_w, stroke_color = 85, 95, 100, 70, c1
+        else:
+            cx_e1, cx_e2, ellipse_x, ellipse_w, stroke_color = 145, 155, 140, 70, c2
         stroke_dash = "4 2"
     else:
-        cx_e1, cx_e2 = (105, 135)
-        ellipse_x, ellipse_w = (120, 68)
+        cx_e1, cx_e2 = 105, 135
+        ellipse_x, ellipse_w = 120, 68
         stroke_color = "#b0bec5"
         stroke_dash = "3 3"
 
     return f"""
     <div style='display:flex; justify-content:center; align-items:center; width:100%; height:130px;'>
         <svg viewBox="0 0 240 120" width="100%" height="100%">
-            <circle cx="70" cy="60" r="22" fill="{c1}" opacity="0.85"/>
-            <text x="64" y="65" fill="black" font-weight="bold" font-family="sans-serif" font-size="14">{sym1}</text>
-            <circle cx="170" cy="60" r="18" fill="{c2}" opacity="0.85"/>
-            <text x="164" y="64" fill="black" font-weight="bold" font-family="sans-serif" font-size="12">{sym2}</text>
-            <ellipse cx="{ellipse_x}" cy="60" rx="{ellipse_w}" ry="32" fill="none" stroke="{stroke_color}" stroke-width="1.5" stroke-dasharray="{stroke_dash}"/>
+            <circle cx="70" cy="60" r="24" fill="{c1}" opacity="0.85"/>
+            <text x="64" y="65" fill="black" font-weight="bold" font-family="sans-serif" font-size="16">{sym1}</text>
+            <circle cx="170" cy="60" r="20" fill="{c2}" opacity="0.85"/>
+            <text x="164" y="65" fill="black" font-weight="bold" font-family="sans-serif" font-size="14">{sym2}</text>
+            <ellipse cx="{ellipse_x}" cy="60" rx="{ellipse_w}" ry="35" fill="none" stroke="{stroke_color}" stroke-width="2" stroke-dasharray="{stroke_dash}"/>
             <circle cx="{cx_e1}" cy="60" r="4" fill="#ffffff"/>
             <circle cx="{cx_e2}" cy="60" r="4" fill="#ffffff"/>
         </svg>
@@ -110,202 +154,111 @@ def generar_svg_enlace(sym1, f1, c1, sym2, f2, c2):
     """
 
 # ========================================================
-# 4. GESTIÓN DE ESTADOS
+# 4. INICIALIZACIÓN DE ESTADOS
 # ========================================================
 if "auth" not in st.session_state: st.session_state["auth"] = False
 if "vidas" not in st.session_state: st.session_state["vidas"] = 3
 if "puntos" not in st.session_state: st.session_state["puntos"] = 0
+if "quiz_evaluado" not in st.session_state: st.session_state["quiz_evaluado"] = False
+if "quiz_respuestas" not in st.session_state: st.session_state["quiz_respuestas"] = {}
 
 # ========================================================
-# 5. PORTADA PRINCIPAL (MARCA PERSONAL RECUPERADA)
+# 5. PORTADA DE ACCESO (MARCA PERSONAL)
 # ========================================================
 if not st.session_state["auth"]:
     st.markdown("<h1 class='main-title'>Chonps<span class='main-title-suffix'>Lab</span></h1>", unsafe_allow_html=True)
-    st.markdown("<p class='sub-title'>Tu Laboratorio Digital de Ciencias de la Vida y Biología Molecular</p>", unsafe_allow_html=True)
+    st.markdown("<p class='sub-title'>Plataforma Interactiva de Ciencias de la Vida y Biología Celular</p>", unsafe_allow_html=True)
     st.markdown("""
-    <div class='bio-panel'>
-        <span style='color:#00e5ff; font-weight:700; font-size:1.25rem;'>Bienvenido a tu suite analítica</span>
-        <p style='color:#cfd8dc; margin-top:10px;'>Sincroniza tus credenciales para acceder a la estación de trabajo. Modela la teoría atómica, comprueba las fuerzas electronegativas, interactúa con monosacáridos (epímeros) y estabiliza el pH celular en un solo panel de control integrado.</p>
+    <div class='bio-panel' style='max-width: 800px; margin: 0 auto 30px auto;'>
+        <span style='color:#00e5ff; font-weight:700; font-size:1.3rem; margin-bottom:10px; display:block;'>Sincronización del Entorno Analítico</span>
+        <p style='color:#cfd8dc; line-height: 1.6;'>Valida tus credenciales para acceder a la estación de trabajo. Este simulador integra modelado de teoría atómica, espectrometría de fuerzas electronegativas, reacciones de monosacáridos y curvas de estabilización de pH en un ecosistema de grado clínico.</p>
     </div>
     """, unsafe_allow_html=True)
     
-    pwd = st.text_input("Licencia de Acceso (Token Único):", type="password")
-    if st.button("Activar Panel Central", use_container_width=True):
-        if pwd.strip().upper() in ["SYNAPSIS", "LAB-2026", "CHONPS"]:
-            st.session_state["auth"] = True
-            st.rerun()
-        else:
-            st.error("Acceso denegado. Token inválido.")
+    col_a, col_b, col_c = st.columns([1, 2, 1])
+    with col_b:
+        pwd = st.text_input("Licencia de Acceso (Token Único):", type="password", placeholder="Ingresa SYNAPSIS o LAB-2026")
+        if st.button("Activar Panel Central", use_container_width=True):
+            if pwd.strip().upper() in ["SYNAPSIS", "LAB-2026", "CHONPS"]:
+                st.session_state["auth"] = True
+                st.rerun()
+            else:
+                st.error("Acceso denegado. Token de matrícula inválido.")
 
 # ========================================================
-# 6. CONSOLA DE LABORATORIO (DASHBOARD ÚNICO MEDIANTE TABS)
+# 6. CONSOLA DE LABORATORIO (TABS DE ALTO RENDIMIENTO)
 # ========================================================
 else:
-    # Encabezado Central
+    # Encabezado Central Clínico
     c1, c2 = st.columns([3, 1])
     with c1:
-        st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Consola de Operaciones: ChonpsLab</h2>", unsafe_allow_html=True)
+        st.markdown("<h2 style='color:#00e5ff; margin-top:0; font-weight:800;'>Consola de Operaciones: ChonpsLab</h2>", unsafe_allow_html=True)
+        st.markdown("<p style='color:#90a4ae; font-style:italic;'>Monitoreo de Variables Bioquímicas en Tiempo Real</p>", unsafe_allow_html=True)
     with c2:
-        st.markdown(f"<div class='monitor-box'><span style='color:#90a4ae; font-size:12px;'>ESTABILIDAD DEL SISTEMA (VIDAS)</span><br><b style='font-size:20px; color:#f44336;'>{st.session_state.vidas} / 3 💔</b></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='monitor-box'><span style='color:#90a4ae; font-size:11px; letter-spacing:1px;'>ESTABILIDAD (VIDAS)</span><br><b style='font-size:24px; color:#f44336;'>{st.session_state.vidas} / 3 💔</b></div>", unsafe_allow_html=True)
 
     if st.session_state.vidas <= 0:
-        st.error("🚨 COLAPSO METABÓLICO: Te has quedado sin vidas. El laboratorio se reiniciará para evitar daños estructurales.")
-        if st.button("Restaurar Parámetros de Laboratorio"):
+        st.markdown("<div class='card-error' style='text-align:center;'><h3>🚨 COLAPSO METABÓLICO</h3><p>Te has quedado sin vidas por acumulación de errores analíticos. El laboratorio se ha bloqueado preventivamente.</p></div>", unsafe_allow_html=True)
+        if st.button("Restaurar Parámetros Base", use_container_width=True):
             st.session_state.vidas = 3
-            st.session_state.puntos = 0
+            st.session_state.quiz_evaluado = False
             st.rerun()
     else:
-        # Sistema de Pestañas Fluidas
+        # Navegación Fluida
         tabs = st.tabs([
-            "🏛️ Módulo 1: Teoría Atómica", 
-            "⚡ Módulo 2: Estira y Afloja (CHONPS)", 
-            "🧬 Módulo 3: Reactores de Enlace", 
-            "🍬 Módulo 4: Glucómica y Epímeros", 
-            "🌡️ Módulo 5: Titulación de pH", 
-            "🏆 Desafío Final"
+            "🏛️ 1. Teoría Atómica", 
+            "⚡ 2. Escala Pauling", 
+            "🧬 3. Reactor de Enlace", 
+            "🍬 4. Glucómica", 
+            "🌡️ 5. Amortiguadores", 
+            "🏆 6. Matriz Final"
         ])
 
         # ----------------------------------------------------
         # MÓDULO 1: TEORÍA ATÓMICA
         # ----------------------------------------------------
         with tabs[0]:
-            st.markdown("### El Origen de la Materia")
-            st.write("Antes de ensamblar macromoléculas, analiza la evolución de la estructura atómica según los registros documentales de Bioquímica Básica.")
+            st.markdown("### Evolución de la Estructura de la Materia")
+            st.write("Para entender la bioquímica celular, primero debemos comprender cómo los científicos definieron el ladrillo básico del universo: el átomo.")
             
             modelo = st.select_slider(
-                "Viaja en el tiempo de la física cuántica:",
+                "Viaja en la línea temporal de la física cuántica:",
                 options=["Dalton (1810)", "Thomson (1897)", "Rutherford (1911)", "Bohr (1913)", "Schrödinger (1926)"]
             )
             
+            st.write("")
             if "Dalton" in modelo:
-                st.info("⚛️ **John Dalton (1810):** El átomo como una esfera sólida indivisible. Los átomos del mismo elemento tienen igual masa. El reordenamiento de los átomos equivale a una reacción química.")
+                st.markdown("<div class='bio-panel'><b>⚛️ Modelo de John Dalton (1810):</b><br>Define el átomo como una esfera sólida indivisible. Postuló que los átomos del mismo elemento tienen igual masa y propiedades, y que el reordenamiento de estos equivale a una reacción química básica.</div>", unsafe_allow_html=True)
             elif "Thomson" in modelo:
-                st.info("⚛️ **J.J. Thomson (1897):** Modelo del 'Pudin de pasas'. Incorpora electrones incrustados dentro de una esfera atómica cargada con electricidad positiva.")
+                st.markdown("<div class='bio-panel'><b>⚛️ Modelo de J.J. Thomson (1897):</b><br>Conocido como el 'Pudin de pasas'. Incorpora por primera vez los electrones, describiéndolos como cargas negativas incrustadas dentro de una gran esfera de electricidad positiva.</div>", unsafe_allow_html=True)
             elif "Rutherford" in modelo:
-                st.info("⚛️ **Ernest Rutherford (1911):** Demostró que los átomos están mayormente huecos, con un núcleo denso y muy pesado en el centro rodeado de electrones.")
+                st.markdown("<div class='bio-panel'><b>⚛️ Modelo de Ernest Rutherford (1911):</b><br>Demostró mediante experimentación que los átomos están mayormente huecos. Propuso un núcleo central extremadamente denso y pesado, alrededor del cual orbitan los electrones.</div>", unsafe_allow_html=True)
             elif "Bohr" in modelo:
-                st.info("⚛️ **Niels Bohr (1913):** Sugirió niveles cuantizados de energía. El electrón gira alrededor del núcleo en órbitas circulares definidas con una energía específica.")
+                st.markdown("<div class='bio-panel'><b>⚛️ Modelo de Niels Bohr (1913):</b><br>Introdujo los niveles cuantizados de energía. El electrón ya no gira libremente, sino en órbitas circulares definidas; el salto entre estas órbitas emite o absorbe energía específica (fotones).</div>", unsafe_allow_html=True)
             else:
-                st.info("⚛️ **Erwin Schrödinger (1926):** Modelo Cuántico. Los electrones no tienen órbitas fijas, sino 'orbitales' que son nubes de probabilidad máxima descritas por los números cuánticos (n, l, m).")
+                st.markdown("<div class='bio-panel'><b>⚛️ Modelo de Erwin Schrödinger (1926):</b><br>El salto al Modelo Cuántico actual. Los electrones no tienen trayectorias exactas, habitan en 'orbitales': regiones tridimensionales de probabilidad matemática definidas por los números cuánticos (n, l, m).</div>", unsafe_allow_html=True)
 
         # ----------------------------------------------------
-        # MÓDULO 2: ESTIRA Y AFLOJA
+        # MÓDULO 2: ESCALA PAULING (CHONPS)
         # ----------------------------------------------------
         with tabs[1]:
-            st.markdown("### Electronegatividad: El Estira y Afloja Atómico")
-            st.write("La **Electronegatividad** es la fuerza con la que un núcleo atrae hacia sí los electrones compartidos en un enlace. Ajusta el control para simular la Escala de Linus Pauling.")
+            st.markdown("### El Estira y Afloja Atómico (Electronegatividad)")
+            st.write("La fuerza con la que un núcleo arranca o retiene los electrones de un enlace. Ajusta el control para simular la tensión molecular.")
             
-            fuerza = st.slider("Fuerza de Atracción (Escala Pauling):", 0.7, 4.0, 2.2, 0.1)
+            fuerza = st.slider("Ajuste de Electronegatividad:", 0.7, 4.0, 2.2, 0.1)
             
-            st.components.v1.html(generar_svg_tira_afloja(fuerza), height=120, scrolling=False)
+            st.components.v1.html(generar_svg_tira_afloja(fuerza), height=130, scrolling=False)
             
             if fuerza >= 3.0:
-                st.markdown("<div class='card-error'><b>🔥 Átomo Ambicioso (Ej: Oxígeno, Nitrógeno):</b> Tiene el poder de deformar por completo la nube orbital, secuestrando la densidad electrónica hacia su propio núcleo.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='card-error'><b>🔥 Átomo Ambicioso (Ej: O, N):</b> Su inmensa atracción deforma la nube, polarizando la molécula y definiendo los puentes de hidrógeno.</div>", unsafe_allow_html=True)
             else:
-                st.markdown("<div class='card-success'><b>🤝 Átomo Equilibrado (Ej: Carbono, Hidrógeno, Fósforo, Azufre):</b> Fuerza moderada. Comparte los electrones de forma justa y simétrica, sin romper el balance de cargas.</div>", unsafe_allow_html=True)
+                st.markdown("<div class='card-success'><b>🤝 Átomo Equilibrado (Ej: C, H, S):</b> Comparte de forma simétrica. Crea esqueletos no polares esenciales para la vida (grasas, membranas).</div>", unsafe_allow_html=True)
                 
             st.write("---")
-            st.markdown("#### Identidad de los Ladrillos de la Vida (CHONPS)")
+            st.markdown("<h4 style='color:#00e5ff;'>Identidad de los Ladrillos CHONPS</h4>", unsafe_allow_html=True)
             c1, c2, c3 = st.columns(3)
             keys = list(ELEMENTOS.keys())
             for i, col in enumerate([c1, c2, c3]):
                 with col:
-                    st.markdown(f"**<span style='color:{ELEMENTOS[keys[i*2]]['color']};'>{keys[i*2]}</span> (Fuerza: {ELEMENTOS[keys[i*2]]['fuerza']})**", unsafe_allow_html=True)
-                    st.markdown(f"**<span style='color:{ELEMENTOS[keys[i*2+1]]['color']};'>{keys[i*2+1]}</span> (Fuerza: {ELEMENTOS[keys[i*2+1]]['fuerza']})**", unsafe_allow_html=True)
-
-        # ----------------------------------------------------
-        # MÓDULO 3: REACTOR DE ENLACES MOLECULARES
-        # ----------------------------------------------------
-        with tabs[2]:
-            st.markdown("### Síntesis de Enlaces (Aplicación de Fuerzas)")
-            st.write("Combina elementos del ecosistema CHONPS. El espectrómetro calculará vectorialmente la deformación de la nube.")
-            
-            c1, c2 = st.columns(2)
-            atom1 = c1.selectbox("Átomo Central (A):", list(ELEMENTOS.keys()))
-            atom2 = c2.selectbox("Átomo de Reacción (B):", list(ELEMENTOS.keys()))
-            
-            if st.button("Ensamblar y Analizar Enlace", use_container_width=True):
-                a1, a2 = ELEMENTOS[atom1], ELEMENTOS[atom2]
-                st.components.v1.html(generar_svg_enlace(a1['sym'], a1['fuerza'], a1['color'], a2['sym'], a2['fuerza'], a2['color']), height=140, scrolling=False)
-                
-                diff = abs(a1['fuerza'] - a2['fuerza'])
-                if diff == 0:
-                    st.markdown(f"<div class='card-success'><b>✅ Enlace Covalente No Polar Puro (Diferencia = 0.0):</b> Simetría orbital perfecta. Comparten electrones exactamente al centro. Característico de moléculas elementales gaseosas o Puentes Disulfuro (S-S).</div>", unsafe_allow_html=True)
-                elif diff <= 0.4:
-                    st.markdown(f"<div class='card-success'><b>✅ Enlace Covalente No Polar (Diferencia = {diff:.2f}):</b> Reparto altamente equitativo. Característico de los hidrocarburos (C-H) que forman las colas hidrofóbicas repeliendo el agua celular.</div>", unsafe_allow_html=True)
-                elif diff <= 1.7:
-                    st.markdown(f"<div class='card-success' style='border-left-color:#ffb142;'><b>⚡ Enlace Covalente Polar (Diferencia = {diff:.2f}):</b> Formación de dipolos activos. El átomo más fuerte genera una carga parcial negativa ($\delta^-$), induciendo solubilidad y puentes de hidrógeno.</div>", unsafe_allow_html=True)
-                else:
-                    st.markdown(f"<div class='card-error'><b>⚠️ Tensión Iónica / Inestabilidad (Diferencia = {diff:.2f}):</b> Transferencia abrupta de densidad electrónica. Genera radicales o estrés molecular alto, clásico en la energía del enlace fosfodiéster.</div>", unsafe_allow_html=True)
-
-        # ----------------------------------------------------
-        # MÓDULO 4: GLUCÓMICA Y EPÍMEROS (CARBOHIDRATOS)
-        # ----------------------------------------------------
-        with tabs[3]:
-            st.markdown("### El Código de los Azúcares: Isomerismo y Enlaces O-Glucosídicos")
-            st.write("Los monosacáridos son polihidroxi-aldehídos o polihidroxi-cetonas. Un pequeño giro en el espacio (isomerismo) cambia radicalmente cómo las enzimas leen la molécula.")
-            
-            with st.expander("🔬 Analizador de Epímeros: ¿Glucosa o Galactosa?"):
-                st.markdown("La **Glucosa** y la **Galactosa** son **Epímeros en el Carbono 4**. Tienen exactamente la misma fórmula química ($C_6H_{12}O_6$), pero en el C4, el grupo Hidroxilo (-OH) de la glucosa mira hacia la derecha, mientras que en la galactosa mira hacia la izquierda. Las enzimas celulares son estrictas y leen estas formas de manera distinta.")
-            
-            st.markdown("#### Reactor de Disacáridos")
-            st.write("Ensambla dos azúcares retirando una molécula de agua para formar un enlace O-Glucosídico.")
-            
-            c1, c2 = st.columns(2)
-            azu1 = c1.selectbox("Monosacárido 1:", ["Alfa-D-Glucosa", "Beta-D-Galactosa"])
-            azu2 = c2.selectbox("Monosacárido 2:", ["Alfa-D-Glucosa", "Beta-D-Fructosa (Cetosa)"])
-            
-            if st.button("Polimerizar Enlace Glucosídico", use_container_width=True):
-                if azu1 == "Alfa-D-Glucosa" and azu2 == "Alfa-D-Glucosa":
-                    st.markdown("<div class='card-success'>🌾 <b>MALTOSA SINTETIZADA:</b> Enlace <b>Alfa(1→4)</b>. Es el azúcar de malta, producto directo de la degradación del almidón. Contiene poder reductor por su extremo libre.</div>", unsafe_allow_html=True)
-                elif azu1 == "Beta-D-Galactosa" and azu2 == "Alfa-D-Glucosa":
-                    st.markdown("<div class='card-success'>🥛 <b>LACTOSA SINTETIZADA:</b> Enlace <b>Beta(1→4)</b>. El azúcar vital de la leche de los mamíferos. Requiere la enzima Lactasa para poder romper la estructura espacial 'Beta'.</div>", unsafe_allow_html=True)
-                elif azu1 == "Alfa-D-Glucosa" and azu2 == "Beta-D-Fructosa (Cetosa)":
-                    st.markdown("<div class='card-success'>🎋 <b>SACAROSA SINTETIZADA:</b> Enlace <b>Alfa(1) ↔ Beta(2)</b>. El azúcar de caña. Como compromete ambos carbonos anoméricos, <b>no es un azúcar reductor</b>.</div>", unsafe_allow_html=True)
-                else:
-                    st.markdown("<div class='card-error'>⚠️ <b>Ensamblaje Irregular:</b> La combinación de estos epímeros con estas conformaciones no es una ruta metabólica de alta prioridad fisiológica en mamíferos.</div>", unsafe_allow_html=True)
-
-        # ----------------------------------------------------
-        # MÓDULO 5: pH Y BUFFERS
-        # ----------------------------------------------------
-        with tabs[4]:
-            st.markdown("### Control Homeostático: Curvas de Titulación")
-            st.write("La vida existe en un rango de pH extremadamente estrecho. Observa cómo responden distintos fluidos ante la invasión agresiva de un ácido fuerte.")
-            
-            solucion = st.radio("Cámara de Perfusión: Selecciona el medio recipiente", ["Medio A: Agua Destilada Pura (Cero Solutos)", "Medio B: Plasma con Buffer de Bicarbonato / Ácido Acético"])
-            
-            if st.button("Inyectar 10 mL de Ácido Clorhídrico (HCl)", use_container_width=True):
-                if "Agua" in solucion:
-                    st.markdown("<div class='card-error'><b>🩸 CHOQUE DE ACIDOSIS:</b> Al no haber un sistema amortiguador, el HCl se disocia al 100% inundando el medio de protones libres ($H^+$). El pH colapsa de 7.0 a 2.0 instantáneamente, causando desnaturalización masiva de proteínas celulares. <b>Pierdes 1 vida.</b></div>", unsafe_allow_html=True)
-                    st.session_state.vidas -= 1
-                else:
-                    st.markdown("<div class='card-success'><b>🛡️ TAMPONAMIENTO EXITOSO:</b> El medio contiene bases conjugadas que atrapan el exceso de protones del HCl, transformándose en ácidos débiles. Esto absorbe el impacto molecular y mantiene el pH en su <b>Región Amortiguadora</b>. La célula sobrevive.</div>", unsafe_allow_html=True)
-
-        # ----------------------------------------------------
-        # MÓDULO 6: RETO FINAL (EVALUACIÓN)
-        # ----------------------------------------------------
-        with tabs[5]:
-            st.markdown("### Desafío Final: Matriz de Ciencias Bioquímicas")
-            st.write("Demuestra tu dominio interactivo del laboratorio. Cada error desestabiliza tu metabolismo y te cuesta 1 vida.")
-            
-            Q1 = st.radio("1. Las enzimas son proteínas altamente específicas. ¿Por qué la naturaleza optó evolutivamente por la D-Glucosa sobre su enantiómero la L-Glucosa?", ["A) Porque la L-Glucosa desvía la luz a la derecha.", "B) Porque la configuración D encaja como 'llave y cerradura' en los sitios activos de nuestras enzimas.", "C) Porque las formas L no tienen enlaces O-Glucosídicos."], index=None)
-            
-            Q2 = st.radio("2. La Galactosa y la Glucosa tienen la misma fórmula, pero difieren en la posición del hidroxilo (-OH) en el carbono 4. Por lo tanto, se consideran:", ["A) Isótopos Atómicos", "B) Epímeros (Isómeros estructurales de 1 solo carbono)", "C) Enantiómeros Espejo"], index=None)
-            
-            Q3 = st.radio("3. Si el pH de la sangre desciende bruscamente, el cuerpo recurre a moléculas que resisten este cambio donando o aceptando protones. Esto es la definición de:", ["A) Una base pura", "B) Un Sistema Amortiguador o Buffer", "C) Un polímero"], index=None)
-            
-            Q4 = st.radio("4. Según el modelo cuántico de Schrödinger, ¿dónde habitan los electrones de los átomos del ecosistema CHONPS?", ["A) En órbitas circulares fijas (como planetas).", "B) Incrustados en el núcleo positivamente.", "C) En orbitales, que son zonas de máxima probabilidad matemática descritas por números cuánticos."], index=None)
-            
-            if st.button("Evaluar Bitácora de Laboratorio", use_container_width=True):
-                errores = 0
-                if Q1 != "B) Porque la configuración D encaja como 'llave y cerradura' en los sitios activos de nuestras enzimas.": errores += 1
-                if Q2 != "B) Epímeros (Isómeros estructurales de 1 solo carbono)": errores += 1
-                if Q3 != "B) Un Sistema Amortiguador o Buffer": errores += 1
-                if Q4 != "C) En orbitales, que son zonas de máxima probabilidad matemática descritas por números cuánticos.": errores += 1
-                
-                if errores == 0:
-                    st.balloons()
-                    st.success("🏆 **¡RÉCORD PERFECTO!** Has dominado los modelos atómicos, el pH, los carbohidratos y el alfabeto CHONPS con rigor.")
-                else:
-                    st.session_state.vidas -= 1
-                    st.error(f"❌ **Examen reprobado con {errores} error(es).** Has perdido 1 Vida. Repasa tus configuraciones.")
+                    k1, k2 = keys[i*2], keys[i*2+1]
+                    st.markdown(f"<div style='background:rgba(255,255,255,0.05); padding:10px; border-radius:5px; border-left:3px solid {ELEMENTOS[k1]['color']}; margin-bottom:10px;'><b>{k1}
