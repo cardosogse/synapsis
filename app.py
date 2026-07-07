@@ -6,7 +6,7 @@ import random
 import math
 
 # ========================================================
-# 1. CONFIGURACIÓN DEL CHASIS Y ESTÉTICA CÓSMICA DE ALTA LEGIBILIDAD
+# 1. CONFIGURACIÓN DEL CHASIS E ESTÉTICA CÓSMICA DE ALTA LEGIBILIDAD
 # ========================================================
 st.set_page_config(page_title="ChonpsLab Pro | Synapsis", page_icon="⚛️", layout="wide")
 
@@ -481,7 +481,13 @@ def main():
         # MÓDULO 1: FUNDAMENTOS DE QUÍMICA BIOLÓGICA (UNIDAD 1 UNAM)
         # ========================================================
         with tabs[0]:
-            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 1: Fundamentos de Química Biológica</h2>", unsafe_allow_html=True)
+            st.markdown("# Módulo 1: Fundamentos de Química Biológica")
+            st.markdown("## Evolución de la Teoría Atómica, Estructura y Enlaces Químicos")
+            st.markdown("""
+            Bienvenido al núcleo de **Synapsis**. Para comprender los procesos metabólicos, fisiológicos y 
+            patológicos en los seres vivos, primero debemos dominar las reglas fisicoquímicas que gobiernan a los átomos 
+            y sus interacciones moleculares.
+            """)
             
             estacion_actual = st.radio(
                 "Selecciona una Estación de Trabajo FMVZ M1:",
@@ -497,7 +503,7 @@ def main():
             st.markdown("---")
 
             if "Estación A" in estacion_actual:
-                st.markdown("### Línea del Tiempo Atómica y Enlaces Químicos")
+                st.markdown("### ⏳ 1. Línea del Tiempo: Evolución de la Teoría Atómica")
                 st.markdown("""<span class='foco-parpadeante'>💡</span> <i>Deslice la línea del tiempo horizontal para descubrir la evolución del átomo.</i>""", unsafe_allow_html=True)
                 st.markdown("<br>", unsafe_allow_html=True)
                 
@@ -524,7 +530,7 @@ def main():
                     st.components.v1.html(f"<div style='display:flex; justify-content:center; align-items:center; width:100%; height:110px; background-color:rgba(255,255,255,0.02); border-radius:8px;'>{obtener_svg_atomo(modelo)}</div>", height=120, scrolling=False)
 
                 st.markdown("---")
-                st.markdown("### 🧬 Pon a prueba tu Bitácora Atómica")
+                st.markdown("### 🧠 Desafío de Consolidación: Memorama Atómico")
                 if st.session_state["memo_completado"]:
                     st.caption("✨ *Modo Práctica Activo: Avance oficial sellado en el servidor. Repasa libremente.*")
                 else:
@@ -589,6 +595,151 @@ def main():
 
                 if st.session_state["memo_completado"]:
                     st.markdown(f"<div class='card-success'>🏆 <b>¡Afinidad Atómica Consolidada!</b> Avance sellado permanentemente en la DB. Marcador: <b>{st.session_state['puntos_acumulados']} PTS</b>.</div>", unsafe_allow_html=True)
+
+                st.write("---")
+
+                # ==============================================================================
+                # NUEVA SUBSECCIÓN: ESTRUCTURA ATÓMICA Y COMPOSICIÓN (COMPLETA Y VERIFICADA)
+                # ==============================================================================
+                st.markdown("### ⚛️ 2. Estructura de un Átomo y Propiedades Periódicas")
+                st.markdown("""
+                El átomo es la unidad fundamental de la materia. Para comprender la bioquímica celular y el equilibrio osmótico, 
+                debemos entender cómo interactúan sus partículas subatómicas: **protones** (con carga positiva, definen la identidad del elemento), 
+                **neutrones** (neutros, aportan estabilidad nuclear) y **electrones** (con carga negativa, responsables directos de los enlaces químicos).
+                """)
+
+                st.markdown("#### 🛠️ Simulador: Construye y Analiza tu Átomo")
+                st.caption("Modifica las partículas subatómicas para observar cómo cambian las propiedades del átomo en tiempo real:")
+
+                col1_at, col2_at = st.columns([1, 1])
+
+                with col1_at:
+                    protones = st.slider("Protones (Número Atómico $Z$)", min_value=1, max_value=20, value=6, step=1, help="Define el elemento químico.")
+                    neutrones = st.slider("Neutrones (Estabilidad Nuclear)", min_value=0, max_value=22, value=6, step=1, help="Sumados a los protones determinan la masa.")
+                    electrones = st.slider("Electrones (Capa de Valencia)", min_value=0, max_value=20, value=6, step=1, help="Determinan la carga neta del átomo.")
+
+                tabla_elementos = {
+                    1: {"simbolo": "H", "nombre": "Hidrógeno", "bio": "Componente del agua y biomoléculas; clave en la regulación del pH hídrico."},
+                    6: {"simbolo": "C", "nombre": "Carbono", "bio": "El esqueleto de la vida macrocelular. Capaz de formar 4 enlaces covalentes estables."},
+                    7: {"simbolo": "N", "nombre": "Nitrógeno", "bio": "Estructura fundamental en aminoácidos (proteínas) y bases nitrogenadas (ADN/ARN)."},
+                    8: {"simbolo": "O", "nombre": "Oxígeno", "bio": "Aceptor final de electrones en la respiración celular y componente maestro del agua."},
+                    11: {"simbolo": "Na", "nombre": "Sodio", "bio": "Catión extracelular principal; vital para regular el potencial de acción y equilibrio hídrico."},
+                    12: {"simbolo": "Mg", "nombre": "Magnesio", "bio": "Cofactor esencial en más de 300 reacciones enzimáticas, incluyendo el uso biológico de ATP."},
+                    15: {"simbolo": "P", "nombre": "Fósforo", "bio": "Constituyente de los enlaces fosfodiéster del ADN y de las uniones de alta energía del ATP."},
+                    16: {"simbolo": "S", "nombre": "Azufre", "bio": "Presente en aminoácidos estructurales como la cisteína, formando puentes disulfuro en proteínas."},
+                    17: {"simbolo": "Cl", "nombre": "Cloro", "bio": "Anión extracelular principal; encargado de mantener el balance de neutralidad osmótica."},
+                    20: {"simbolo": "Ca", "nombre": "Calcio", "bio": "Segundo mensajero celular; esencial para la contracción muscular, cascada de coagulación y mineralización."}
+                }
+
+                masa_atomica = protones + neutrones
+                carga_neta = protones - electrones
+
+                if protones in tabla_elementos:
+                    nombre_elem = tabla_elementos[protones]["nombre"]
+                    simbolo_elem = tabla_elementos[protones]["simbolo"]
+                    info_bio = tabla_elementos[protones]["bio"]
+                else:
+                    nombre_elem = "Elemento genérico / Isótopo pesado"
+                    simbolo_elem = "X"
+                    info_bio = "Estudiado en química general por sus propiedades de configuración y estabilidad electrónica."
+
+                with col2_at:
+                    st.markdown(f"""
+                    <div style="background-color: #1e293b; padding: 22px; border-radius: 12px; border-left: 5px solid #3b82f6; color: #f8fafc; margin-bottom: 15px;">
+                        <h4 style="margin-top: 0; color: #60a5fa;">📊 Estado del Átomo: {nombre_elem} (<sup>{masa_atomica}</sup><sub>{protones}</sub>{simbolo_elem})</h4>
+                        <p style="margin: 4px 0;"><b>Número Atómico ($Z$):</b> {protones} <span style="color: #94a3b8;">(Número de protones)</span></p>
+                        <p style="margin: 4px 0;"><b>Masa Atómica ($A$):</b> {masa_atomica} u.m.a. <span style="color: #94a3b8;">(Protones + Neutrones)</span></p>
+                        <p style="margin: 4px 0;"><b>Carga Eléctrica Neta:</b> {f"+{carga_neta}" if carga_neta > 0 else carga_neta}</p>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    
+                    if carga_neta == 0:
+                        st.success(f"✨ **Átomo Neutro:** El número de protones coincide simétricamente con el de electrones.")
+                    elif carga_neta > 0:
+                        st.warning(f"🔋 **Catión (Ion con carga positiva):** Ha perdido {carga_neta} electrón(es). Es atraído por densidades negativas.")
+                    else:
+                        st.info(f"🪫 **Anión (Ion con carga negativa):** Ha ganado {abs(carga_neta)} electrón(es). Posee una alta afinidad por interactuar con cationes.")
+                        
+                    st.markdown(f"**Relevancia en Sistemas Vivos:** *{info_bio}*")
+
+                st.write("---")
+
+                # ==============================================================================
+                # NUEVA SUBSECCIÓN: ENLACES QUÍMICOS Y FUSIÓN (COMPLETA Y VERIFICADA)
+                # ==============================================================================
+                st.markdown("### 🧬 3. Enlaces Químicos e Interacciones Moleculares")
+                st.markdown("""
+                Los enlaces químicos representan las fuerzas moleculares que mantienen unidos a los átomos para formar compuestos estables. 
+                La naturaleza de cada enlace depende estrictamente de la **electronegatividad ($\chi$)**, que mide la afinidad que posee un átomo 
+                para atraer electrones de valencia hacia su propio núcleo.
+                """)
+
+                st.markdown("#### 🔬 Juego de Simulación: Laboratorio de Fusión Atómica")
+                st.caption("Selecciona dos átomos del menú desplegable para fusionarlos y descubrir qué enlace configuran calculando su diferencia de electronegatividad ($\Delta\chi$):")
+
+                electronegatividades_m1 = {
+                    "Hidrógeno (H)": 2.20,
+                    "Carbono (C)": 2.55,
+                    "Nitrógeno (N)": 3.04,
+                    "Oxígeno (O)": 3.44,
+                    "Sodio (Na)": 0.93,
+                    "Cloro (Cl)": 3.16,
+                    "Calcio (Ca)": 1.00
+                }
+
+                col_fusion1, col_fusion2 = st.columns(2)
+
+                with col_fusion1:
+                    atomo_a_m1 = st.selectbox("Selecciona el Átomo A:", list(electronegatividades_m1.keys()), index=1)
+                with col_fusion2:
+                    atomo_b_m1 = st.selectbox("Selecciona el Átomo B:", list(electronegatividades_m1.keys()), index=3)
+
+                if st.button("🧬 Iniciar Fusión Atómica", use_container_width=True):
+                    chi_a = electronegatividades_m1[atomo_a_m1]
+                    chi_b = electronegatividades_m1[atomo_b_m1]
+                    delta_chi = round(abs(chi_a - chi_b), 2)
+                    
+                    st.markdown(f"<h4 style='text-align: center; color: #10b981;'>Resultado de la Reacción ($\Delta\chi = {delta_chi}$)</h4>", unsafe_allow_html=True)
+                    
+                    if (atomo_a_m1 == "Hidrógeno (H)" and atomo_b_m1 == "Oxígeno (O)") or (atomo_a_m1 == "Oxígeno (O)" and atomo_b_m1 == "Hidrógeno (H)"):
+                        st.markdown(f"""
+                        <div style="background-color: #eff6ff; padding: 20px; border-radius: 8px; border: 1px solid #bfdbfe; color: #1e3a8a;">
+                            <h5>🌊 Enlace Covalente Polar + Potencial de Puente de Hidrógeno</h5>
+                            <p>La diferencia de electronegatividad es de <b>{delta_chi}</b>. El Oxígeno comparte electrones con el Hidrógeno de forma desigual, 
+                            atrayéndolos con mucha fuerza hacia su núcleo y generando densidades de carga parcial (<b>&delta;<sup>-</sup></b> en el Oxígeno y <b>&delta;<sup>+</sup></b> en el Hidrógeno).</p>
+                            <p><b>¡Pilar Biológico!</b> Esta asimetría de cargas permite que el hidrógeno polarizado de una molécula de agua atraiga electrostáticamente 
+                            al oxígeno cargado de otra molécula vecina. Esto forma un <b>Puente de Hidrógeno</b>, la interacción fundamental detrás de la cohesión celular, 
+                            la capilaridad y el elevado calor específico del agua.</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    elif delta_chi >= 1.7:
+                        st.markdown(f"""
+                        <div style="background-color: #fff7ed; padding: 20px; border-radius: 8px; border: 1px solid #fed7aa; color: #7c2d12;">
+                            <h5>⚡ Enlace No Covalente: Iónico</h5>
+                            <p>La diferencia de electronegatividad es crítica (<b>{delta_chi} &ge; 1.7</b>). En este escenario, no se comparten electrones.</p>
+                            <p>El elemento altamente electronegativo arranca por completo el electrón del átomo electropositivo. Esto genera 
+                            un catión y un anión estables que permanecen estrechamente unidos por **atracción electrostática**. Fundamental para comprender 
+                            las soluciones salinas de rehidratación y gradientes celulares.</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    elif 0.4 <= delta_chi < 1.7:
+                        st.markdown(f"""
+                        <div style="background-color: #faf5ff; padding: 20px; border-radius: 8px; border: 1px solid #e9d5ff; color: #581c87;">
+                            <h5>🧪 Enlace Covalente Polar</h5>
+                            <p>La diferencia de electronegatividad se encuentra en un rango intermedio (<b>{delta_chi}</b>).</p>
+                            <p>Los átomos comparten electrones, pero lo hacen de forma **asimétrica**. El átomo más electronegativo retiene la densidad del par electrónico 
+                            más tiempo cerca de sí, estableciendo dipolos transitorios. Es el enlace común en carbohidratos y proteínas que les concede hidrofilia.</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"""
+                        <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; border: 1px solid #bbf7d0; color: #14532d;">
+                            <h5>💎 Enlace Covalente No Polar (Apolar)</h5>
+                            <p>La diferencia de electronegatividad es baja o nula (<b>{delta_chi} &lt; 0.4</b>).</p>
+                            <p>Los electrones se distribuyen y comparten de manera perfectamente **simétrica y equitativa** entre ambos núcleos moleculares. 
+                            Es un enlace sumamente fuerte que almacena gran cantidad de energía química, definiendo el carácter hidrofóbico de los lípidos y membranas biológicas.</p>
+                        </div>
+                        """, unsafe_allow_html=True)
 
             elif "Estación B" in estacion_actual:
                 st.markdown("### Fuerzas Intermoleculares y Solubilidad")
@@ -724,7 +875,7 @@ def main():
         with tabs[2]:
             st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 3: Reactores de Enlace Bioquímico</h2>", unsafe_allow_html=True)
             col_a1, col_a2 = st.columns(2)
-            atom1 = col_a1.selectbox("Átomo Central (A):", list(ELEMENTOS.keys()))
+            atom1 = col_a1.selectbox("Átmo Central (A):", list(ELEMENTOS.keys()))
             atom2 = col_a2.selectbox("Átomo de Reacción (B):", list(ELEMENTOS.keys()))
             if st.button("Ensamblar y Analizar Enlace", use_container_width=True):
                 a1, a2 = ELEMENTOS[atom1], ELEMENTOS[atom2]
