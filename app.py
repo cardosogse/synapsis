@@ -35,6 +35,40 @@ def inyectar_css():
         .stTabs [data-baseweb="tab"] { background-color: rgba(255,255,255,0.05); border-radius: 4px 4px 0 0; padding: 10px 20px; color: #90a4ae; font-weight: bold;}
         .stTabs [aria-selected="true"] { background-color: rgba(0, 229, 255, 0.15) !important; color: #00e5ff !important; border-bottom: 2px solid #00e5ff !important; }
         
+        /* INYECCIÓN DE ESTILOS PARA EL SUB-NAVEGADOR TÁCTIL (BOTONERA DE ESTACIONES) */
+        div[data-testid="stRadio"] > div{
+            flex-direction: row !important;
+            gap: 12px !important;
+            flex-wrap: wrap;
+        }
+        div[data-testid="stRadio"] label {
+            background-color: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            padding: 10px 18px !important;
+            border-radius: 20px !important;
+            color: #cfd8dc !important;
+            transition: all 0.2s ease-in-out !important;
+            cursor: pointer !important;
+        }
+        div[data-testid="stRadio"] label:hover {
+            background-color: rgba(0, 229, 255, 0.08) !important;
+            border-color: #00e5ff !important;
+            color: #ffffff !important;
+        }
+        div[data-testid="stRadio"] label[data-checked="true"] {
+            background-color: rgba(0, 229, 255, 0.18) !important;
+            border-color: #00e5ff !important;
+            color: #00e5ff !important;
+            font-weight: bold !important;
+        }
+        /* Ocultar el círculo nativo feo del radio button para simular botones limpios */
+        div[data-testid="stRadio"] label div[data-testid="stMarkdownContainer"]-prefix {
+            display: none !important;
+        }
+        div[data-testid="stRadio"] div[role="radiogroup"] > label > div:first-child {
+            display: none !important;
+        }
+
         /* Animación de pulso/parpadeo sutil para el foco instructivo */
         @keyframes parpadeoPulso {
             0% { opacity: 0.3; text-shadow: 0 0 0px transparent; }
@@ -392,11 +426,10 @@ def main():
                 with c_b3:
                     if st.button("🗑️ Eliminar", use_container_width=True):
                         if token_bloqueado:
-                            eliminar_token_reg = token_bloqueado
                             if token_bloqueado == "SYNAPSIS-PRO-2026":
                                 st.error("No puedes eliminar el token raíz.")
                             else:
-                                eliminar_record = eliminar_registro_token(token_bloqueado)
+                                eliminar_registro_token(token_bloqueado)
                                 st.error("Fila borrada de SQLite.")
                         else: st.warning("Escribe un token.")
 
@@ -436,7 +469,7 @@ def main():
         with tabs[0]:
             st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 1: Fundamentos de Química Biológica</h2>", unsafe_allow_html=True)
             
-            # SUB-NAVEGADOR DE RADIO BOTONES HORIZONTALES (MÁXIMA COMODIDAD CLIC DISCRETO)
+            # SUB-NAVEGADOR MEJORADO CON ESTILOS VISUALES DE BOTONERA INDEPENDIENTE (CSS)
             estacion_actual = st.radio(
                 "Selecciona una Estación de Trabajo FMVZ:",
                 options=[
@@ -616,7 +649,7 @@ def main():
                     "Amino (-NH2)", "Carboxilo (-COOH)", "Tiol / Disulfuro (-SH / -S-S-)", "Fosforilo (-PO3 2-)"
                 ])
                 
-                if "Carbonilo" in grupo:
+                if "Carbonilo" in group:
                     st.warning("**Carbonilo:** Presente en aldehídos y cetonas. Eje reactivo en los azúcares reductores que se estudian en el metabolismo energético.")
                 elif "Metilo" in grupo:
                     st.warning("**Metilo:** Grupo apolar. Crítico en las modificaciones epigenéticas del ADN celular (metilación) y en la hidrofobicidad proteica.")
