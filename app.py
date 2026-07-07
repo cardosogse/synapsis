@@ -6,7 +6,7 @@ import random
 import math
 
 # ========================================================
-# 1. CONFIGURACIÓN DEL CHASIS E ESTÉTICA CÓSMICA DE ALTA LEGIBILIDAD
+# 1. CONFIGURACIÓN DEL CHASIS Y ESTÉTICA CÓSMICA DE ALTA LEGIBILIDAD
 # ========================================================
 st.set_page_config(page_title="ChonpsLab Pro | Synapsis", page_icon="⚛️", layout="wide")
 
@@ -33,7 +33,7 @@ def inyectar_css():
         
         /* Estilizado de pestañas principales */
         .stTabs [data-baseweb="tab-list"] { gap: 8px; background-color: transparent; }
-        .stTabs [data-baseweb="tab"] { background-color: rgba(255,255,255,0.05); border-radius: 4px 4px 0 0; padding: 10px 20px; color: #90a4ae; font-weight: bold;}
+        .stTabs [data-baseweb="tab"] { background-color: rgba(255,255,255,0.05); border-radius: 4px 4px 0 0; padding: 10px 20px; color: #90a4ae; font-weight: bold; cursor: pointer !important;}
         .stTabs [aria-selected="true"] { background-color: rgba(0, 229, 255, 0.15) !important; color: #00e5ff !important; border-bottom: 2px solid #00e5ff !important; }
         
         /* INYECCIÓN DE ESTILOS PARA EL SUB-NAVEGADOR TÁCTIL (BOTONERA DE ESTACIONES) */
@@ -62,12 +62,32 @@ def inyectar_css():
             color: #00e5ff !important;
             font-weight: bold !important;
         }
-        /* Ocultar el círculo nativo feo del radio button para simular botones limpios */
+        /* Ocultar el círculo nativo del radio button para simular botones limpios */
         div[data-testid="stRadio"] label div[data-testid="stMarkdownContainer"]-prefix {
             display: none !important;
         }
         div[data-testid="stRadio"] div[role="radiogroup"] > label > div:first-child {
             display: none !important;
+        }
+
+        /* GESTIÓN DE CURSORES TÁCTILES EN SLIDERS (MANITA DE ARRASTRE) */
+        div[data-testid="stSlider"] {
+            cursor: pointer !important;
+        }
+        div[data-testid="stSlider"] [role="slider"] {
+            cursor: grab !important;
+        }
+        div[data-testid="stSlider"] [role="slider"]:active {
+            cursor: grabbing !important;
+        }
+
+        /* PERSONALIZACIÓN EXCLUSIVA DEL SELECT_SLIDER (LÍNEA DEL TIEMPO EN AZUL CIAN) */
+        div[data-testid="stElementToolbar"] + div div[data-baseweb="slider-track"] > div {
+            background: linear-gradient(to right, #00e5ff, #00e5ff) !important;
+        }
+        div[data-testid="stElementToolbar"] + div [role="slider"] {
+            background-color: #00e5ff !important;
+            box-shadow: 0 0 8px #00e5ff !important;
         }
 
         /* Animación de pulso/parpadeo sutil para el foco instructivo */
@@ -297,11 +317,11 @@ def generar_svg_tira_afloja(f1, c1, sym1, f2, c2, sym2):
             <line x1="60" y1="50" x2="180" y2="50" stroke="#555" stroke-width="2" stroke-dasharray="4 4"/>
             <circle cx="60" cy="50" r="22" fill="{c1}" opacity="0.85"/>
             <text x="54" y="55" fill="black" font-weight="bold" font-family="sans-serif" font-size="14">{sym1}</text>
-            <text x="48" y="85" fill="#cfd8dc" font-family="sans-serif" font-size="11">χ: {f1}</text>
+            <text x="48" y="85" fill="#cfd8dc" font-family="sans-serif" font-size="11">Electronegatividad: {f1}</text>
             
             <circle cx="180" cy="50" r="22" fill="{c2}" opacity="0.85"/>
             <text x="174" y="55" fill="black" font-weight="bold" font-family="sans-serif" font-size="14">{sym2}</text>
-            <text x="168" y="85" fill="#cfd8dc" font-family="sans-serif" font-size="11">χ: {f2}</text>
+            <text x="168" y="85" fill="#cfd8dc" font-family="sans-serif" font-size="11">Electronegatividad: {f2}</text>
             
             <ellipse cx="{cx_e}" cy="50" rx="{ellipse_w}" ry="28" fill="none" stroke="{stroke_color}" stroke-width="1.8" stroke-dasharray="3 1"/>
             <circle cx="{cx_e}" cy="50" r="6" fill="#00e5ff"/>
@@ -475,24 +495,18 @@ def main():
         # ========================================================
         # ARQUITECTURA DE MACRO-MÓDULOS DE NAVEGACIÓN
         # ========================================================
-        tabs = st.tabs(["🏛️ Módulo 1", "⚡ Módulo 2", "🧬 Módulo 3", "🌡️ Módulo 4", "🍬 Módulo 5", "🏆 Examen"])
+        tabs = st.tabs(["🏛️ Módulo 1", "⚡ Módulo 2", "🧬 Módulo 3", "🌡️ Módulo 4", "🏆 Evaluación"])
 
         # ========================================================
         # MÓDULO 1: FUNDAMENTOS DE QUÍMICA BIOLÓGICA (UNIDAD 1 UNAM)
         # ========================================================
         with tabs[0]:
             st.markdown("# Módulo 1: Fundamentos de Química Biológica")
-            st.markdown("## Evolución de la Teoría Atómica, Estructura y Enlaces Químicos")
-            st.markdown("""
-            Bienvenido al núcleo de **Synapsis**. Para comprender los procesos metabólicos, fisiológicos y 
-            patológicos en los seres vivos, primero debemos dominar las reglas fisicoquímicas que gobiernan a los átomos 
-            y sus interacciones moleculares.
-            """)
             
             estacion_actual = st.radio(
                 "Selecciona una Estación de Trabajo FMVZ M1:",
                 options=[
-                    "⚛️ Estación A: Estructura y Enlaces",
+                    "⚛️ Estación A: Evolución, Estructura y Enlaces",
                     "💧 Estación B: Fuerzas del Agua",
                     "🧬 Estación C: Grupos Funcionales",
                     "🩸 Estación D: pH y Buffers respiratorios"
@@ -503,8 +517,8 @@ def main():
             st.markdown("---")
 
             if "Estación A" in estacion_actual:
-                st.markdown("### ⏳ 1. Línea del Tiempo: Evolución de la Teoría Atómica")
-                st.markdown("""<span class='foco-parpadeante'>💡</span> <i>Deslice la línea del tiempo horizontal para descubrir la evolución del átomo.</i>""", unsafe_allow_html=True)
+                st.markdown("### Evolución de la Teoría Atómica, Estructura y Enlaces Químicos")
+                st.markdown("""<span class='foco-parpadeante'>💡</span> <i>Deslice la línea del tiempo horizontal (barra azul cian) para descubrir la evolución del átomo.</i>""", unsafe_allow_html=True)
                 st.markdown("<br>", unsafe_allow_html=True)
                 
                 modelo = st.select_slider(
@@ -599,7 +613,7 @@ def main():
                 st.write("---")
 
                 # ==============================================================================
-                # NUEVA SUBSECCIÓN: ESTRUCTURA ATÓMICA Y COMPOSICIÓN (COMPLETA Y VERIFICADA)
+                # SUBSECCIÓN: ESTRUCTURA ATÓMICA Y COMPOSICIÓN (CORREGIDO SIN SIGNOS LIKELY LATEX)
                 # ==============================================================================
                 st.markdown("### ⚛️ 2. Estructura de un Átomo y Propiedades Periódicas")
                 st.markdown("""
@@ -609,26 +623,26 @@ def main():
                 """)
 
                 st.markdown("#### 🛠️ Simulador: Construye y Analiza tu Átomo")
-                st.caption("Modifica las partículas subatómicas para observar cómo cambian las propiedades del átomo en tiempo real:")
+                st.caption("Modifica las partículas subatómicas usando los controles deslizantes (barras rojas) para observar las propiedades en tiempo real:")
 
                 col1_at, col2_at = st.columns([1, 1])
 
                 with col1_at:
-                    protones = st.slider("Protones (Número Atómico $Z$)", min_value=1, max_value=20, value=6, step=1, help="Define el elemento químico.")
-                    neutrones = st.slider("Neutrones (Estabilidad Nuclear)", min_value=0, max_value=22, value=6, step=1, help="Sumados a los protones determinan la masa.")
-                    electrones = st.slider("Electrones (Capa de Valencia)", min_value=0, max_value=20, value=6, step=1, help="Determinan la carga neta del átomo.")
+                    protones = st.slider("Protones (Número Atómico Z)", min_value=1, max_value=20, value=6, step=1, help="Define la identidad del elemento químico.")
+                    neutrones = st.slider("Neutrones (Estabilidad Nuclear)", min_value=0, max_value=22, value=6, step=1, help="Sumados a los protones determinan la masa total.")
+                    electrones = st.slider("Electrones (Capa de Valencia)", min_value=0, max_value=20, value=6, step=1, help="Determinan la carga eléctrica neta del átomo.")
 
                 tabla_elementos = {
-                    1: {"simbolo": "H", "nombre": "Hidrógeno", "bio": "Componente del agua y biomoléculas; clave en la regulación del pH hídrico."},
-                    6: {"simbolo": "C", "nombre": "Carbono", "bio": "El esqueleto de la vida macrocelular. Capaz de formar 4 enlaces covalentes estables."},
-                    7: {"simbolo": "N", "nombre": "Nitrógeno", "bio": "Estructura fundamental en aminoácidos (proteínas) y bases nitrogenadas (ADN/ARN)."},
-                    8: {"simbolo": "O", "nombre": "Oxígeno", "bio": "Aceptor final de electrones en la respiración celular y componente maestro del agua."},
-                    11: {"simbolo": "Na", "nombre": "Sodio", "bio": "Catión extracelular principal; vital para regular el potencial de acción y equilibrio hídrico."},
-                    12: {"simbolo": "Mg", "nombre": "Magnesio", "bio": "Cofactor esencial en más de 300 reacciones enzimáticas, incluyendo el uso biológico de ATP."},
-                    15: {"simbolo": "P", "nombre": "Fósforo", "bio": "Constituyente de los enlaces fosfodiéster del ADN y de las uniones de alta energía del ATP."},
-                    16: {"simbolo": "S", "nombre": "Azufre", "bio": "Presente en aminoácidos estructurales como la cisteína, formando puentes disulfuro en proteínas."},
-                    17: {"simbolo": "Cl", "nombre": "Cloro", "bio": "Anión extracelular principal; encargado de mantener el balance de neutralidad osmótica."},
-                    20: {"simbolo": "Ca", "nombre": "Calcio", "bio": "Segundo mensajero celular; esencial para la contracción muscular, cascada de coagulación y mineralización."}
+                    1: {"simbolo": "H", "nombre": "Hidrógeno", "bio": "Componente fundamental del agua y biomoléculas orgánicas; clave en la regulación del pH hídrico celular."},
+                    6: {"simbolo": "C", "nombre": "Carbono", "bio": "El esqueleto estructural de la bioquímica macromolecular. Capaz de organizar hasta 4 enlaces estables."},
+                    7: {"simbolo": "N", "nombre": "Nitrógeno", "bio": "Estructura maestra constituyente de los aminoácidos (proteínas) y bases nitrogenadas (ADN y ARN)."},
+                    8: {"simbolo": "O", "nombre": "Oxígeno", "bio": "Aceptor final de electrones en la respiración mitocondrial celular y componente central del agua."},
+                    11: {"simbolo": "Na", "nombre": "Sodio", "bio": "Catión extracelular principal; indispensable para regular el potencial de acción y la presión osmótica."},
+                    12: {"simbolo": "Mg", "nombre": "Magnesio", "bio": "Cofactor esencial en más de 300 reacciones enzimáticas, incluyendo el uso biológico energético de ATP."},
+                    15: {"simbolo": "P", "nombre": "Fósforo", "bio": "Constituyente de los enlaces fosfodiéster en ácidos nucleicos y de las uniones de alta energía del ATP."},
+                    16: {"simbolo": "S", "nombre": "Azufre", "bio": "Presente en aminoácidos como la cisteína, formando puentes disulfuro determinantes en la estructura proteica."},
+                    17: {"simbolo": "Cl", "nombre": "Cloro", "bio": "Anión extracelular primario; encargado de mantener el balance de neutralidad y balance hídrico."},
+                    20: {"simbolo": "Ca", "nombre": "Calcio", "bio": "Segundo mensajero celular; esencial en la contracción muscular, cascada de coagulación y soporte mineral óseo."}
                 }
 
                 masa_atomica = protones + neutrones
@@ -639,43 +653,43 @@ def main():
                     simbolo_elem = tabla_elementos[protones]["simbolo"]
                     info_bio = tabla_elementos[protones]["bio"]
                 else:
-                    nombre_elem = "Elemento genérico / Isótopo pesado"
+                    nombre_elem = "Elemento Genérico / Isótopo Especial"
                     simbolo_elem = "X"
-                    info_bio = "Estudiado en química general por sus propiedades de configuración y estabilidad electrónica."
+                    info_bio = "Estudiado en química general por sus propiedades de configuración periférica y estabilidad electrónica."
 
                 with col2_at:
                     st.markdown(f"""
                     <div style="background-color: #1e293b; padding: 22px; border-radius: 12px; border-left: 5px solid #3b82f6; color: #f8fafc; margin-bottom: 15px;">
                         <h4 style="margin-top: 0; color: #60a5fa;">📊 Estado del Átomo: {nombre_elem} (<sup>{masa_atomica}</sup><sub>{protones}</sub>{simbolo_elem})</h4>
-                        <p style="margin: 4px 0;"><b>Número Atómico ($Z$):</b> {protones} <span style="color: #94a3b8;">(Número de protones)</span></p>
-                        <p style="margin: 4px 0;"><b>Masa Atómica ($A$):</b> {masa_atomica} u.m.a. <span style="color: #94a3b8;">(Protones + Neutrones)</span></p>
-                        <p style="margin: 4px 0;"><b>Carga Eléctrica Neta:</b> {f"+{carga_neta}" if carga_neta > 0 else carga_neta}</p>
+                        <p style="margin: 6px 0; font-size: 1.05rem;"><b>Número Atómico (Z):</b> {protones} <span style="color: #94a3b8;">(Total de protones en el núcleo)</span></p>
+                        <p style="margin: 6px 0; font-size: 1.05rem;"><b>Masa Atómica (A):</b> {masa_atomica} u.m.a. <span style="color: #94a3b8;">(Protones + Neutrones)</span></p>
+                        <p style="margin: 6px 0; font-size: 1.05rem;"><b>Carga Eléctrica Neta:</b> {f"+{carga_neta}" if carga_neta > 0 else carga_neta}</p>
                     </div>
                     """, unsafe_allow_html=True)
                     
                     if carga_neta == 0:
-                        st.success(f"✨ **Átomo Neutro:** El número de protones coincide simétricamente con el de electrones.")
+                        st.success(f"✨ **Átomo Eléctricamente Neutro:** El número de protones coincide simétricamente con el de electrones periféricos.")
                     elif carga_neta > 0:
-                        st.warning(f"🔋 **Catión (Ion con carga positiva):** Ha perdido {carga_neta} electrón(es). Es atraído por densidades negativas.")
+                        st.warning(f"🔋 **Catión (Ion con carga positiva):** Ha cedido o perdido {carga_neta} electrón(es). Posee afinidad por zonas negativas.")
                     else:
-                        st.info(f"🪫 **Anión (Ion con carga negativa):** Ha ganado {abs(carga_neta)} electrón(es). Posee una alta afinidad por interactuar con cationes.")
+                        st.info(f"🪫 **Anión (Ion con carga negativa):** Ha ganado {abs(carga_neta)} electrón(es). Posee una alta densidad de carga electrónica.")
                         
-                    st.markdown(f"**Relevancia en Sistemas Vivos:** *{info_bio}*")
+                    st.markdown(f"**Relevancia Fisiológica Celular:** *{info_bio}*")
 
                 st.write("---")
 
                 # ==============================================================================
-                # NUEVA SUBSECCIÓN: ENLACES QUÍMICOS Y FUSIÓN (COMPLETA Y VERIFICADA)
+                # NUEVA SUBSECCIÓN: ENLACES QUÍMICOS Y FUSIÓN (CORREGIDO SIN CÓDIGO RARO)
                 # ==============================================================================
                 st.markdown("### 🧬 3. Enlaces Químicos e Interacciones Moleculares")
                 st.markdown("""
-                Los enlaces químicos representan las fuerzas moleculares que mantienen unidos a los átomos para formar compuestos estables. 
-                La naturaleza de cada enlace depende estrictamente de la **electronegatividad ($\chi$)**, que mide la afinidad que posee un átomo 
-                para atraer electrones de valencia hacia su propio núcleo.
+                Los enlaces químicos representan las fuerzas moleculares estables que mantienen unidos a los átomos para organizar compuestos complejos. 
+                La naturaleza de cada interacción depende estrictamente de la **electronegatividad**, la cual mide la fuerza relativa que posee un núcleo 
+                para atraer electrones de valencia compartidos.
                 """)
 
                 st.markdown("#### 🔬 Juego de Simulación: Laboratorio de Fusión Atómica")
-                st.caption("Selecciona dos átomos del menú desplegable para fusionarlos y descubrir qué enlace configuran calculando su diferencia de electronegatividad ($\Delta\chi$):")
+                st.caption("Selecciona dos átomos para fundirlos y descubrir el tipo de enlace exacto de acuerdo a su Diferencia de Electronegatividad (Delta-X):")
 
                 electronegatividades_m1 = {
                     "Hidrógeno (H)": 2.20,
@@ -699,27 +713,25 @@ def main():
                     chi_b = electronegatividades_m1[atomo_b_m1]
                     delta_chi = round(abs(chi_a - chi_b), 2)
                     
-                    st.markdown(f"<h4 style='text-align: center; color: #10b981;'>Resultado de la Reacción ($\Delta\chi = {delta_chi}$)</h4>", unsafe_allow_html=True)
+                    st.markdown(f"<h4 style='text-align: center; color: #10b981;'>Resultado de la Reacción (Diferencia de Electronegatividad = {delta_chi})</h4>", unsafe_allow_html=True)
                     
                     if (atomo_a_m1 == "Hidrógeno (H)" and atomo_b_m1 == "Oxígeno (O)") or (atomo_a_m1 == "Oxígeno (O)" and atomo_b_m1 == "Hidrógeno (H)"):
                         st.markdown(f"""
                         <div style="background-color: #eff6ff; padding: 20px; border-radius: 8px; border: 1px solid #bfdbfe; color: #1e3a8a;">
                             <h5>🌊 Enlace Covalente Polar + Potencial de Puente de Hidrógeno</h5>
-                            <p>La diferencia de electronegatividad es de <b>{delta_chi}</b>. El Oxígeno comparte electrones con el Hidrógeno de forma desigual, 
-                            atrayéndolos con mucha fuerza hacia su núcleo y generando densidades de carga parcial (<b>&delta;<sup>-</sup></b> en el Oxígeno y <b>&delta;<sup>+</sup></b> en el Hidrógeno).</p>
-                            <p><b>¡Pilar Biológico!</b> Esta asimetría de cargas permite que el hidrógeno polarizado de una molécula de agua atraiga electrostáticamente 
-                            al oxígeno cargado de otra molécula vecina. Esto forma un <b>Puente de Hidrógeno</b>, la interacción fundamental detrás de la cohesión celular, 
-                            la capilaridad y el elevado calor específico del agua.</p>
+                            <p>La diferencia de electronegatividad es de <b>{delta_chi}</b>. El Oxígeno atrae los electrones del Hidrógeno de forma asimétrica, 
+                            induciendo densidades de carga parcial (carga parcial negativa en el Oxígeno y carga parcial positiva en el Hidrógeno).</p>
+                            <p><b>¡Pilar Biológico!</b> Esta asimetría de cargas permite que el hidrógeno cargado positivamente de una molécula de agua atraiga electrostáticamente 
+                            al oxígeno con carga negativa de otra molécula vecina. Esto forma un <b>Puente de Hidrógeno</b>, clave en la cohesión y el elevado calor específico celular.</p>
                         </div>
                         """, unsafe_allow_html=True)
                     elif delta_chi >= 1.7:
                         st.markdown(f"""
                         <div style="background-color: #fff7ed; padding: 20px; border-radius: 8px; border: 1px solid #fed7aa; color: #7c2d12;">
                             <h5>⚡ Enlace No Covalente: Iónico</h5>
-                            <p>La diferencia de electronegatividad es crítica (<b>{delta_chi} &ge; 1.7</b>). En este escenario, no se comparten electrones.</p>
-                            <p>El elemento altamente electronegativo arranca por completo el electrón del átomo electropositivo. Esto genera 
-                            un catión y un anión estables que permanecen estrechamente unidos por **atracción electrostática**. Fundamental para comprender 
-                            las soluciones salinas de rehidratación y gradientes celulares.</p>
+                            <p>La diferencia de electronegatividad es crítica (<b>{delta_chi} mayor o igual a 1.7</b>). En este escenario, no se comparten electrones.</p>
+                            <p>El elemento altamente electronegativo arranca por completo el electrón periférico del átomo electropositivo, generando 
+                            un catión y un anión estables que permanecen estrechamente consolidados por **atracción electrostática**. Indispensable para comprender soluciones salinas y balances de electrolitos.</p>
                         </div>
                         """, unsafe_allow_html=True)
                     elif 0.4 <= delta_chi < 1.7:
@@ -727,17 +739,17 @@ def main():
                         <div style="background-color: #faf5ff; padding: 20px; border-radius: 8px; border: 1px solid #e9d5ff; color: #581c87;">
                             <h5>🧪 Enlace Covalente Polar</h5>
                             <p>La diferencia de electronegatividad se encuentra en un rango intermedio (<b>{delta_chi}</b>).</p>
-                            <p>Los átomos comparten electrones, pero lo hacen de forma **asimétrica**. El átomo más electronegativo retiene la densidad del par electrónico 
-                            más tiempo cerca de sí, estableciendo dipolos transitorios. Es el enlace común en carbohidratos y proteínas que les concede hidrofilia.</p>
+                            <p>Los átomos comparten electrones, pero lo hacen de forma asimétrica. El átomo con mayor fuerza retiene la densidad del par electrónico 
+                            más tiempo cerca de su propio núcleo. Es el enlace común en carbohidratos y cadenas de aminoácidos solubles.</p>
                         </div>
                         """, unsafe_allow_html=True)
                     else:
                         st.markdown(f"""
                         <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; border: 1px solid #bbf7d0; color: #14532d;">
                             <h5>💎 Enlace Covalente No Polar (Apolar)</h5>
-                            <p>La diferencia de electronegatividad es baja o nula (<b>{delta_chi} &lt; 0.4</b>).</p>
-                            <p>Los electrones se distribuyen y comparten de manera perfectamente **simétrica y equitativa** entre ambos núcleos moleculares. 
-                            Es un enlace sumamente fuerte que almacena gran cantidad de energía química, definiendo el carácter hidrofóbico de los lípidos y membranas biológicas.</p>
+                            <p>La diferencia de electronegatividad es baja o nula (<b>{delta_chi} menor a 0.4</b>).</p>
+                            <p>Los electrones se distribuyen y comparten de manera perfectamente simétrica y equitativa. 
+                            Es un enlace de alta estabilidad hidrofóbica que define el comportamiento protector de los lípidos moleculares y membranas biológicas.</p>
                         </div>
                         """, unsafe_allow_html=True)
 
@@ -779,7 +791,7 @@ def main():
                             st.session_state.vidas -= 1
                             st.session_state.advertencia_ph = False
                     else:
-                        st.markdown("<div class='card-success'>🛡️ <b>EFECTO TAMPÓN EXITOSO:</b> El amortiguador fisiológico absorbió los protones ($H^+$) generando ácido carbónico, el cual se disociará en $CO_2$ eliminable vía pulmonar.</div>", unsafe_allow_html=True)
+                        st.markdown("<div class='card-success'>🛡️ <b>EFECTO TAMPÓN EXITOSO:</b> El amortiguador fisiológico absorbió los protones (H+) generando ácido carbónico, el cual se disociará en CO2 eliminable vía pulmonar.</div>", unsafe_allow_html=True)
                         st.session_state.advertencia_ph = False
 
         # ========================================================
@@ -789,7 +801,7 @@ def main():
             # ANTI-F5: Persistencia estricta en la DB real
             actualizar_modulo_db(st.session_state["token_actual"], 2)
             
-            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 2: Electronegatividad (El Estira y Afloja)</h2>", unsafe_allow_html=True)
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 2: Electronegatividad (El Estira y Afloja Celular)</h2>", unsafe_allow_html=True)
             
             estacion_m2 = st.radio(
                 "Navegación Sub-Módulo 2:",
@@ -804,7 +816,7 @@ def main():
 
             if "Estación A" in estacion_m2:
                 st.markdown("### El Gradiente de Afinidad Electrónica en Bioelementos")
-                st.write("La electronegatividad ($\chi$) mide la capacidad de un átomo para atraer densidad electrónica hacia sí en un enlace.")
+                st.write("La electronegatividad mide la capacidad de un átomo para atraer densidad electrónica hacia sí en un enlace.")
                 
                 col_sel1, col_sel2 = st.columns(2)
                 e1_name = col_sel1.selectbox("Elemento Primario:", list(ELEMENTOS.keys()), index=1) # Hidrógeno
@@ -816,26 +828,26 @@ def main():
                 st.components.v1.html(generar_svg_tira_afloja(el1['fuerza'], el1['color'], el1['sym'], el2['fuerza'], el2['color'], el2['sym']), height=130, scrolling=False)
                 
                 if diff_m2 == 0:
-                    st.markdown(f"<div class='card-success'><b>🤝 Enlace Covalente No Polar Puro ($\Delta\chi = 0.0$):</b> Distribución electrónica perfectamente simétrica. Comportamiento típico de los hidrocarburos insolubles.</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-success'><b>🤝 Enlace Covalente No Polar Puro (Diferencia = 0.0):</b> Distribución electrónica perfectamente simétrica. Comportamiento típico de los hidrocarburos insolubles.</div>", unsafe_allow_html=True)
                 elif diff_m2 <= 0.4:
-                    st.markdown(f"<div class='card-success'><b>🤝 Enlace Covalente No Polar ($\Delta\chi = {diff_m2:.2f}$):</b> Compartición equitativa. Es el bloque fundamental de los enlaces C-H estables en lípidos.</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-success'><b>🤝 Enlace Covalente No Polar (Diferencia = {diff_m2:.2f}):</b> Compartición equitativa. Es el bloque fundamental de los enlaces C-H estables en lípidos.</div>", unsafe_allow_html=True)
                 elif diff_m2 <= 1.7:
                     st.markdown(
                         f"""
                         <div class='card-hint'>
-                            <b>⚡ Enlace Covalente Polar ($\Delta\chi = {diff_m2:.2f}$):</b> 
-                            Se genera un dipolo permanente. El átomo con mayor $\chi$ induce una carga parcial negativa ($\delta^-$), 
+                            <b>⚡ Enlace Covalente Polar (Diferencia = {diff_m2:.2f}):</b> 
+                            Se genera un dipolo permanente. El átomo con mayor electronegatividad induce una carga parcial negativa, 
                             crucial para la solubilidad y puentes de hidrógeno del agua y azúcares.
                         </div>
                         """, 
                         unsafe_allow_html=True
                     )
                 else:
-                    st.markdown(f"<div class='card-error'><b>⚠️ Carácter Altamente Iónico / Tensión ($\Delta\chi = {diff_m2:.2f}$):</b> Transferencia completa de electrones. Comportamiento característico de sales disociables ($Na^+Cl^-$).</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-error'><b>⚠️ Carácter Altamente Iónico / Tensión (Diferencia = {diff_m2:.2f}):</b> Transferencia completa de electrones. Comportamiento característico de sales disociables (NaCl).</div>", unsafe_allow_html=True)
 
             elif "Estación B" in estacion_m2:
                 st.markdown("### Laboratorio Biofísico: Equilibrio de Nernst en Células Veterinarias")
-                st.write("La diferencia de electronegatividad y la permeabilidad celular controlan los gradientes iónicos. Use el simulador para estimar el potencial de equilibrio del ion Potasio ($K^+$) o Sodio ($Na^+$) en un miocito cardiaco bovino.")
+                st.write("La diferencia de electronegatividad y la permeabilidad celular controlan los gradientes iónicos. Use el simulador para estimar el potencial de equilibrio del ion Potasio (K+) o Sodio (Na+) en un miocito cardiaco bovino.")
                 
                 ion_sel = st.selectbox("Ion Bajo Estudio:", ["Potasio (K+)", "Sodio (Na+)"])
                 
@@ -843,11 +855,9 @@ def main():
                 if ion_sel == "Potasio (K+)":
                     c_ext = c1_n.slider("Concentración Extracelular [K+]_out (mM):", 1.0, 15.0, 4.5, 0.5)
                     c_int = c2_n.slider("Concentración Intracelular [K+]_in (mM):", 100.0, 160.0, 140.0, 1.0)
-                    z = 1.0
                 else:
                     c_ext = c1_n.slider("Concentración Extracelular [Na+]_out (mM):", 100.0, 160.0, 145.0, 1.0)
                     c_int = c2_n.slider("Concentración Intracelular [Na+]_in (mM):", 5.0, 30.0, 12.0, 0.5)
-                    z = 1.0
                 
                 potencial_equilibrio = 61.5 * math.log10(c_ext / c_int)
                 
@@ -875,7 +885,7 @@ def main():
         with tabs[2]:
             st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 3: Reactores de Enlace Bioquímico</h2>", unsafe_allow_html=True)
             col_a1, col_a2 = st.columns(2)
-            atom1 = col_a1.selectbox("Átmo Central (A):", list(ELEMENTOS.keys()))
+            atom1 = col_a1.selectbox("Átomo Central (A):", list(ELEMENTOS.keys()))
             atom2 = col_a2.selectbox("Átomo de Reacción (B):", list(ELEMENTOS.keys()))
             if st.button("Ensamblar y Analizar Enlace", use_container_width=True):
                 a1, a2 = ELEMENTOS[atom1], ELEMENTOS[atom2]
@@ -887,22 +897,10 @@ def main():
                 else: st.markdown("<div class='card-error'>⚠️ Tensión Iónica Crítica.</div>", unsafe_allow_html=True)
 
         # ========================================================
-        # MÓDULO 4: EQUILIBRIO ÁCIDO-BASE Y PH
+        # MÓDULO 4: GLUCÓMICA, RUTAS METABÓLICAS Y BIOENERGÉTICA
         # ========================================================
         with tabs[3]:
-            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 4: Equilibrio Ácido-Base y pH</h2>", unsafe_allow_html=True)
-            solucion_tab4 = st.radio("Cámara de Perfusión Secundaria:", ["Medio A: Plasma con Buffer Bicarbonato", "Medio B: Agua Destilada Pura"])
-            if st.button("Inyectar 10 mL de HCl (Módulo 4)", use_container_width=True):
-                if "Agua" in solucion_tab4:
-                    st.markdown("<div class='card-error'>🩸 pH colapsado instantáneamente en el Módulo 4.</div>", unsafe_allow_html=True)
-                else:
-                    st.markdown("<div class='card-success'>🛡️ Tamponamiento exitoso.</div>", unsafe_allow_html=True)
-
-        # ========================================================
-        # MÓDULO 5: GLUCÓMICA E ISOMERISMO
-        # ========================================================
-        with tabs[4]:
-            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 5: Glucómica e Isomerismo</h2>", unsafe_allow_html=True)
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 4: Glucómica e Isomerismo</h2>", unsafe_allow_html=True)
             col_g1, col_g2 = st.columns(2)
             azu1 = col_g1.selectbox("Monosacárido 1:", ["Alfa-D-Glucosa", "Beta-D-Galactosa"])
             azu2 = col_g2.selectbox("Monosacárido 2:", ["Alfa-D-Glucosa", "Beta-D-Fructosa (Cetosa)"])
@@ -910,13 +908,13 @@ def main():
                 if azu1 == "Alfa-D-Glucosa" and azu2 == "Alfa-D-Glucosa": st.markdown("<div class='card-success'>🌾 <b>MALTOSA SINTETIZADA:</b> Enlace Alfa(1→4).</div>", unsafe_allow_html=True)
                 elif azu1 == "Beta-D-Galactosa" and azu2 == "Alfa-D-Glucosa": st.markdown("<div class='card-success'>🥛 <b>LACTOSA SINTETIZADA:</b> Enlace Beta(1→4).</div>", unsafe_allow_html=True)
                 elif azu1 == "Alfa-D-Glucosa" and azu2 == "Beta-D-Fructosa (Cetosa)": st.markdown("<div class='card-success'>🎋 <b>SACAROSA SINTETIZADA:</b> Enlace Alfa(1) ↔ Beta(2). No reductor.</div>", unsafe_allow_html=True)
-                else: st.markdown("<div class='card-error'>⚠️ Ensamblaje de baja prioridad metabólica.</div>", unsafe_allow_html=True)
+                else: st.markdown("<div class='card-error'>⚠️ Enlace de baja prioridad metabólica.</div>", unsafe_allow_html=True)
 
         # ========================================================
-        # MÓDULO 6: EVALUACIÓN FINAL
+        # MÓDULO 5: EVALUACIÓN FINAL
         # ========================================================
-        with tabs[5]:
-            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 6: Evaluación Final</h2>", unsafe_allow_html=True)
+        with tabs[4]:
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Evaluación Final de la Bitácora</h2>", unsafe_allow_html=True)
             Q1 = st.radio("1. ¿Por qué la evolución optó por la D-Glucosa sobre la L-Glucosa?", ["A) Desvía la luz a la derecha.", "B) Modelo 'llave y cerradura' en los sitios activos enzimáticos.", "C) Carece de enlaces O-Glucosídicos."], index=None)
             Q2 = st.radio("2. Glucosa y Galactosa difieren estructuralmente en un solo carbono asimétrico (C4), son:", ["A) Isótopos", "B) Epímeros", "C) Enantiómeros"], index=None)
             if st.button("Evaluar Bitácora de Laboratorio", use_container_width=True):
