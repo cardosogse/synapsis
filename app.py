@@ -278,7 +278,6 @@ ELEMENTOS = {
 @st.cache_data
 def generar_svg_tira_afloja(f1, c1, sym1, f2, c2, sym2):
     diff = abs(f1 - f2)
-    # Calcular centro de densidad de electrones en base al gradiente
     if f1 == f2:
         cx_e = 120
         ellipse_w = 40
@@ -670,4 +669,120 @@ def main():
                 elif diff_m2 <= 0.4:
                     st.markdown(f"<div class='card-success'><b>🤝 Enlace Covalente No Polar ($\Delta\chi = {diff_m2:.2f}$):</b> Compartición equitativa. Es el bloque fundamental de los enlaces C-H estables en lípidos.</div>", unsafe_allow_html=True)
                 elif diff_m2 <= 1.7:
-                    st.markdown(f"<div class='card-hint'><b>⚡ Enlace Covalente Polar ($\Delta\chi = {diff_m2:.2f}$):</b> Se genera un dipolo permanente. El átomo con mayor $\chi$ induce una carga parcial negativa ($\delta^-$), crucial para la solubilidad y puentes de hidrógeno del agua y azúcares.</div>", unsafe_allow_html=True
+                    st.markdown(
+                        f"""
+                        <div class='card-hint'>
+                            <b>⚡ Enlace Covalente Polar ($\Delta\chi = {diff_m2:.2f}$):</b> 
+                            Se genera un dipolo permanente. El átomo con mayor $\chi$ induce una carga parcial negativa ($\delta^-$), 
+                            crucial para la solubilidad y puentes de hidrógeno del agua y azúcares.
+                        </div>
+                        """, 
+                        unsafe_allow_html=True
+                    )
+                else:
+                    st.markdown(f"<div class='card-error'><b>⚠️ Carácter Altamente Iónico / Tensión ($\Delta\chi = {diff_m2:.2f}$):</b> Transferencia completa de electrones. Comportamiento característico de sales disociables ($Na^+Cl^-$).</div>", unsafe_allow_html=True)
+
+            elif "Estación B" in estacion_m2:
+                st.markdown("### Laboratorio Biofísico: Equilibrio de Nernst en Células Veterinarias")
+                st.write("La diferencia de electronegatividad y la permeabilidad celular controlan los gradientes iónicos. Use el simulador para estimar el potencial de equilibrio del ion Potasio ($K^+$) o Sodio ($Na^+$) en un miocito cardiaco bovino.")
+                
+                ion_sel = st.selectbox("Ion Bajo Estudio:", ["Potasio (K+)", "Sodio (Na+)"])
+                
+                c1_n, c2_n = st.columns(2)
+                if ion_sel == "Potasio (K+)":
+                    c_ext = c1_n.slider("Concentración Extracelular [K+]_out (mM):", 1.0, 15.0, 4.5, 0.5)
+                    c_int = c2_n.slider("Concentración Intracelular [K+]_in (mM):", 100.0, 160.0, 140.0, 1.0)
+                    z = 1.0
+                else:
+                    c_ext = c1_n.slider("Concentración Extracelular [Na+]_out (mM):", 100.0, 160.0, 145.0, 1.0)
+                    c_int = c2_n.slider("Concentración Intracelular [Na+]_in (mM):", 5.0, 30.0, 12.0, 0.5)
+                    z = 1.0
+                
+                potencial_equilibrio = 61.5 * math.log10(c_ext / c_int)
+                
+                st.markdown(f"<div class='monitor-box' style='border:1px solid #00e5ff;'><span style='color:#00e5ff; font-size:13px;'>POTENCIAL DE EQUILIBRIO CALCULADO</span><br><b style='font-size:24px; color:#ffffff;'>{potencial_equilibrio:.2f} mV</b></div>", unsafe_allow_html=True)
+                
+                if ion_sel == "Potasio (K+)":
+                    if c_ext > 7.5:
+                        st.markdown("<div class='card-error'>🚨 <b>HIPERPOTASEMIA CRÍTICA DETECTADA:</b> Los niveles elevados de potasio extracelular colapsan el potencial de reposo miocárdico, provocando paro cardiaco en diástole. <b>-1 Vida.</b></div>", unsafe_allow_html=True)
+                        st.session_state.vidas -= 1
+                    elif c_ext < 2.5:
+                        st.markdown("<div class='card-error'>🚨 <b>HIPOPOTASEMIA SEVERA:</b> Hiperpolarización celular extrema. Riesgo de arritmias fatales y debilidad muscular generalizada. <b>-1 Vida.</b></div>", unsafe_allow_html=True)
+                        st.session_state.vidas -= 1
+                    else:
+                        st.markdown("<div class='card-success'>✅ Rango fisiológico seguro para la conducción eléctrica del miocardio doméstico.</div>", unsafe_allow_html=True)
+                else:
+                    if c_ext > 155.0 or c_ext < 130.0:
+                        st.markdown("<div class='card-error'>🚨 <b>DESEQUILIBRIO OSMÓTICO AGUDO (Na+):</b> Alteración drástica del volumen celular neuronal. Riesgo inminente de edema cerebral o deshidratación neuronal severa. <b>-1 Vida.</b></div>", unsafe_allow_html=True)
+                        st.session_state.vidas -= 1
+                    else:
+                        st.markdown("<div class='card-success'>✅ Homeostasis osmótica y gradiente electroquímico óptimos.</div>", unsafe_allow_html=True)
+
+        # ========================================================
+        # MÓDULO 3: REACTORES DE ENLACE BIOQUÍMICO
+        # ========================================================
+        with tabs[2]:
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 3: Reactores de Enlace Bioquímico</h2>", unsafe_allow_html=True)
+            col_a1, col_a2 = st.columns(2)
+            atom1 = col_a1.selectbox("Átomo Central (A):", list(ELEMENTOS.keys()))
+            atom2 = col_a2.selectbox("Átomo de Reacción (B):", list(ELEMENTOS.keys()))
+            if st.button("Ensamblar y Analizar Enlace", use_container_width=True):
+                a1, a2 = ELEMENTOS[atom1], ELEMENTOS[atom2]
+                st.components.v1.html(generar_svg_enlace(a1['sym'], a1['fuerza'], a1['color'], a2['sym'], a2['fuerza'], a2['color']), height=140, scrolling=False)
+                diff = abs(a1['fuerza'] - a2['fuerza'])
+                if diff == 0: st.markdown(f"<div class='card-success'>Enlace Covalente No Polar Puro (Diferencia = 0.0).</div>", unsafe_allow_html=True)
+                elif diff <= 0.4: st.markdown(f"<div class='card-success'>Enlace Covalente No Polar.</div>", unsafe_allow_html=True)
+                elif diff <= 1.7: st.markdown(f"<div class='card-success' style='border-left-color:#ffb142;'>⚡ Enlace Covalente Polar (Dipolo activo).</div>", unsafe_allow_html=True)
+                else: st.markdown("<div class='card-error'>⚠️ Tensión Iónica Crítica.</div>", unsafe_allow_html=True)
+
+        # ========================================================
+        # MÓDULO 4: EQUILIBRIO ÁCIDO-BASE Y PH
+        # ========================================================
+        with tabs[3]:
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 4: Equilibrio Ácido-Base y pH</h2>", unsafe_allow_html=True)
+            solucion_tab4 = st.radio("Cámara de Perfusión Secundaria:", ["Medio A: Plasma con Buffer Bicarbonato", "Medio B: Agua Destilada Pura"])
+            if st.button("Inyectar 10 mL de HCl (Módulo 4)", use_container_width=True):
+                if "Agua" in solucion_tab4:
+                    st.markdown("<div class='card-error'>🩸 pH colapsado instantáneamente en el Módulo 4.</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown("<div class='card-success'>🛡️ Tamponamiento exitoso.</div>", unsafe_allow_html=True)
+
+        # ========================================================
+        # MÓDULO 5: GLUCÓMICA E ISOMERISMO
+        # ========================================================
+        with tabs[4]:
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 5: Glucómica e Isomerismo</h2>", unsafe_allow_html=True)
+            col_g1, col_g2 = st.columns(2)
+            azu1 = col_g1.selectbox("Monosacárido 1:", ["Alfa-D-Glucosa", "Beta-D-Galactosa"])
+            azu2 = col_g2.selectbox("Monosacárido 2:", ["Alfa-D-Glucosa", "Beta-D-Fructosa (Cetosa)"])
+            if st.button("Polimerizar Enlace Glucosídico", use_container_width=True):
+                if azu1 == "Alfa-D-Glucosa" and azu2 == "Alfa-D-Glucosa": st.markdown("<div class='card-success'>🌾 <b>MALTOSA SINTETIZADA:</b> Enlace Alfa(1→4).</div>", unsafe_allow_html=True)
+                elif azu1 == "Beta-D-Galactosa" and azu2 == "Alfa-D-Glucosa": st.markdown("<div class='card-success'>🥛 <b>LACTOSA SINTETIZADA:</b> Enlace Beta(1→4).</div>", unsafe_allow_html=True)
+                elif azu1 == "Alfa-D-Glucosa" and azu2 == "Beta-D-Fructosa (Cetosa)": st.markdown("<div class='card-success'>🎋 <b>SACAROSA SINTETIZADA:</b> Enlace Alfa(1) ↔ Beta(2). No reductor.</div>", unsafe_allow_html=True)
+                else: st.markdown("<div class='card-error'>⚠️ Ensamblaje de baja prioridad metabólica.</div>", unsafe_allow_html=True)
+
+        # ========================================================
+        # MÓDULO 6: EVALUACIÓN FINAL
+        # ========================================================
+        with tabs[5]:
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 6: Evaluación Final</h2>", unsafe_allow_html=True)
+            Q1 = st.radio("1. ¿Por qué la evolución optó por la D-Glucosa sobre la L-Glucosa?", ["A) Desvía la luz a la derecha.", "B) Modelo 'llave y cerradura' en los sitios activos enzimáticos.", "C) Carece de enlaces O-Glucosídicos."], index=None)
+            Q2 = st.radio("2. Glucosa y Galactosa difieren estructuralmente en un solo carbono asimétrico (C4), son:", ["A) Isótopos", "B) Epímeros", "C) Enantiómeros"], index=None)
+            if st.button("Evaluar Bitácora de Laboratorio", use_container_width=True):
+                errores = 0
+                if Q1 and "B)" not in Q1: errores += 1
+                if Q2 and "B)" not in Q2: errores += 1
+                if not Q1 or not Q2: st.warning("Responde todas las interrogantes.")
+                elif errores == 0:
+                    st.balloons()
+                    st.success("🏆 **¡RÉCORD PERFECTO!** Dominio total de la materia.")
+                else:
+                    st.session_state.errores_quiz += 1
+                    if st.session_state.errores_quiz == 1: st.markdown(f"<div class='card-hint'>💡 Tienes {errores} error(es). La variación en un único carbono define a un epímero. Corrige sin penalización.</div>", unsafe_allow_html=True)
+                    else:
+                        st.session_state.vidas -= 1
+                        st.error("❌ Fallo Crítico. Se ha restado 1 Vida.")
+                        st.session_state.errores_quiz = 0
+
+if __name__ == "__main__":
+    main()
