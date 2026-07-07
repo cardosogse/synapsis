@@ -3,6 +3,7 @@ import sqlite3
 import datetime
 from datetime import timedelta
 import random
+import math
 
 # ========================================================
 # 1. CONFIGURACIÓN DEL CHASIS Y ESTÉTICA CÓSMICA DE ALTA LEGIBILIDAD
@@ -127,6 +128,13 @@ def sincronizar_progreso_db(token, puntos, memo_comp):
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
     c.execute("UPDATE tokens_acceso SET score_puntos = ?, memo_completado = ? WHERE token = ?", (puntos, memo_comp, token))
+    conn.commit()
+    conn.close()
+
+def actualizar_modulo_db(token, modulo):
+    conn = sqlite3.connect(DB_NAME)
+    c = conn.cursor()
+    c.execute("UPDATE tokens_acceso SET modulo_actual = ? WHERE token = ?", (modulo, token))
     conn.commit()
     conn.close()
 
@@ -268,32 +276,39 @@ ELEMENTOS = {
 }
 
 @st.cache_data
-def generar_svg_tira_afloja(fuerza):
-    if fuerza >= 3.0:
-        return """
-        <div style='display:flex; justify-content:center; align-items:center; width:100%; height:110px;'>
-            <svg viewBox="0 0 240 100" width="100%" height="100%">
-                <circle cx="60" cy="50" r="24" fill="#ff5252" opacity="0.9"/>
-                <text x="48" y="54" fill="white" font-weight="bold" font-family="sans-serif" font-size="12">Fuerte</text>
-                <circle cx="95" cy="50" r="5" fill="#00e5ff"/>
-                <ellipse cx="105" cy="50" rx="65" ry="28" fill="none" stroke="#ff5252" stroke-width="1.5" stroke-dasharray="4 2"/>
-                <circle cx="180" cy="50" r="12" fill="#00e5ff" opacity="0.5"/>
-            </svg>
-        </div>
-        """
+def generar_svg_tira_afloja(f1, c1, sym1, f2, c2, sym2):
+    diff = abs(f1 - f2)
+    # Calcular centro de densidad de electrones en base al gradiente
+    if f1 == f2:
+        cx_e = 120
+        ellipse_w = 40
+        stroke_color = "#ffffff"
+    elif f1 > f2:
+        cx_e = 80 + (1.0 / diff) * 5 if diff > 0 else 80
+        ellipse_w = 55
+        stroke_color = c1
     else:
-        return """
-        <div style='display:flex; justify-content:center; align-items:center; width:100%; height:110px;'>
-            <svg viewBox="0 0 240 100" width="100%" height="100%">
-                <circle cx="60" cy="50" r="16" fill="#90a4ae" opacity="0.8"/>
-                <text x="54" y="54" fill="white" font-family="sans-serif" font-size="12">Átomo</text>
-                <circle cx="120" cy="50" r="5" fill="#ffffff"/>
-                <circle cx="120" cy="50" r="8" fill="none" stroke="#00e5ff" stroke-width="1"/>
-                <circle cx="180" cy="50" r="16" fill="#90a4ae" opacity="0.8"/>
-                <ellipse cx="120" cy="50" rx="65" ry="22" fill="none" stroke="#b0bec5" stroke-width="1.2" stroke-dasharray="2 2"/>
-            </svg>
-        </div>
-        """
+        cx_e = 160 - (1.0 / diff) * 5 if diff > 0 else 160
+        ellipse_w = 55
+        stroke_color = c2
+
+    return f"""
+    <div style='display:flex; justify-content:center; align-items:center; width:100%; height:120px;'>
+        <svg viewBox="0 0 240 100" width="100%" height="100%">
+            <line x1="60" y1="50" x2="180" y2="50" stroke="#555" stroke-width="2" stroke-dasharray="4 4"/>
+            <circle cx="60" cy="50" r="22" fill="{c1}" opacity="0.85"/>
+            <text x="54" y="55" fill="black" font-weight="bold" font-family="sans-serif" font-size="14">{sym1}</text>
+            <text x="48" y="85" fill="#cfd8dc" font-family="sans-serif" font-size="11">χ: {f1}</text>
+            
+            <circle cx="180" cy="50" r="22" fill="{c2}" opacity="0.85"/>
+            <text x="174" y="55" fill="black" font-weight="bold" font-family="sans-serif" font-size="14">{sym2}</text>
+            <text x="168" y="85" fill="#cfd8dc" font-family="sans-serif" font-size="11">χ: {f2}</text>
+            
+            <ellipse cx="{cx_e}" cy="50" rx="{ellipse_w}" ry="28" fill="none" stroke="{stroke_color}" stroke-width="1.8" stroke-dasharray="3 1"/>
+            <circle cx="{cx_e}" cy="50" r="6" fill="#00e5ff"/>
+        </svg>
+    </div>
+    """
 
 @st.cache_data
 def generar_svg_enlace(sym1, f1, c1, sym2, f2, c2):
@@ -395,7 +410,7 @@ def main():
             else:
                 st.error(f"Error: {mensaje}")
         
-        # PANEL DE ADMINISTRACIÓN ROBUSTECIDO CON HERRAMIENTAS AVANZADAS
+        # PANEL DE ADMINISTRACIÓN
         with st.expander("⚙️ Panel de Administración (Gestor de Licencias y Tokens)"):
             st.markdown("Consola jerárquica para la creación, liberación o revocación de credenciales.")
             c_admin1, c_admin2 = st.columns(2)
@@ -469,9 +484,8 @@ def main():
         with tabs[0]:
             st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 1: Fundamentos de Química Biológica</h2>", unsafe_allow_html=True)
             
-            # SUB-NAVEGADOR MEJORADO CON ESTILOS VISUALES DE BOTONERA INDEPENDIENTE (CSS)
             estacion_actual = st.radio(
-                "Selecciona una Estación de Trabajo FMVZ:",
+                "Selecciona una Estación de Trabajo FMVZ M1:",
                 options=[
                     "⚛️ Estación A: Estructura y Enlaces",
                     "💧 Estación B: Fuerzas del Agua",
@@ -483,14 +497,9 @@ def main():
             )
             st.markdown("---")
 
-            # ----------------------------------------------------
-            # ESTACIÓN A: ESTRUCTURA Y ENLACES QUÍMICOS
-            # ----------------------------------------------------
             if "Estación A" in estacion_actual:
                 st.markdown("### Línea del Tiempo Atómica y Enlaces Químicos")
-                st.markdown("""
-                <span class='foco-parpadeante'>💡</span> <i>Deslice la línea del tiempo horizontal para descubrir la evolución del átomo.</i>
-                """, unsafe_allow_html=True)
+                st.markdown("""<span class='foco-parpadeante'>💡</span> <i>Deslice la línea del tiempo horizontal para descubrir la evolución del átomo.</i>""", unsafe_allow_html=True)
                 st.markdown("<br>", unsafe_allow_html=True)
                 
                 modelo = st.select_slider(
@@ -502,60 +511,25 @@ def main():
                 col_txt, col_svg = st.columns([3, 1])
                 with col_txt:
                     if "Dalton" in modelo:
-                        st.markdown("""
-                        <div class='card-dalton'>
-                            <b style='color:#90a4ae; font-size: 1.2rem;'>Modelo de Dalton (1810) — Átomo Indivisible</b><br><br>
-                            • <b>Principio:</b> El átomo es una esfera sólida sin cargas. Explica la conservación de la masa en proporciones fijas.<br>
-                            • <b>Límite en Bioquímica:</b> Al carecer de electrones y cargas eléctricas, es incapaz de explicar la unión química.
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.markdown("<div class='card-dalton'><b style='color:#90a4ae; font-size: 1.2rem;'>Modelo de Dalton (1810) — Átomo Indivisible</b><br><br>• <b>Principio:</b> El átomo es una esfera sólida sin cargas.<br>• <b>Límite:</b> Incapaz de explicar uniones químicas al carecer de electrones.</div>", unsafe_allow_html=True)
                     elif "Thomson" in modelo:
-                        st.markdown("""
-                        <div class='card-thomson'>
-                            <b style='color:#9c27b0; font-size: 1.2rem;'>Modelo de Thomson (1897) — El Electrón</b><br><br>
-                            • <b>Principio:</b> Descubre el electrón. Concibe el átomo como una masa esférica positiva atascada de cargas negativas.<br>
-                            • <b>Aporte Molecular:</b> Introduce la naturaleza eléctrica, revelando el origen de las interacciones químicas.
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.markdown("<div class='card-thomson'><b style='color:#9c27b0; font-size: 1.2rem;'>Modelo de Thomson (1897) — El Electrón</b><br><br>• <b>Principio:</b> Descubre el electrón. Masa positiva con cargas negativas incrustadas.<br>• <b>Aporte:</b> Introduce la naturaleza eléctrica de la materia.</div>", unsafe_allow_html=True)
                     elif "Rutherford" in modelo:
-                        st.markdown("""
-                        <div class='card-rutherford'>
-                            <b style='color:#2196f3; font-size: 1.2rem;'>Modelo de Rutherford (1911) — El Espacio Vacío</b><br><br>
-                            • <b>Principio:</b> Demuestra un núcleo central denso positivo con electrones orbitando en un inmenso espacio vacío.<br>
-                            • <b>Aporte Molecular:</b> Posiciona a los electrones en la periferia libres para interactuar, ser robados o compartidos.
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.markdown("<div class='card-rutherford'><b style='color:#2196f3; font-size: 1.2rem;'>Modelo de Rutherford (1911) — El Espacio Vacío</b><br><br>• <b>Principio:</b> Núcleo denso positivo y espacio vacío periférico.<br>• <b>Aporte:</b> Electrones libres en la corteza listos para interactuar.</div>", unsafe_allow_html=True)
                     elif "Bohr" in modelo:
-                        st.markdown("""
-                        <div class='card-bohr'>
-                            <b style='color:#ffb142; font-size: 1.2rem;'>Modelo de Bohr (1913) — Órbitas Cuantizadas</b><br><br>
-                            • <b>Principio:</b> Los electrones giran en órbitas circulares y estables con niveles de energía definidos.<br>
-                            • <b>Límite en Bioquímica:</b> Su rigidez bidimensional impide deducir los ángulos tridimensionales de las moléculas orgánicas.
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.markdown("<div class='card-bohr'><b style='color:#ffb142; font-size: 1.2rem;'>Modelo de Bohr (1913) — Órbitas Cuantizadas</b><br><br>• <b>Principio:</b> Niveles fijos de energía.<br>• <b>Límite:</b> Su rigidez 2D no explica la geometría tridimensional orgánica.</div>", unsafe_allow_html=True)
                     else:
-                        st.markdown("""
-                        <div class='card-schrodinger'>
-                            <b style='color:#00e5ff; font-size: 1.2rem;'>Modelo de Schrödinger (1926) — Mecánica Cuántica (Eje Estructural)</b><br><br>
-                            • <b>Principio:</b> Sustituye órbitas rígidas por <b>orbitales</b>: nubes probabilísticas tridimensionales de electrones.<br><br>
-                            <b>¿Por qué define a la bioquímica moderna?</b><br>
-                            Demuestra que los enlaces son nubes electrónicas flexibles que se hibridan y deforman. Esto justifica matemáticamente la geometría angular exacta del agua en 'V', las uniones débiles que estabilizan la doble hélice del ADN y el acoplamiento tridimensional preciso de los sitios activos de las enzimas.
-                        </div>
-                        """, unsafe_allow_html=True)
+                        st.markdown("<div class='card-schrodinger'><b style='color:#00e5ff; font-size: 1.2rem;'>Modelo de Schrödinger (1926) — Orbitales Cuánticos</b><br><br>• <b>Principio:</b> Densidades probabilísticas 3D.<br>• <b>Eje Estructural:</b> Justifica los ángulos de enlace exactos (como el agua en 'V') y la flexibilidad de acoplamiento enzima-sustrato.</div>", unsafe_allow_html=True)
                 
                 with col_svg:
-                    st.components.v1.html(f"""
-                    <div style='display:flex; justify-content:center; align-items:center; width:100%; height:110px; background-color:rgba(255,255,255,0.02); border-radius:8px;'>
-                        {obtener_svg_atomo(modelo)}
-                    </div>
-                    """, height=120, scrolling=False)
+                    st.components.v1.html(f"<div style='display:flex; justify-content:center; align-items:center; width:100%; height:110px; background-color:rgba(255,255,255,0.02); border-radius:8px;'>{obtener_svg_atomo(modelo)}</div>", height=120, scrolling=False)
 
                 st.markdown("---")
                 st.markdown("### 🧬 Pon a prueba tu Bitácora Atómica")
                 if st.session_state["memo_completado"]:
                     st.caption("✨ *Modo Práctica Activo: Avance oficial sellado en el servidor. Repasa libremente.*")
                 else:
-                    st.caption("🔥 *Modo Oficial Activo: Consigue una racha de 2 aciertos consecutivos sin errores para ganar puntos y extender tu licencia.*")
+                    st.caption("🔥 *Modo Oficial Activo: Consigue una racha de 2 aciertos consecutivos sin errores para ganar puntos e incrementar tu licencia.*")
 
                 if len(st.session_state["memo_reveladas"]) == 2:
                     idx1, idx2 = st.session_state["memo_reveladas"]
@@ -615,153 +589,85 @@ def main():
                         st.rerun()
 
                 if st.session_state["memo_completado"]:
-                    st.markdown(f"<div class='card-success'>🏆 <b>¡Afinidad Atómica Consolidada!</b> Avance sellado de forma permanente en el servidor. Tu balance global actual es de: <b>{st.session_state['puntos_acumulados']} PTS</b>.</div>", unsafe_allow_html=True)
+                    st.markdown(f"<div class='card-success'>🏆 <b>¡Afinidad Atómica Consolidada!</b> Avance sellado permanentemente en la DB. Marcador: <b>{st.session_state['puntos_acumulados']} PTS</b>.</div>", unsafe_allow_html=True)
 
-            # ----------------------------------------------------
-            # ESTACIÓN B: FUERZAS DEL AGUA Y SOLUBILIDAD
-            # ----------------------------------------------------
             elif "Estación B" in estacion_actual:
                 st.markdown("### Fuerzas Intermoleculares y Solubilidad")
-                st.info("""
-                **Puentes de Hidrógeno e Interacciones de Van der Waals (Temas 1.3 y 1.6)**
-                * **Fuerzas Cohesivas:** El enlace por puente de hidrógeno es una fuerza dipolo-dipolo extrema que une las moléculas de agua, dotándola de su alto calor específico.
-                * **Fuerzas de Van der Waals:** Incluyen las fuerzas de dispersión de London (dipolos inducidos transitorios) y dipolo-dipolo inducido, esenciales para la estabilización interna de proteínas y membranas.
-                * **Interacciones Hidrofóbicas:** Explicación termodinámica de cómo el agua repele las cadenas hidrocarbonadas apolares, forzando la autoorganización de los lípidos en micelas y bicapas lipídicas celulares.
-                """)
+                st.info("""**Puentes de Hidrógeno e Interacciones de Van der Waals**
+                \n* **Fuerzas Cohesivas:** Dipolo-dipolo extremo en el agua. Explica su punto de ebullición y calor específico.
+                \n* **Fuerzas de Van der Waals:** Interacciones débiles que estabilizan núcleos hidrofóbicos proteicos.
+                \n* **Efecto Hidrofóbico:** Exclusión termodinámica de solutos apolares, forzando el ensamblaje de la bicapa lipídica celular.""")
                 
-                st.markdown("#### 🧪 Calculadora de Disoluciones Molares (Tema 1.7)")
-                st.write("Simula la preparación de soluciones de reactivos variando la masa del soluto y el volumen de solvente.")
+                st.markdown("#### 🧪 Calculadora de Disoluciones Molares")
                 g_soluto = st.number_input("Masa de Soluto (g):", min_value=1.0, value=18.0)
                 vol_l = st.slider("Volumen de la Disolución (L):", 0.1, 5.0, 1.0, 0.1)
-                pm_glucosa = 180.15 # Peso molecular de referencia
-                molaridad = (g_soluto / pm_glucosa) / vol_l
-                st.success(f"Concentración Calculada: **{molaridad:.3f} M** (Mol/L) considerando Glucosa como soluto patrón.")
+                molaridad = (g_soluto / 180.15) / vol_l
+                st.success(f"Concentración Calculada: **{molaridad:.3f} M** (Glucosa).")
 
-            # ----------------------------------------------------
-            # ESTACIÓN C: UNIVERSO DE GRUPOS FUNCIONALES
-            # ----------------------------------------------------
             elif "Estación C" in estacion_actual:
-                st.markdown("### Estructura de los Grupos Funcionales y Estereoquímica (Temas 1.4 y 1.5)")
-                st.write("Selecciona cualquier grupo funcional constituyente de las macromoléculas animales para desplegar su relevancia biológica en medicina veterinaria:")
-                
-                grupo = st.selectbox("Grupo Funcional a Inspeccionar:", [
-                    "Carbonilo (C=O)", "Metilo (CH3)", "Hidroxilo (-OH)", "Éster (-COOR)", 
-                    "Amino (-NH2)", "Carboxilo (-COOH)", "Tiol / Disulfuro (-SH / -S-S-)", "Fosforilo (-PO3 2-)"
-                ])
-                
-                if "Carbonilo" in group:
-                    st.warning("**Carbonilo:** Presente en aldehídos y cetonas. Eje reactivo en los azúcares reductores que se estudian en el metabolismo energético.")
+                st.markdown("### Estructura de los Grupos Funcionales")
+                grupo = st.selectbox("Grupo Funcional a Inspeccionar:", ["Carbonilo (C=O)", "Metilo (CH3)", "Hidroxilo (-OH)", "Tiol / Disulfuro (-SH)", "Fosforilo (-PO3)"])
+                if "Carbonilo" in grupo:
+                    st.warning("**Carbonilo:** Propio de aldehídos/cetonas. Centro neurálgico del metabolismo de glúcidos.")
                 elif "Metilo" in grupo:
-                    st.warning("**Metilo:** Grupo apolar. Crítico en las modificaciones epigenéticas del ADN celular (metilación) y en la hidrofobicidad proteica.")
-                elif "Hidroxilo" in grupo:
-                    st.warning("**Hidroxilo:** Confiere solubilidad extrema en agua a través de puentes de hidrógeno. Abundante en alcoholes y carbohidratos.")
+                    st.warning("**Metilo:** Hidrofóbico, crítico en empaquetamiento estructural y marcas epigenéticas de metilación en el ADN.")
                 elif "Tiol" in grupo:
-                    st.warning("**Tiol y Disulfuro:** Los puentes de disulfuro entre residuos de Cisteína aportan rigidez estructural tridimensional masiva a las proteínas extracelulares como la queratina (pelo, cuernos, pezuñas).")
-                elif "Fosforilo" in grupo:
-                    st.warning("**Fosforilo:** Enlace de alta energía química. Moneda de intercambio de energía universal en el organismo animal (ATP) y pilar en los ácidos nucleicos.")
+                    st.warning("**Tiol/Disulfuro:** Puentes covalentes cruzados de cisteína. Brindan rigidez mecánica a pezuñas y cuernos por la queratina.")
                 else:
-                    st.warning("Grupo funcional de alta frecuencia en aminoácidos y metabolitos primarios de la homeostasis orgánica.")
-                
-                st.markdown("---")
-                st.markdown("#### 🧬 Breviario de Estereoquímica (Tema 1.5)")
-                st.write("La orientación espacial define la vida: Los aminoácidos naturales en los mamíferos domésticos pertenecen exclusivamente a la serie **L**, mientras que los carbohidratos asimilables corresponden a la serie **D**. La alteración tridimensional de un fármaco quiral puede volverlo ineficaz o tóxico.")
+                    st.warning("Grupo funcional característico de biomoléculas celulares.")
 
-            # ----------------------------------------------------
-            # ESTACIÓN D: PH Y SISTEMAS AMORTIGUADORES RESPIRATORIOS
-            # ----------------------------------------------------
             else:
-                st.markdown("### Autoionización del Agua, Escala de pH y Amortiguadores (Temas 1.8, 1.9 y 1.10)")
-                st.write("El control del pH es una constante biológica inalterable para las enzimas del plasma animal.")
-                
+                st.markdown("### pH y Sistemas Amortiguadores")
                 solucion = st.radio("Cámara de Perfusión Sanguínea:", ["Plasma con Amortiguador Bicarbonato (pH 7.4)", "Agua Destilada Pura (pH 7.0)"])
-                if st.button("Inyectar 10 mL de Ácido Clorhídrico (HCl)", use_container_width=True):
+                if st.button("Inyectar 10 mL de HCl", use_container_width=True):
                     if "Agua" in solucion:
                         if not st.session_state.advertencia_ph:
-                            st.markdown("<div class='card-hint'>💡 <b>SISTEMA DE ASISTENCIA:</b> El agua carece de amortiguadores. Si continúas, causarás un colapso por acidosis masiva. Vuelve a presionar para confirmar la acción.</div>", unsafe_allow_html=True)
+                            st.markdown("<div class='card-hint'>💡 <b>ALERTA INTERACTIVA:</b> El agua destilada carece de tampones. Inyectar HCl causará desnaturalización ácida masiva. Presiona de nuevo si deseas ejecutar la acción.</div>", unsafe_allow_html=True)
                             st.session_state.advertencia_ph = True
                         else:
-                            st.markdown("<div class='card-error'>🩸 <b>CHOQUE DE ACIDOSIS:</b> El pH del agua cayó a 2.0. Desnaturalización masiva de proteínas. <b>-1 Vida.</b></div>", unsafe_allow_html=True)
+                            st.markdown("<div class='card-error'>🩸 <b>CHOQUE POR ACIDOSIS:</b> El pH colapsó a 2.0. Proteínas plasmáticas destruidas. <b>-1 Vida.</b></div>", unsafe_allow_html=True)
                             st.session_state.vidas -= 1
                             st.session_state.advertencia_ph = False
                     else:
-                        st.markdown("<div class='card-success'>🛡️ <b>TAMPONAMIENTO EXITOSO:</b> El sistema amortiguador fisiológico contuvo el impacto. El exceso de protones reaccionó con el Bicarbonato ($HCO_3^-$) formando Ácido Carbónico ($H_2CO_3$), eliminable como $CO_2$ en los pulmones.</div>", unsafe_allow_html=True)
+                        st.markdown("<div class='card-success'>🛡️ <b>EFECTO TAMPÓN EXITOSO:</b> El amortiguador fisiológico absorbió los protones ($H^+$) generando ácido carbónico, el cual se disociará en $CO_2$ eliminable vía pulmonar.</div>", unsafe_allow_html=True)
                         st.session_state.advertencia_ph = False
 
         # ========================================================
-        # MÓDULO 2: ELECTRONEGATIVIDAD
+        # MÓDULO 2: ELECTRONEGATIVIDAD (INGENIERÍA CONSOLIDADA)
         # ========================================================
         with tabs[1]:
-            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 2: Electronegatividad (Estira y Afloja)</h2>", unsafe_allow_html=True)
-            fuerza = st.slider("Fuerza de Atracción (Escala Pauling):", 0.7, 4.0, 2.2, 0.1)
-            st.components.v1.html(generar_svg_tira_afloja(fuerza), height=120, scrolling=False)
-            if fuerza >= 3.0: st.markdown("<div class='card-error'><b>🔥 Átomo Altamente Electronegativo:</b> Secuestra la densidad electrónica.</div>", unsafe_allow_html=True)
-            else: st.markdown("<div class='card-success'><b>🤝 Átomo Equilibrado:</b> Comparte electrones de forma justa.</div>", unsafe_allow_html=True)
+            # ANTI-F5: Persistencia estricta en la DB real
+            actualizar_modulo_db(st.session_state["token_actual"], 2)
+            
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 2: Electronegatividad (El Estira y Afloja)</h2>", unsafe_allow_html=True)
+            
+            estacion_m2 = st.radio(
+                "Navegación Sub-Módulo 2:",
+                options=[
+                    "⚡ Estación A: Escala de Pauling Interactiva",
+                    "🧫 Estación B: Fisiología de Membrana (Ecuación de Nernst)"
+                ],
+                horizontal=True,
+                label_visibility="collapsed"
+            )
+            st.markdown("---")
 
-        # ========================================================
-        # MÓDULO 3: REACTORES DE ENLACE BIOQUÍMICO
-        # ========================================================
-        with tabs[2]:
-            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 3: Reactores de Enlace Bioquímico</h2>", unsafe_allow_html=True)
-            col_a1, col_a2 = st.columns(2)
-            atom1 = col_a1.selectbox("Átomo Central (A):", list(ELEMENTOS.keys()))
-            atom2 = col_a2.selectbox("Átomo de Reacción (B):", list(ELEMENTOS.keys()))
-            if st.button("Ensamblar y Analizar Enlace", use_container_width=True):
-                a1, a2 = ELEMENTOS[atom1], ELEMENTOS[atom2]
-                st.components.v1.html(generar_svg_enlace(a1['sym'], a1['fuerza'], a1['color'], a2['sym'], a2['fuerza'], a2['color']), height=140, scrolling=False)
-                diff = abs(a1['fuerza'] - a2['fuerza'])
-                if diff == 0: st.markdown(f"<div class='card-success'>... Enlace Covalente No Polar Puro (Diferencia = 0.0).</div>", unsafe_allow_html=True)
-                elif diff <= 0.4: st.markdown(f"<div class='card-success'>... Enlace Covalente No Polar.</div>", unsafe_allow_html=True)
-                elif diff <= 1.7: st.markdown(f"<div class='card-success' style='border-left-color:#ffb142;'>⚡ Enlace Covalente Polar (Dipolo activo).</div>", unsafe_allow_html=True)
-                else: st.markdown("<div class='card-error'>⚠️ Tensión Iónica Crítica.</div>", unsafe_allow_html=True)
-
-        # ========================================================
-        # MÓDULO 4: EQUILIBRIO ÁCIDO-BASE Y PH
-        # ========================================================
-        with tabs[3]:
-            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 4: Equilibrio Ácido-Base y pH</h2>", unsafe_allow_html=True)
-            solucion_tab4 = st.radio("Cámara de Perfusión Secundaria:", ["Medio A: Plasma con Buffer Bicarbonato", "Medio B: Agua Destilada Pura"])
-            if st.button("Inyectar 10 mL de HCl (Módulo 4)", use_container_width=True):
-                if "Agua" in solucion_tab4:
-                    st.markdown("<div class='card-error'>🩸 pH colapsado instantáneamente en el Módulo 4.</div>", unsafe_allow_html=True)
-                else:
-                    st.markdown("<div class='card-success'>🛡️ Tamponamiento exitoso.</div>", unsafe_allow_html=True)
-
-        # ========================================================
-        # MÓDULO 5: GLUCÓMICA E ISOMERISMO
-        # ========================================================
-        with tabs[4]:
-            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 5: Glucómica e Isomerismo</h2>", unsafe_allow_html=True)
-            col_g1, col_g2 = st.columns(2)
-            azu1 = col_g1.selectbox("Monosacárido 1:", ["Alfa-D-Glucosa", "Beta-D-Galactosa"])
-            azu2 = col_g2.selectbox("Monosacárido 2:", ["Alfa-D-Glucosa", "Beta-D-Fructosa (Cetosa)"])
-            if st.button("Polimerizar Enlace Glucosídico", use_container_width=True):
-                if azu1 == "Alfa-D-Glucosa" and azu2 == "Alfa-D-Glucosa": st.markdown("<div class='card-success'>🌾 <b>MALTOSA SINTETIZADA:</b> Enlace Alfa(1→4).</div>", unsafe_allow_html=True)
-                elif azu1 == "Beta-D-Galactosa" and azu2 == "Alfa-D-Glucosa": st.markdown("<div class='card-success'>🥛 <b>LACTOSA SINTETIZADA:</b> Enlace Beta(1→4).</div>", unsafe_allow_html=True)
-                elif azu1 == "Alfa-D-Glucosa" and azu2 == "Beta-D-Fructosa (Cetosa)": st.markdown("<div class='card-success'>🎋 <b>SACAROSA SINTETIZADA:</b> Enlace Alfa(1) ↔ Beta(2). Non-reducing.</div>", unsafe_allow_html=True)
-                else: st.markdown("<div class='card-error'>⚠️ Ensamblaje de baja prioridad metabólica.</div>", unsafe_allow_html=True)
-
-        # ========================================================
-        # MÓDULO 6: EVALUACIÓN FINAL
-        # ========================================================
-        with tabs[5]:
-            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 6: Evaluación Final</h2>", unsafe_allow_html=True)
-            Q1 = st.radio("1. ¿Por qué la evolución optó por la D-Glucosa sobre la L-Glucosa?", ["A) Desvía la luz a la derecha.", "B) Modelo 'llave y cerradura' en los sitios activos enzimáticos.", "C) Carece de enlaces O-Glucosídicos."], index=None)
-            Q2 = st.radio("2. Glucosa y Galactosa difieren estructuralmente en un solo carbono asimétrico (C4), son:", ["A) Isótopos", "B) Epímeros", "C) Enantiómeros"], index=None)
-            if st.button("Evaluar Bitácora de Laboratorio", use_container_width=True):
-                errores = 0
-                if Q1 and "B)" not in Q1: errores += 1
-                if Q2 and "B)" not in Q2: errores += 1
-                if not Q1 or not Q2: st.warning("Responde todas las interrogantes.")
-                elif errores == 0:
-                    st.balloons()
-                    st.success("🏆 **¡RÉCORD PERFECTO!** Dominio total de la materia.")
-                else:
-                    st.session_state.errores_quiz += 1
-                    if st.session_state.errores_quiz == 1: st.markdown(f"<div class='card-hint'>💡 Tienes {errores} error(es). La variación en un único carbono define a un epímero. Corrige sin penalización.</div>", unsafe_allow_html=True)
-                    else:
-                        st.session_state.vidas -= 1
-                        st.error("❌ Fallo Crítico. Se ha restado 1 Vida.")
-                        st.session_state.errores_quiz = 0
-
-if __name__ == "__main__":
-    main()
+            if "Estación A" in estacion_m2:
+                st.markdown("### El Gradiente de Afinidad Electrónica en Bioelementos")
+                st.write("La electronegatividad ($\chi$) mide la capacidad de un átomo para atraer densidad electrónica hacia sí en un enlace.")
+                
+                col_sel1, col_sel2 = st.columns(2)
+                e1_name = col_sel1.selectbox("Elemento Primario:", list(ELEMENTOS.keys()), index=1) # Hidrógeno
+                e2_name = col_sel2.selectbox("Elemento Secundario:", list(ELEMENTOS.keys()), index=2) # Oxígeno
+                
+                el1, el2 = ELEMENTOS[e1_name], ELEMENTOS[e2_name]
+                diff_m2 = abs(el1['fuerza'] - el2['fuerza'])
+                
+                st.components.v1.html(generar_svg_tira_afloja(el1['fuerza'], el1['color'], el1['sym'], el2['fuerza'], el2['color'], el2['sym']), height=130, scrolling=False)
+                
+                if diff_m2 == 0:
+                    st.markdown(f"<div class='card-success'><b>🤝 Enlace Covalente No Polar Puro ($\Delta\chi = 0.0$):</b> Distribución electrónica perfectamente simétrica. Comportamiento típico de los hidrocarburos insolubles.</div>", unsafe_allow_html=True)
+                elif diff_m2 <= 0.4:
+                    st.markdown(f"<div class='card-success'><b>🤝 Enlace Covalente No Polar ($\Delta\chi = {diff_m2:.2f}$):</b> Compartición equitativa. Es el bloque fundamental de los enlaces C-H estables en lípidos.</div>", unsafe_allow_html=True)
+                elif diff_m2 <= 1.7:
+                    st.markdown(f"<div class='card-hint'><b>⚡ Enlace Covalente Polar ($\Delta\chi = {diff_m2:.2f}$):</b> Se genera un dipolo permanente. El átomo con mayor $\chi$ induce una carga parcial negativa ($\delta^-$), crucial para la solubilidad y puentes de hidrógeno del agua y azúcares.</div>", unsafe_allow_html=True
