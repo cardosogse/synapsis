@@ -30,7 +30,7 @@ def inyectar_css():
         .card-hint { background-color: rgba(255, 177, 66, 0.1); border-left: 5px solid #ffb142; padding: 15px; border-radius: 5px; margin-top: 10px; color: #ffda79;}
         .monitor-box { background-color: rgba(255,255,255,0.05); padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px;}
         
-        /* Estilizado de pestañas */
+        /* Estilizado de pestañas de navegación */
         .stTabs [data-baseweb="tab-list"] { gap: 8px; background-color: transparent; }
         .stTabs [data-baseweb="tab"] { background-color: rgba(255,255,255,0.05); border-radius: 4px 4px 0 0; padding: 10px 20px; color: #90a4ae; font-weight: bold;}
         .stTabs [aria-selected="true"] { background-color: rgba(0, 229, 255, 0.15) !important; color: #00e5ff !important; border-bottom: 2px solid #00e5ff !important; }
@@ -48,7 +48,7 @@ def inyectar_css():
             display: inline-block;
         }
 
-        /* Paneles cromáticos individuales para la coherencia visual */
+        /* Paneles cromáticos individuales para coherencia visual científica */
         .card-dalton { background-color: rgba(144, 164, 174, 0.08); border: 1px solid rgba(144, 164, 174, 0.3); border-left: 5px solid #90a4ae; padding: 20px; border-radius: 6px; margin-bottom: 15px; }
         .card-thomson { background-color: rgba(156, 39, 176, 0.08); border: 1px solid rgba(156, 39, 176, 0.3); border-left: 5px solid #9c27b0; padding: 20px; border-radius: 6px; margin-bottom: 15px; }
         .card-rutherford { background-color: rgba(33, 150, 243, 0.08); border: 1px solid rgba(33, 150, 243, 0.3); border-left: 5px solid #2196f3; padding: 20px; border-radius: 6px; margin-bottom: 15px; }
@@ -65,7 +65,7 @@ DB_NAME = 'synapsis_auth.db'
 def inicializar_db():
     conn = sqlite3.connect(DB_NAME)
     c = conn.cursor()
-    # Schema robustecido para guardar puntos, módulo activo y estatus del juego contra reinicios de F5
+    # Esquema robustecido anti-F5
     c.execute('''CREATE TABLE IF NOT EXISTS tokens_acceso
                  (token TEXT PRIMARY KEY, 
                   fecha_expiracion DATE, 
@@ -282,7 +282,7 @@ def generar_svg_enlace(sym1, f1, c1, sym2, f2, c2):
     """
 
 def mezclar_memorama():
-    # 5 Pares perfectos (10 tarjetas) balanceados para evitar paja y asegurar el rigor
+    # 5 Pares perfectos (10 tarjetas en total: 2 filas x 5 columnas) sin paja de relleno
     contenido = [
         ("Dalton (1810)", 1), ("Materia indivisible sin cargas", 1),
         ("Thomson (1897)", 2), ("Esfera positiva con electrones incrustados", 2),
@@ -303,7 +303,7 @@ def inicializar_estado():
     if "errores_quiz" not in st.session_state: st.session_state["errores_quiz"] = 0
     if "advertencia_ph" not in st.session_state: st.session_state["advertencia_ph"] = False
     
-    # Marcador persistente local conectado a SQLite
+    # Marcadores enlazados a SQLite
     if "puntos_acumulados" not in st.session_state: st.session_state["puntos_acumulados"] = 0
     if "racha_consecutiva" not in st.session_state: st.session_state["racha_consecutiva"] = 0
     if "licencia_extendida" not in st.session_state: st.session_state["licencia_extendida"] = False
@@ -339,12 +339,11 @@ def main():
                 st.session_state["auth"] = True
                 st.session_state["token_actual"] = token_limpio
                 
-                # Cargar datos persistentes anti-F5 de la base de datos
+                # Carga anti-F5 de progreso consolidado
                 pts, comp = obtener_datos_usuario(token_limpio)
                 st.session_state["puntos_acumulados"] = pts
                 if comp == 1:
                     st.session_state["memo_completado"] = True
-                    # Marcar los 5 pares como resueltos visualmente
                     st.session_state["memo_resueltas"] = [1, 2, 3, 4, 5]
                 
                 st.success(mensaje)
@@ -383,16 +382,7 @@ def main():
             st.markdown("---")
             st.caption("Cerrar sesión explícitamente libera la concurrencia en SQLite.")
 
-        NOMBRES_MODULOS = [
-            "Módulo 1: Evolución del Modelo Atómico",
-            "Módulo 2: Electronegatividad (Estira y Afloja)",
-            "Módulo 3: Reactores de Enlace Bioquímico",
-            "Módulo 4: Equilibrio Ácido-Base y pH",
-            "Módulo 5: Glucómica e Isomerismo",
-            "Módulo 6: Evaluación Final"
-        ]
-
-        c_tit, c_vid = st.columns([3, 1])
+        _, c_vid = st.columns([3, 1])
         with c_vid:
             st.markdown(f"<div class='monitor-box'><span style='color:#90a4ae; font-size:12px;'>ESTABILIDAD CELULAR</span><br><b style='font-size:20px; color:#f44336;'>{st.session_state.vidas} / 3 💔</b></div>", unsafe_allow_html=True)
 
@@ -405,14 +395,17 @@ def main():
                 st.rerun()
             return
 
+        # ========================================================
+        # SISTEMA DE PESTAÑAS FLUIDAS Y TÍTULOS EXCLUSIVOS (DINÁMICO)
+        # ========================================================
         tabs = st.tabs(["🏛️ Módulo 1", "⚡ Módulo 2", "🧬 Módulo 3", "🌡️ Módulo 4", "🍬 Módulo 5", "🏆 Examen"])
 
         # ========================================================
-        # MÓDULO 1: EVOLUCIÓN DEL MODELO ATÓMICO (REESTRUCTURADO)
+        # MÓDULO 1: EVOLUCIÓN DEL MODELO ATÓMICO
         # ========================================================
         with tabs[0]:
-            with c_tit:
-                st.markdown(f"<h2 style='color:#00e5ff; margin-top:0;'>{NOMBRES_MODULOS[0]}</h2>", unsafe_allow_html=True)
+            # El título dinámico se autogenera de forma exclusiva dentro de su propio contenedor
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 1: Evolución del Modelo Atómico</h2>", unsafe_allow_html=True)
                 
             st.markdown("""
             <span class='foco-parpadeante'>💡</span> <i>Deslice la línea del tiempo horizontal para descubrir la evolución del átomo.</i>
@@ -482,13 +475,11 @@ def main():
             st.markdown("---")
             st.markdown("### 🧬 Pon a prueba tu Bitácora Atómica")
             
-            # Bifurcación visual del estado del juego
             if st.session_state["memo_completado"]:
                 st.caption("✨ *Modo Práctica Activo: Tu puntaje oficial ya está sellado en SQLite de forma segura. Puedes repasar libremente.*")
             else:
                 st.caption("🔥 *Modo Oficial Activo: Consigue una racha de 2 aciertos consecutivos sin errores para ganar puntos y extender tu licencia.*")
 
-            # Procesar clics del Memorama (5 Pares)
             if len(st.session_state["memo_reveladas"]) == 2:
                 idx1, idx2 = st.session_state["memo_reveladas"]
                 val1, id_par1 = st.session_state["memo_tablero"][idx1]
@@ -497,39 +488,31 @@ def main():
                 if id_par1 == id_par2:
                     if id_par1 not in st.session_state["memo_resueltas"]:
                         st.session_state["memo_resueltas"].append(id_par1)
-                        
-                        # SISTEMA DE LOGROS Y RACHAS (Solo en modo Oficial)
                         if not st.session_state["memo_completado"]:
                             st.session_state["racha_consecutiva"] += 1
                             puntos_ganados = 100
-                            
-                            # Validar Racha de 2 aciertos consecutivos
                             if st.session_state["racha_consecutiva"] >= 2 and not st.session_state["licencia_extendida"]:
-                                puntos_ganados += 300 # Bono cuántico de puntos
+                                puntos_ganados += 300
                                 st.session_state["licencia_extendida"] = True
                                 otorgar_tiempo_extra_db(st.session_state["token_actual"], dias=7)
-                                st.toast("🚀 ¡RACHA CUÁNTICA! Has ganado +7 días de licencia extra en SQLite.", icon="🎁")
-                            
+                                st.toast("🚀 ¡RACHA CUÁNTICA! +7 días de licencia extra.", icon="🎁")
                             st.session_state["puntos_acumulados"] += puntos_ganados
                             sincronizar_progreso_db(st.session_state["token_actual"], st.session_state["puntos_acumulados"], 0)
-                            
                     st.toast("⚡ ¡Afinidad molecular correcta!", icon="✅")
                 else:
-                    st.session_state["racha_consecutiva"] = 0 # Se rompe la racha si falla
-                    st.toast("❌ Los modelos no interactúan. Inténtalo de nuevo.", icon="⚠️")
+                    st.session_state["racha_consecutiva"] = 0
+                    st.toast("❌ Los modelos no interactúan.", icon="⚠️")
                 st.session_state["memo_reveladas"] = []
 
             if len(st.session_state["memo_resueltas"]) == 5 and not st.session_state["memo_completado"]:
                 st.session_state["memo_completado"] = True
                 sincronizar_progreso_db(st.session_state["token_actual"], st.session_state["puntos_acumulados"], 1)
 
-            # Cuadrícula adaptada a 5 columnas (2 filas x 5 columnas = 10 tarjetas)
             cols_memo = st.columns(5)
             for i in range(10):
                 col_idx = i % 5
                 with cols_memo[col_idx]:
                     val_tarjeta, id_par = st.session_state["memo_tablero"][i]
-                    
                     if id_par in st.session_state["memo_resueltas"]:
                         label = f"✅ {val_tarjeta}"
                         deshabilitado = True
@@ -539,7 +522,6 @@ def main():
                     else:
                         label = "⚛️ Revelar"
                         deshabilitado = False
-                        
                     if st.button(label, key=f"btn_memo_{i}", use_container_width=True, disabled=deshabilitado):
                         st.session_state["memo_reveladas"].append(i)
                         st.rerun()
@@ -550,31 +532,29 @@ def main():
                 if st.button("🔄 Reiniciar Memorama", use_container_width=True):
                     st.session_state["memo_tablero"] = mezclar_memorama()
                     st.session_state["memo_reveladas"] = []
-                    # Si ya es completado oficial, dejamos las resueltas limpias para jugar modo práctica
-                    if st.session_state["memo_completado"]:
-                        st.session_state["memo_resueltas"] = []
-                    else:
-                        st.session_state["memo_resueltas"] = []
+                    st.session_state["memo_resueltas"] = []
+                    if not st.session_state["memo_completado"]:
                         st.session_state["racha_consecutiva"] = 0
                     st.rerun()
 
             if st.session_state["memo_completado"]:
-                st.markdown(f"<div class='card-success'>🏆 <b>¡Afinidad Atómica Consolidada!</b> Avance sellado de forma permanente en el servidor. Tu balance global actual es de: <b>{st.session_state['puntos_acumulados']} PTS</b>. Las bases estructurales están listas.</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='card-success'>🏆 <b>¡Afinidad Atómica Consolidada!</b> Avance sellado de forma permanente en el servidor. Tu balance global actual es de: <b>{st.session_state['puntos_acumulados']} PTS</b>.</div>", unsafe_allow_html=True)
 
         # ========================================================
-        # CONSERVACIÓN ABSOLUTA DE LAS PESTAÑAS COMPAÑERAS
+        # MÓDULO 2: ELECTRONEGATIVIDAD
         # ========================================================
         with tabs[1]:
-            with c_tit: st.markdown(f"<h2 style='color:#00e5ff; margin-top:0;'>{NOMBRES_MODULOS[1]}</h2>", unsafe_allow_html=True)
-            st.markdown("### Electronegatividad y Tensión Orbital")
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 2: Electronegatividad (Estira y Afloja)</h2>", unsafe_allow_html=True)
             fuerza = st.slider("Fuerza de Atracción (Escala Pauling):", 0.7, 4.0, 2.2, 0.1)
             st.components.v1.html(generar_svg_tira_afloja(fuerza), height=120, scrolling=False)
             if fuerza >= 3.0: st.markdown("<div class='card-error'><b>🔥 Átomo Altamente Electronegativo:</b> Secuestra la densidad electrónica.</div>", unsafe_allow_html=True)
             else: st.markdown("<div class='card-success'><b>🤝 Átomo Equilibrado:</b> Comparte electrones de forma justa.</div>", unsafe_allow_html=True)
 
+        # ========================================================
+        # MÓDULO 3: REACTORES DE ENLACE BIOQUÍMICO
+        # ========================================================
         with tabs[2]:
-            with c_tit: st.markdown(f"<h2 style='color:#00e5ff; margin-top:0;'>{NOMBRES_MODULOS[2]}</h2>", unsafe_allow_html=True)
-            st.markdown("### Síntesis de Enlaces Bioquímicos")
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 3: Reactores de Enlace Bioquímico</h2>", unsafe_allow_html=True)
             col_a1, col_a2 = st.columns(2)
             atom1 = col_a1.selectbox("Átomo Central (A):", list(ELEMENTOS.keys()))
             atom2 = col_a2.selectbox("Átomo de Reacción (B):", list(ELEMENTOS.keys()))
@@ -587,9 +567,11 @@ def main():
                 elif diff <= 1.7: st.markdown(f"<div class='card-success' style='border-left-color:#ffb142;'>⚡ Enlace Covalente Polar (Dipolo activo).</div>", unsafe_allow_html=True)
                 else: st.markdown("<div class='card-error'>⚠️ Tensión Iónica Crítica.</div>", unsafe_allow_html=True)
 
+        # ========================================================
+        # MÓDULO 4: EQUILIBRIO ÁCIDO-BASE Y PH
+        # ========================================================
         with tabs[3]:
-            with c_tit: st.markdown(f"<h2 style='color:#00e5ff; margin-top:0;'>{NOMBRES_MODULOS[3]}</h2>", unsafe_allow_html=True)
-            st.markdown("### Control Homeostático: Curvas de Titulación")
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 4: Equilibrio Ácido-Base y pH</h2>", unsafe_allow_html=True)
             solucion = st.radio("Cámara de Perfusión:", ["Medio A: Plasma con Buffer Bicarbonato", "Medio B: Agua Destilada Pura"])
             if st.button("Inyectar 10 mL de Ácido Clorhídrico (HCl)", use_container_width=True):
                 if "Agua" in solucion:
@@ -604,9 +586,11 @@ def main():
                     st.markdown("<div class='card-success'>🛡️ <b>TAMPONAMIENTO EXITOSO:</b> Sistema amortiguador contuvo los protones.</div>", unsafe_allow_html=True)
                     st.session_state.advertencia_ph = False
 
+        # ========================================================
+        # MÓDULO 5: GLUCÓMICA E ISOMERISMO
+        # ========================================================
         with tabs[4]:
-            with c_tit: st.markdown(f"<h2 style='color:#00e5ff; margin-top:0;'>{NOMBRES_MODULOS[4]}</h2>", unsafe_allow_html=True)
-            st.markdown("### El Código de los Azúcares: Enlaces O-Glucosídicos")
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 5: Glucómica e Isomerismo</h2>", unsafe_allow_html=True)
             col_g1, col_g2 = st.columns(2)
             azu1 = col_g1.selectbox("Monosacárido 1:", ["Alfa-D-Glucosa", "Beta-D-Galactosa"])
             azu2 = col_g2.selectbox("Monosacárido 2:", ["Alfa-D-Glucosa", "Beta-D-Fructosa (Cetosa)"])
@@ -616,9 +600,11 @@ def main():
                 elif azu1 == "Alfa-D-Glucosa" and azu2 == "Beta-D-Fructosa (Cetosa)": st.markdown("<div class='card-success'>🎋 <b>SACAROSA SINTETIZADA:</b> Enlace Alfa(1) ↔ Beta(2). Non-reducing.</div>", unsafe_allow_html=True)
                 else: st.markdown("<div class='card-error'>⚠️ Ensamblaje de baja prioridad metabólica.</div>", unsafe_allow_html=True)
 
+        # ========================================================
+        # MÓDULO 6: EVALUACIÓN FINAL
+        # ========================================================
         with tabs[5]:
-            with c_tit: st.markdown(f"<h2 style='color:#00e5ff; margin-top:0;'>{NOMBRES_MODULOS[5]}</h2>", unsafe_allow_html=True)
-            st.markdown("### Desafío Final: Matriz Bioquímica")
+            st.markdown("<h2 style='color:#00e5ff; margin-top:0;'>Módulo 6: Evaluación Final</h2>", unsafe_allow_html=True)
             Q1 = st.radio("1. ¿Por qué la evolución optó por la D-Glucosa sobre la L-Glucosa?", ["A) Desvía la luz a la derecha.", "B) Modelo 'llave y cerradura' en los sitios activos enzimáticos.", "C) Carece de enlaces O-Glucosídicos."], index=None)
             Q2 = st.radio("2. Glucosa y Galactosa difieren estructuralmente en un solo carbono asimétrico (C4), son:", ["A) Isótopos", "B) Epímeros", "C) Enantiómeros"], index=None)
             if st.button("Evaluar Bitácora de Laboratorio", use_container_width=True):
