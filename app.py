@@ -295,4 +295,174 @@ def main():
         # ========================================================
         with tabs[0]:
             st.markdown("### Línea del Tiempo Atómica")
-            st.caption("*💡 Desplace o mueva la línea del tiempo horizontal para descubrir
+            st.caption("*💡 Desplace o mueva la línea del tiempo horizontal para descubrir la evolución del átomo.*")
+            
+            modelo = st.select_slider(
+                "Navegación Cronológica:",
+                options=["Dalton (1810)", "Thomson / Rutherford", "Bohr (1913)", "Schrödinger (1926)"]
+            )
+            
+            # Coherencia cromática controlada por CSS inyectado para emparejar el slider con el recuadro
+            if "Dalton" in modelo:
+                st.markdown("""
+                <div class='card-dalton'>
+                    <b style='color:#90a4ae; font-size: 1.2rem;'>Modelo de Dalton (1810) — Átomo Indivisible</b><br><br>
+                    • <b>Principio:</b> El átomo es una esfera sólida sin cargas. Explica la conservación de la masa y las proporciones fijas en reacciones.<br>
+                    • <b>Límite en Bioquímica:</b> Al carecer de electrones y cargas eléctricas, es incapaz de explicar el mecanismo de unión entre átomos.
+                </div>
+                """, unsafe_allow_html=True)
+            elif "Thomson" in modelo:
+                st.markdown("""
+                <div class='card-thomson'>
+                    <b style='color:#2196f3; font-size: 1.2rem;'>Modelos de Thomson y Rutherford — Cargas Eléctricas</b><br><br>
+                    • <b>Principio:</b> Descubrimiento del electrón (Thomson) y del núcleo denso positivo con espacio vacío (Rutherford).<br>
+                    • <b>Importancia Molecular:</b> Introduce las fuerzas electrostáticas de atracción y repulsión, base de cualquier enlace químico futuro.
+                </div>
+                """, unsafe_allow_html=True)
+            elif "Bohr" in modelo:
+                st.markdown("""
+                <div class='card-bohr'>
+                    <b style='color:#ffb142; font-size: 1.2rem;'>Modelo de Bohr (1913) — Órbitas Cuantizadas</b><br><br>
+                    • <b>Principio:</b> Los electrones giran en órbitas circulares fijas con niveles de energía definidos.<br>
+                    • <b>Límite en Bioquímica:</b> Su rigidez bidimensional es incapaz de explicar la geometría tridimensional y los ángulos de enlace de las moléculas orgánicas complejas.
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("""
+                <div class='card-schrodinger'>
+                    <b style='color:#00e5ff; font-size: 1.2rem;'>Modelo de Schrödinger (1926) — Mecánica Cuántica (Eje Estructural)</b><br><br>
+                    • <b>Principio:</b> Sustituye órbitas fijas por <b>orbitales</b>: nubes probabilísticas tridimensionales donde residen los electrones.<br><br>
+                    <b>¿Por qué define a la bioquímica moderna?</b><br>
+                    Porque demuestra que los enlaces químicos no son varillas rígidas, sino nubes electrónicas que se superponen, se deforman e hibridan en el espacio. Esta flexibilidad cuántica es el único mecanismo físico que explica la geometría angular exacta en 'V' del agua, el acoplamiento tridimensional preciso enzima-sustrato y las fuerzas intermoleculares débiles que estabilizan el ADN.
+                </div>
+                """, unsafe_allow_html=True)
+                
+            st.markdown("---")
+            st.markdown("### 🧬 Pon a prueba tu Bitácora Atómica")
+            st.write("Encuentra los 4 pares vinculando el nombre del científico o teoría con su respectiva restricción o aportación molecular.")
+            
+            # Procesar lógica de clics del Memorama
+            if len(st.session_state["memo_reveladas"]) == 2:
+                idx1, idx2 = st.session_state["memo_reveladas"]
+                val1, id_par1 = st.session_state["memo_tablero"][idx1]
+                val2, id_par2 = st.session_state["memo_tablero"][idx2]
+                
+                if id_par1 == id_par2:
+                    if id_par1 not in st.session_state["memo_resueltas"]:
+                        st.session_state["memo_resueltas"].append(id_par1)
+                    st.toast("⚡ ¡Afinidad molecular correcta!", icon="✅")
+                else:
+                    st.toast("❌ Los modelos no interactúan. Inténtalo de nuevo.", icon="⚠️")
+                st.session_state["memo_reveladas"] = []
+
+            if len(st.session_state["memo_resueltas"]) == 4:
+                st.session_state["memo_completado"] = True
+
+            # Renderizado de la cuadrícula de Botones (2 filas x 4 columnas)
+            cols_memo = st.columns(4)
+            for i in range(8):
+                col_idx = i % 4
+                with cols_memo[col_idx]:
+                    val_tarjeta, id_par = st.session_state["memo_tablero"][i]
+                    
+                    if id_par in st.session_state["memo_resueltas"]:
+                        label = f"✅ {val_tarjeta}"
+                        deshabilitado = True
+                    elif i in st.session_state["memo_reveladas"]:
+                        label = f"👀 {val_tarjeta}"
+                        deshabilitado = True
+                    else:
+                        label = "⚛️ Revelar"
+                        deshabilitado = False
+                        
+                    if st.button(label, key=f"btn_memo_{i}", use_container_width=True, disabled=deshabilitado):
+                        st.session_state["memo_reveladas"].append(i)
+                        st.rerun()
+
+            # Panel inferior de control del juego (Reset y Éxito)
+            st.markdown("<br>", unsafe_allow_html=True)
+            c_reset, _ = st.columns([1, 3])
+            with c_reset:
+                if st.button("🔄 Reiniciar Memorama", use_container_width=True):
+                    st.session_state["memo_tablero"] = mezclar_memorama()
+                    st.session_state["memo_reveladas"] = []
+                    st.session_state["memo_resueltas"] = []
+                    st.session_state["memo_completado"] = False
+                    st.rerun()
+
+            if st.session_state["memo_completado"]:
+                st.markdown("<div class='card-success'>🏆 <b>¡Afinidad Atómica Consolidada!</b> Has completado exitosamente la correspondencia de las teorías. Las bases cuánticas para los siguientes niveles estructurales están listas.</div>", unsafe_allow_html=True)
+
+        # ========================================================
+        # CONSERVACIÓN ABSOLUTA DE LAS PESTAÑAS COMPAÑERAS
+        # ========================================================
+        with tabs[1]:
+            st.markdown("### Electronegatividad y Tensión Orbital")
+            fuerza = st.slider("Fuerza de Atracción (Escala Pauling):", 0.7, 4.0, 2.2, 0.1)
+            st.components.v1.html(generar_svg_tira_afloja(fuerza), height=120, scrolling=False)
+            if fuerza >= 3.0: st.markdown("<div class='card-error'><b>🔥 Átomo Altamente Electronegativo:</b> Secuestra la densidad electrónica.</div>", unsafe_allow_html=True)
+            else: st.markdown("<div class='card-success'><b>🤝 Átomo Equilibrado:</b> Comparte electrones de forma justa.</div>", unsafe_allow_html=True)
+
+        with tabs[2]:
+            st.markdown("### Síntesis de Enlaces Bioquímicos")
+            col_a1, col_a2 = st.columns(2)
+            atom1 = col_a1.selectbox("Átomo Central (A):", list(ELEMENTOS.keys()))
+            atom2 = col_a2.selectbox("Átomo de Reacción (B):", list(ELEMENTOS.keys()))
+            if st.button("Ensamblar y Analizar Enlace", use_container_width=True):
+                a1, a2 = ELEMENTOS[atom1], ELEMENTOS[atom2]
+                st.components.v1.html(generar_svg_enlace(a1['sym'], a1['fuerza'], a1['color'], a2['sym'], a2['fuerza'], a2['color']), height=140, scrolling=False)
+                diff = abs(a1['fuerza'] - a2['fuerza'])
+                if diff == 0: st.markdown(f"<div class='card-success'>✅ Enlace Covalente No Polar Puro (Diferencia = 0.0).</div>", unsafe_allow_html=True)
+                elif diff <= 0.4: st.markdown(f"<div class='card-success'>✅ Enlace Covalente No Polar.</div>", unsafe_allow_html=True)
+                elif diff <= 1.7: st.markdown(f"<div class='card-success' style='border-left-color:#ffb142;'>⚡ Enlace Covalente Polar (Dipolo activo).</div>", unsafe_allow_html=True)
+                else: st.markdown("<div class='card-error'>⚠️ Tensión Iónica Crítica.</div>", unsafe_allow_html=True)
+
+        with tabs[3]: # Módulo de pH subió a la posición 4
+            st.markdown("### Control Homeostático: Curvas de Titulación")
+            solucion = st.radio("Cámara de Perfusión:", ["Medio A: Plasma con Buffer Bicarbonato", "Medio B: Agua Destilada Pura"])
+            if st.button("Inyectar 10 mL de Ácido Clorhídrico (HCl)", use_container_width=True):
+                if "Agua" in solucion:
+                    if not st.session_state.advertencia_ph:
+                        st.markdown("<div class='card-hint'>💡 <b>SISTEMA DE ASISTENCIA:</b> El agua carece de amortiguadores. Si continúas, causarás choque de acidosis masiva. ¿Proceder? Confirma volviendo a presionar el botón.</div>", unsafe_allow_html=True)
+                        st.session_state.advertencia_ph = True
+                    else:
+                        st.markdown("<div class='card-error'>🩸 <b>CHOQUE DE ACIDOSIS:</b> El pH colapsó instantáneamente. Desnaturalización proteica masiva. <b>-1 Vida.</b></div>", unsafe_allow_html=True)
+                        st.session_state.vidas -= 1
+                        st.session_state.advertencia_ph = False
+                else:
+                    st.markdown("<div class='card-success'>🛡️ <b>TAMPONAMIENTO EXITOSO:</b> Sistema amortiguador contuvu el impacto de protones.</div>", unsafe_allow_html=True)
+                    st.session_state.advertencia_ph = False
+
+        with tabs[4]: # Módulo de Carbohidratos bajó a la posición 5
+            st.markdown("### El Código de los Azúcares: Enlaces O-Glucosídicos")
+            col_g1, col_g2 = st.columns(2)
+            azu1 = col_g1.selectbox("Monosacárido 1:", ["Alfa-D-Glucosa", "Beta-D-Galactosa"])
+            azu2 = col_g2.selectbox("Monosacárido 2:", ["Alfa-D-Glucosa", "Beta-D-Fructosa (Cetosa)"])
+            if st.button("Polimerizar Enlace Glucosídico", use_container_width=True):
+                if azu1 == "Alfa-D-Glucosa" and azu2 == "Alfa-D-Glucosa": st.markdown("<div class='card-success'>🌾 <b>MALTOSA SINTETIZADA:</b> Enlace Alfa(1→4).</div>", unsafe_allow_html=True)
+                elif azu1 == "Beta-D-Galactosa" and azu2 == "Alfa-D-Glucosa": st.markdown("<div class='card-success'>🥛 <b>LACTOSA SINTETIZADA:</b> Enlace Beta(1→4).</div>", unsafe_allow_html=True)
+                elif azu1 == "Alfa-D-Glucosa" and azu2 == "Beta-D-Fructosa (Cetosa)": st.markdown("<div class='card-success'>🎋 <b>SACAROSA SINTETIZADA:</b> Enlace Alfa(1) ↔ Beta(2). Non-reducing.</div>", unsafe_allow_html=True)
+                else: st.markdown("<div class='card-error'>⚠️ Ensamble irregular de baja prioridad metabólica.</div>", unsafe_allow_html=True)
+
+        with tabs[5]:
+            st.markdown("### Desafío Final: Matriz Bioquímica")
+            Q1 = st.radio("1. ¿Por qué la evolución optó por la D-Glucosa sobre la L-Glucosa?", ["A) Desvía la luz a la derecha.", "B) Modelo 'llave y cerradura' en los sitios activos enzimáticos.", "C) Carece de enlaces O-Glucosídicos."], index=None)
+            Q2 = st.radio("2. Glucosa y Galactosa difieren estructuralmente en un solo carbono asimétrico (C4), son:", ["A) Isótopos", "B) Epímeros", "C) Enantiómeros"], index=None)
+            if st.button("Evaluar Bitácora de Laboratorio", use_container_width=True):
+                errores = 0
+                if Q1 and "B)" not in Q1: errores += 1
+                if Q2 and "B)" not in Q2: errores += 1
+                if not Q1 or not Q2: st.warning("Responde todas las interrogantes.")
+                elif errores == 0:
+                    st.balloons()
+                    st.success("🏆 **¡RÉCORD PERFECTO!** Dominio total de la materia.")
+                else:
+                    st.session_state.errores_quiz += 1
+                    if st.session_state.errores_quiz == 1: st.markdown(f"<div class='card-hint'>💡 Tienes {errores} error(es). La especificidad es tridimensional y la variación en un único carbono define a un epímero. Corrige sin penalización.</div>", unsafe_allow_html=True)
+                    else:
+                        st.session_state.vidas -= 1
+                        st.error("❌ Fallo Crítico. Se ha restado 1 Vida.")
+                        st.session_state.errores_quiz = 0
+
+if __name__ == "__main__":
+    main()
